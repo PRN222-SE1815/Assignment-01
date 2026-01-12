@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="BusinessLogic/BusinessLogic.csproj" Id="16348a85-9817-48e1-b972-cbe812d29281" />
+  <Project Path="DataAccess/DataAccess.csproj" Id="4108c43b-e5ee-4993-b38f-a7d28d496ea7" />
+  <Project Path="Web/Web.csproj" />
+</Solution>
