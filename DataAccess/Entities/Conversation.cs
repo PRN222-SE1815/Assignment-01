@@ -19,10 +19,16 @@ public partial class Conversation
     public int? CreatedByUserId { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+    //add new field CourseId
+    public int? CourseId { get; set; }
 
     [InverseProperty("Conversation")]
     public virtual ICollection<ConversationParticipant> ConversationParticipants { get; set; } = new List<ConversationParticipant>();
 
     [InverseProperty("Conversation")]
     public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+    //navigation property for Course
+    [ForeignKey("CourseId")]
+    [InverseProperty("Conversations")]
+    public virtual Course? Course { get; set; }
 }

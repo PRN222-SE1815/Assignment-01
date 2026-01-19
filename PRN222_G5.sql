@@ -90,7 +90,7 @@ CREATE TABLE Grades (
 );
 
 -- Table: Conversations
-CREATE TABLE Conversations (
+CREATE TABLE Conversations (-
     ConversationId INT IDENTITY(1,1) PRIMARY KEY,
     IsGroup BIT DEFAULT 0,
     Title NVARCHAR(200),
@@ -98,7 +98,7 @@ CREATE TABLE Conversations (
     CreatedAt DATETIME2 DEFAULT SYSDATETIME()
 );
 
--- Table: ConversationParticipants
+-- Table: ConversationParticipants-
 CREATE TABLE ConversationParticipants (
     ConversationId INT,
     UserId INT,
@@ -109,7 +109,7 @@ CREATE TABLE ConversationParticipants (
     FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 
--- Table: Messages
+-- Table: Messages-
 CREATE TABLE Messages (
     MessageId INT IDENTITY(1,1) PRIMARY KEY,
     ConversationId INT NOT NULL,
@@ -121,7 +121,7 @@ CREATE TABLE Messages (
     FOREIGN KEY (ConversationId) REFERENCES Conversations(ConversationId)
 );
 
--- Table: MessageReads
+-- Table: MessageReads-
 CREATE TABLE MessageReads (
     MessageId INT,
     UserId INT,
@@ -131,7 +131,7 @@ CREATE TABLE MessageReads (
     FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 
--- Table: Notifications
+-- Table: Notifications-
 CREATE TABLE Notifications (
     NotificationId INT IDENTITY(1,1) PRIMARY KEY,
     SenderUserId INT,
@@ -141,7 +141,7 @@ CREATE TABLE Notifications (
     FOREIGN KEY (SenderUserId) REFERENCES Users(UserId)
 );
 
--- Table: NotificationRecipients
+-- Table: NotificationRecipients-
 CREATE TABLE NotificationRecipients (
     NotificationId INT,
     ReceiverUserId INT,
@@ -151,6 +151,22 @@ CREATE TABLE NotificationRecipients (
     FOREIGN KEY (NotificationId) REFERENCES Notifications(NotificationId),
     FOREIGN KEY (ReceiverUserId) REFERENCES Users(UserId)
 );
+
+-----Chạy theo đúng thứ tự
+--B1: Thêm cột CourseId 
+ALTER TABLE Conversations
+ADD CourseId INT NULL;
+
+--B2: Thêm Foreign Key
+ALTER TABLE Conversations
+ADD CONSTRAINT FK_Conversations_Courses 
+    FOREIGN KEY (CourseId) REFERENCES Courses(CourseId);
+
+--B3:  1 course 1 conversation
+CREATE UNIQUE INDEX IX_Conversations_CourseId 
+    ON Conversations(CourseId) 
+    WHERE CourseId IS NOT NULL;
+
 
 -- Insert sample data
 INSERT INTO Roles (RoleName) VALUES 
