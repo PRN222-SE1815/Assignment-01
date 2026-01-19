@@ -47,6 +47,16 @@ public partial class SchoolManagementDbContext : DbContext
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
             entity.Property(e => e.IsGroup).HasDefaultValue(false);
+            //config CourseId foreign key
+            entity.HasOne(d => d.Course)
+                .WithMany(p => p.Conversations)
+                .HasForeignKey(d => d.CourseId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Conversations_Courses");
+            //thêm mới unique index cho CourseId để mở rộng chúcn năng cuộc trò chuyện theo khóa học
+            entity.HasIndex(e => e.CourseId)
+                .IsUnique()
+                .HasFilter("[CourseId] IS NOT NULL");
         });
 
         modelBuilder.Entity<ConversationParticipant>(entity =>

@@ -34,4 +34,6 @@ public partial class Course
     [ForeignKey("TeacherId")]
     [InverseProperty("Courses")]
     public virtual Teacher? Teacher { get; set; }
+    [InverseProperty("Course")]
+    public virtual ICollection<Conversation> Conversations { get; set; } = new List<Conversation>();
 }
