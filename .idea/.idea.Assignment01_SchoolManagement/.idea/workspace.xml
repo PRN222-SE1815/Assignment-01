@@ -9,7 +9,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="96d852b3-41c9-46db-bd24-e884de7d8354" name="Changes" comment="" />
+    <list default="true" id="96d852b3-41c9-46db-bd24-e884de7d8354" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/BusinessLogic/DTOs/Requests/CreateStudyRequest.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -38,6 +40,9 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Requests/CreateStudyRequest.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -130,6 +135,7 @@
       <workItem from="1768781853859" duration="801000" />
       <workItem from="1768783982214" duration="1040000" />
       <workItem from="1768785122311" duration="6698000" />
+      <workItem from="1768816615560" duration="7103000" />
     </task>
     <servers />
   </component>
