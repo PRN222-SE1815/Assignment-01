@@ -53,6 +53,20 @@ CREATE TABLE Courses (
     FOREIGN KEY (TeacherId) REFERENCES Teachers(TeacherId)
 );
 
+CREATE TABLE CourseSchedules (
+    CourseScheduleId INT IDENTITY(1,1) PRIMARY KEY,
+    CourseId INT NOT NULL,
+    DayOfWeek TINYINT NOT NULL,     
+    StartTime TIME(0) NOT NULL,
+    EndTime TIME(0) NOT NULL,
+    StartDate DATE NOT NULL,         -- ngày bắt đầu áp dụng lịch
+    EndDate DATE NOT NULL,           -- ngày kết thúc áp dụng lịch
+    Location NVARCHAR(200) NULL,
+    Note NVARCHAR(500) NULL,
+    CONSTRAINT FK_CourseSchedules_Courses
+        FOREIGN KEY (CourseId) REFERENCES Courses(CourseId)
+);
+
 -- Table: Enrollments
 CREATE TABLE Enrollments (
     EnrollmentId INT IDENTITY(1,1) PRIMARY KEY,
@@ -81,7 +95,7 @@ CREATE TABLE Conversations (
     IsGroup BIT DEFAULT 0,
     Title NVARCHAR(200),
     CreatedByUserId INT,
-    CreatedAt DATETIME2 DEFAULT SYSDATETIME(),
+    CreatedAt DATETIME2 DEFAULT SYSDATETIME()
 );
 
 -- Table: ConversationParticipants
@@ -104,7 +118,7 @@ CREATE TABLE Messages (
     SentAt DATETIME2 DEFAULT SYSDATETIME(),
     EditedAt DATETIME2,
     IsDeleted BIT DEFAULT 0,
-    FOREIGN KEY (ConversationId) REFERENCES Conversations(ConversationId),
+    FOREIGN KEY (ConversationId) REFERENCES Conversations(ConversationId)
 );
 
 -- Table: MessageReads
@@ -173,6 +187,22 @@ INSERT INTO Courses (CourseCode, CourseName, Credits, Semester, TeacherId) VALUE
 (N'IT001', N'Nhập môn lập trình', 3, N'Fall 2024', 1), -- Thầy Hùng dạy
 (N'IT002', N'Cấu trúc dữ liệu', 4, N'Fall 2024', 1), -- Thầy Hùng dạy
 (N'ENG101', N'Tiếng Anh cơ bản', 3, N'Fall 2024', 2); -- Cô Lan dạy
+GO
+
+-- Date range: 2026-01-05 to 2026-03-29
+INSERT INTO CourseSchedules
+    (CourseId, DayOfWeek, StartTime, EndTime, StartDate, EndDate, Location, Note)
+VALUES
+    -- IT001: Mon & Wed 08:00-10:00
+    (1, 1, '08:00', '10:00', '2026-01-05', '2026-03-29', N'Room A101', N'IT001 - Lecture'),
+    (1, 3, '08:00', '10:00', '2026-01-05', '2026-03-29', N'Room A101', N'IT001 - Lecture'),
+
+    -- IT002: Tue & Thu 13:30-15:30
+    (2, 2, '13:30', '15:30', '2026-01-05', '2026-03-29', N'Room B203', N'IT002 - Lecture'),
+    (2, 4, '13:30', '15:30', '2026-01-05', '2026-03-29', N'Room B203', N'IT002 - Lecture'),
+
+    -- ENG101: Fri 09:00-11:00
+    (3, 5, '09:00', '11:00', '2026-01-05', '2026-03-29', N'Room C105', N'ENG101 - Lecture');
 GO
 
 -- 5. Insert Enrollments (Sinh viên đăng ký môn học)

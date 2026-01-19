@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Repositories.Interfaces
+namespace DataAccess.Repositories.Implements
 {
     internal class UserRepository
     {

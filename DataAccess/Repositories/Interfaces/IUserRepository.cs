@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Repositories.Implements
+namespace DataAccess.Repositories.Interfaces
 {
     internal interface IUserRepository
     {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities;
 
-[Index("CourseCode", Name = "UQ__Courses__FC00E0003559A26C", IsUnique = true)]
+[Index("CourseCode", Name = "UQ__Courses__FC00E0000446175C", IsUnique = true)]
 public partial class Course
 {
     [Key]
@@ -24,6 +24,9 @@ public partial class Course
     public string? Semester { get; set; }
 
     public int? TeacherId { get; set; }
+
+    [InverseProperty("Course")]
+    public virtual ICollection<CourseSchedule> CourseSchedules { get; set; } = new List<CourseSchedule>();
 
     [InverseProperty("Course")]
     public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();

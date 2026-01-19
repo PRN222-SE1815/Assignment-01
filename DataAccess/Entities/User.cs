@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities;
 
-[Index("Username", Name = "UQ__Users__536C85E478518130", IsUnique = true)]
-[Index("Email", Name = "UQ__Users__A9D1053434B8C03E", IsUnique = true)]
+[Index("Username", Name = "UQ__Users__536C85E4BCAC30FE", IsUnique = true)]
+[Index("Email", Name = "UQ__Users__A9D10534B09FBA3E", IsUnique = true)]
 public partial class User
 {
     [Key]

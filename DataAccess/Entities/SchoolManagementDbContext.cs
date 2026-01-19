@@ -17,6 +17,8 @@ public partial class SchoolManagementDbContext : DbContext
 
     public virtual DbSet<Course> Courses { get; set; }
 
+    public virtual DbSet<CourseSchedule> CourseSchedules { get; set; }
+
     public virtual DbSet<Enrollment> Enrollments { get; set; }
 
     public virtual DbSet<Grade> Grades { get; set; }
@@ -41,7 +43,7 @@ public partial class SchoolManagementDbContext : DbContext
     {
         modelBuilder.Entity<Conversation>(entity =>
         {
-            entity.HasKey(e => e.ConversationId).HasName("PK__Conversa__C050D8779B4FFD98");
+            entity.HasKey(e => e.ConversationId).HasName("PK__Conversa__C050D87700DF12E6");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
             entity.Property(e => e.IsGroup).HasDefaultValue(false);
@@ -49,110 +51,119 @@ public partial class SchoolManagementDbContext : DbContext
 
         modelBuilder.Entity<ConversationParticipant>(entity =>
         {
-            entity.HasKey(e => new { e.ConversationId, e.UserId }).HasName("PK__Conversa__112854B3A20EACAF");
+            entity.HasKey(e => new { e.ConversationId, e.UserId }).HasName("PK__Conversa__112854B30782DD01");
 
             entity.Property(e => e.JoinedAt).HasDefaultValueSql("(sysdatetime())");
 
             entity.HasOne(d => d.Conversation).WithMany(p => p.ConversationParticipants)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Conversat__Conve__6A30C649");
+                .HasConstraintName("FK__Conversat__Conve__6D0D32F4");
 
             entity.HasOne(d => d.User).WithMany(p => p.ConversationParticipants)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Conversat__UserI__6B24EA82");
+                .HasConstraintName("FK__Conversat__UserI__6E01572D");
         });
 
         modelBuilder.Entity<Course>(entity =>
         {
-            entity.HasKey(e => e.CourseId).HasName("PK__Courses__C92D71A7E751DC31");
+            entity.HasKey(e => e.CourseId).HasName("PK__Courses__C92D71A72182E054");
 
             entity.HasOne(d => d.Teacher).WithMany(p => p.Courses).HasConstraintName("FK__Courses__Teacher__59FA5E80");
         });
 
+        modelBuilder.Entity<CourseSchedule>(entity =>
+        {
+            entity.HasKey(e => e.CourseScheduleId).HasName("PK__CourseSc__1678FC2B579F82F2");
+
+            entity.HasOne(d => d.Course).WithMany(p => p.CourseSchedules)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CourseSchedules_Courses");
+        });
+
         modelBuilder.Entity<Enrollment>(entity =>
         {
-            entity.HasKey(e => e.EnrollmentId).HasName("PK__Enrollme__7F68771B044497AD");
+            entity.HasKey(e => e.EnrollmentId).HasName("PK__Enrollme__7F68771BA9F6F61D");
 
             entity.Property(e => e.EnrollDate).HasDefaultValueSql("(CONVERT([date],sysdatetime()))");
             entity.Property(e => e.Status).HasDefaultValue("Active");
 
             entity.HasOne(d => d.Course).WithMany(p => p.Enrollments)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Enrollmen__Cours__5FB337D6");
+                .HasConstraintName("FK__Enrollmen__Cours__628FA481");
 
             entity.HasOne(d => d.Student).WithMany(p => p.Enrollments)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Enrollmen__Stude__5EBF139D");
+                .HasConstraintName("FK__Enrollmen__Stude__619B8048");
         });
 
         modelBuilder.Entity<Grade>(entity =>
         {
-            entity.HasKey(e => e.GradeId).HasName("PK__Grades__54F87A578BB5ED57");
+            entity.HasKey(e => e.GradeId).HasName("PK__Grades__54F87A57730F7B93");
 
             entity.HasOne(d => d.Enrollment).WithMany(p => p.Grades)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Grades__Enrollme__628FA481");
+                .HasConstraintName("FK__Grades__Enrollme__656C112C");
         });
 
         modelBuilder.Entity<Message>(entity =>
         {
-            entity.HasKey(e => e.MessageId).HasName("PK__Messages__C87C0C9CEB2E2BDD");
+            entity.HasKey(e => e.MessageId).HasName("PK__Messages__C87C0C9CC7104A11");
 
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.SentAt).HasDefaultValueSql("(sysdatetime())");
 
             entity.HasOne(d => d.Conversation).WithMany(p => p.Messages)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Messages__Conver__6FE99F9F");
+                .HasConstraintName("FK__Messages__Conver__72C60C4A");
         });
 
         modelBuilder.Entity<MessageRead>(entity =>
         {
-            entity.HasKey(e => new { e.MessageId, e.UserId }).HasName("PK__MessageR__19048058211ED066");
+            entity.HasKey(e => new { e.MessageId, e.UserId }).HasName("PK__MessageR__190480587113527D");
 
             entity.Property(e => e.ReadAt).HasDefaultValueSql("(sysdatetime())");
 
             entity.HasOne(d => d.Message).WithMany(p => p.MessageReads)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__MessageRe__Messa__73BA3083");
+                .HasConstraintName("FK__MessageRe__Messa__76969D2E");
 
             entity.HasOne(d => d.User).WithMany(p => p.MessageReads)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__MessageRe__UserI__74AE54BC");
+                .HasConstraintName("FK__MessageRe__UserI__778AC167");
         });
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E123FDFBB08");
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E12B2E53BF0");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
 
-            entity.HasOne(d => d.SenderUser).WithMany(p => p.Notifications).HasConstraintName("FK__Notificat__Sende__787EE5A0");
+            entity.HasOne(d => d.SenderUser).WithMany(p => p.Notifications).HasConstraintName("FK__Notificat__Sende__7B5B524B");
         });
 
         modelBuilder.Entity<NotificationRecipient>(entity =>
         {
-            entity.HasKey(e => new { e.NotificationId, e.ReceiverUserId }).HasName("PK__Notifica__C6BCFBB77F35AC77");
+            entity.HasKey(e => new { e.NotificationId, e.ReceiverUserId }).HasName("PK__Notifica__C6BCFBB73904E424");
 
             entity.Property(e => e.IsRead).HasDefaultValue(false);
 
             entity.HasOne(d => d.Notification).WithMany(p => p.NotificationRecipients)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Notificat__Notif__7C4F7684");
+                .HasConstraintName("FK__Notificat__Notif__7F2BE32F");
 
             entity.HasOne(d => d.ReceiverUser).WithMany(p => p.NotificationRecipients)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Notificat__Recei__7D439ABD");
+                .HasConstraintName("FK__Notificat__Recei__00200768");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE1A74942E67");
+            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE1A38AF7956");
         });
 
         modelBuilder.Entity<Student>(entity =>
         {
-            entity.HasKey(e => e.StudentId).HasName("PK__Students__32C52B99468900EA");
+            entity.HasKey(e => e.StudentId).HasName("PK__Students__32C52B998706C4D7");
 
             entity.HasOne(d => d.User).WithMany(p => p.Students)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -161,7 +172,7 @@ public partial class SchoolManagementDbContext : DbContext
 
         modelBuilder.Entity<Teacher>(entity =>
         {
-            entity.HasKey(e => e.TeacherId).HasName("PK__Teachers__EDF25964ED7556BC");
+            entity.HasKey(e => e.TeacherId).HasName("PK__Teachers__EDF25964CAA91A38");
 
             entity.HasOne(d => d.User).WithMany(p => p.Teachers)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -170,7 +181,7 @@ public partial class SchoolManagementDbContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C7F9E805B");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C6DE2B4BF");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysdatetime())");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
