@@ -4,17 +4,17 @@ namespace Web.Models.Auth
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Username là bắt buộc")]
-        [StringLength(50, ErrorMessage = "Username không được vượt quá 50 ký tự")]
-        [Display(Name = "Tên đăng nhập")]
+        [Required(ErrorMessage = "Username is required")]
+        [StringLength(50, ErrorMessage = "Username cannot exceed 50 characters")]
+        [Display(Name = "Username")]
         public string Username { get; set; } = null!;
 
-        [Required(ErrorMessage = "Password là bắt buộc")]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
-        [Display(Name = "Mật khẩu")]
+        [Display(Name = "Password")]
         public string Password { get; set; } = null!;
 
-        [Display(Name = "Ghi nhớ đăng nhập")]
+        [Display(Name = "Remember me")]
         public bool RememberMe { get; set; }
 
         public string? ReturnUrl { get; set; }

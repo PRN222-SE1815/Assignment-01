@@ -61,7 +61,7 @@ namespace Web.Controllers
 
                 if (!result.Success || result.User == null)
                 {
-                    ModelState.AddModelError(string.Empty, result.Message ?? "Đăng nhập thất bại");
+                    ModelState.AddModelError(string.Empty, result.Message ?? "Login failed");
                     return View(model);
                 }
 
@@ -89,7 +89,7 @@ namespace Web.Controllers
                 _logger.LogInformation("User {Username} logged in successfully with role {Role}", 
                     result.User.Username, result.User.RoleName);
 
-                // Redirect theo role hoặc returnUrl
+                // Redirect based on role or returnUrl
                 if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                 {
                     return Redirect(model.ReturnUrl);
