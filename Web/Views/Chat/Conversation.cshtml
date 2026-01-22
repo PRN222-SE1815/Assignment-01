@@ -1,0 +1,282 @@
+@model BusinessLogic.DTOs.Responses.ConversationResponse
+@using BusinessLogic.DTOs.Responses
+
+@{
+    ViewData["Title"] = Model.Title ?? "Conversation";
+    var messages = ViewBag.Messages as List<MessageResponse> ?? new List<MessageResponse>();
+    var currentUserId = ViewBag.CurrentUserId as int? ?? 0;
+}
+
+<div class="container-fluid mt-3">
+    <div class="row">
+        <!-- Chat Area -->
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">
+                                @if (Model.IsGroup)
+                                {
+                                    <i class="fas fa-users"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-user"></i>
+                                }
+                                @Model.Title
+                            </h5>
+                            <small>@Model.Participants.Count participants online</small>
+                        </div>
+                        <div>
+                            <a asp-action="Index" class="btn btn-sm btn-light">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body" id="chatMessages" style="height: 500px; overflow-y: auto;">
+                    @foreach (var message in messages.OrderBy(m => m.SentAt))
+                    {
+                        var isMyMessage = message.SenderUserId == currentUserId;
+                        <div class="mb-3 @(isMyMessage ? "text-end" : "")" data-message-id="@message.MessageId">
+                            <div class="d-inline-block @(isMyMessage ? "bg-primary text-white" : "bg-light") rounded p-2" 
+                                 style="max-width: 70%;">
+                                @if (!isMyMessage)
+                                {
+                                    <strong class="d-block">@message.SenderName</strong>
+                                }
+                                <div>
+                                    @message.Body
+                                </div>
+                                <small class="d-block mt-1 @(isMyMessage ? "text-white-50" : "text-muted")">
+                                    @message.SentAt.ToString("HH:mm")
+                                    @if (message.EditedAt != null)
+                                    {
+                                        <span>(edited)</span>
+                                    }
+                                </small>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="card-body border-top py-2" id="typingIndicator" style="display: none; min-height: 30px;">
+                    <small class="text-muted">
+                        <em id="typingText"></em>
+                    </small>
+                </div>
+
+                <div class="card-footer">
+                    <form id="messageForm" class="d-flex gap-2">
+                        <input type="text" 
+                               id="messageInput" 
+                               class="form-control" 
+                               placeholder="Type a message..." 
+                               autocomplete="off" 
+                               required />
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Participants Sidebar -->
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-users"></i> Participants (@Model.Participants.Count)
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        @foreach (var participant in Model.Participants.OrderBy(p => p.FullName))
+                        {
+                            <div class="list-group-item">
+                                <i class="fas fa-user-circle text-success"></i>
+                                @participant.FullName
+                                @if (participant.UserId == Model.CreatedByUserId)
+                                {
+                                    <span class="badge bg-warning text-dark">Creator</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.IsGroup && Model.CreatedByUserId != currentUserId)
+            {
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <form asp-action="LeaveGroup" method="post" 
+                              onsubmit="return confirm('Are you sure you want to leave this group?');">
+                            <input type="hidden" name="conversationId" value="@Model.ConversationId" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-sm w-100">
+                                <i class="fas fa-sign-out-alt"></i> Leave Group
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.14/signalr.min.js"></script>
+    <script>
+        const conversationId = @Model.ConversationId;
+        const currentUserId = @currentUserId;
+        const currentUserName = "@(User.Identity?.Name ?? "Unknown")";
+        
+        // Build SignalR connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .withAutomaticReconnect()
+            .build();
+
+        // Start connection
+        connection.start()
+            .then(() => {
+                console.log("Connected to SignalR Hub");
+                connection.invoke("JoinConversation", conversationId);
+            })
+            .catch(err => console.error("SignalR connection error:", err));
+
+        // Receive new message
+        connection.on("ReceiveMessage", function (message) {
+            appendMessage(message);
+            scrollToBottom();
+        });
+
+        // Message read
+        connection.on("MessageRead", function (data) {
+            console.log(`Message ${data.messageId} read by user ${data.userId}`);
+        });
+
+        // Message edited
+        connection.on("MessageEdited", function (message) {
+            updateMessage(message);
+        });
+
+        // Message deleted
+        connection.on("MessageDeleted", function (messageId) {
+            removeMessage(messageId);
+        });
+
+        // Typing indicator
+        connection.on("UserTyping", function (data) {
+            if (data.conversationId === conversationId) {
+                showTypingIndicator(data.userName);
+            }
+        });
+
+        connection.on("UserStoppedTyping", function (data) {
+            if (data.conversationId === conversationId) {
+                hideTypingIndicator();
+            }
+        });
+
+        // Error handling
+        connection.on("Error", function (message) {
+            alert("Error: " + message);
+        });
+
+        // Send message form
+        document.getElementById("messageForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const messageInput = document.getElementById("messageInput");
+            const messageBody = messageInput.value.trim();
+            
+            if (messageBody) {
+                connection.invoke("SendMessage", conversationId, messageBody)
+                    .catch(err => console.error("Error sending message:", err));
+
+                messageInput.value = "";
+                connection.invoke("UserStoppedTyping", conversationId, currentUserName);
+            }
+        });
+
+        // Typing indicator logic
+        let typingTimeout;
+        document.getElementById("messageInput").addEventListener("input", function () {
+            connection.invoke("UserTyping", conversationId, currentUserName);
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                connection.invoke("UserStoppedTyping", conversationId, currentUserName);
+            }, 1000);
+        });
+
+        // Helper functions
+        function appendMessage(message) {
+            const isMyMessage = message.senderUserId === currentUserId;
+            const messageHtml = `
+                <div class="mb-3 ${isMyMessage ? 'text-end' : ''}" data-message-id="${message.messageId}">
+                    <div class="d-inline-block ${isMyMessage ? 'bg-primary text-white' : 'bg-light'} rounded p-2" style="max-width: 70%;">
+                        ${!isMyMessage ? `<strong class="d-block">${message.senderName}</strong>` : ''}
+                        <div>${escapeHtml(message.body)}</div>
+                        <small class="d-block mt-1 ${isMyMessage ? 'text-white-50' : 'text-muted'}">
+                            ${new Date(message.sentAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                        </small>
+                    </div>
+                </div>
+            `;
+            document.getElementById("chatMessages").insertAdjacentHTML('beforeend', messageHtml);
+        }
+
+        function updateMessage(message) {
+            const messageElement = document.querySelector(`[data-message-id="${message.messageId}"]`);
+            if (messageElement) {
+                messageElement.querySelector('div div').textContent = message.body;
+                const timeElement = messageElement.querySelector('small');
+                if (!timeElement.textContent.includes('(edited)')) {
+                    timeElement.innerHTML += ' <span>(edited)</span>';
+                }
+            }
+        }
+
+        function removeMessage(messageId) {
+            const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+            if (messageElement) {
+                messageElement.remove();
+            }
+        }
+
+        function showTypingIndicator(userName) {
+            document.getElementById("typingIndicator").style.display = "block";
+            document.getElementById("typingText").textContent = `${userName} is typing...`;
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById("typingIndicator").style.display = "none";
+        }
+
+        function scrollToBottom() {
+            const chatMessages = document.getElementById("chatMessages");
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Scroll to bottom on load
+        scrollToBottom();
+    </script>
+}
+

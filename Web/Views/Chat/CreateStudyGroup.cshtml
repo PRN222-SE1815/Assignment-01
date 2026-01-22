@@ -1,0 +1,98 @@
+@model BusinessLogic.DTOs.Requests.CreateStudyGroupRequest
+
+@{
+    ViewData["Title"] = "Create Study Group";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle"></i> Create New Study Group
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateStudyGroup" method="post">
+                        @Html.AntiForgeryToken()
+                        
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="GroupName" class="form-label">
+                                <i class="fas fa-tag"></i> Group Name <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="GroupName" 
+                                   class="form-control" 
+                                   placeholder="e.g., PRN222 Project Team" 
+                                   required />
+                            <span asp-validation-for="GroupName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-users"></i> Invite Members (Optional)
+                            </label>
+                            <p class="text-muted small">
+                                Enter User IDs of members you want to invite, separated by commas.
+                                <br />
+                                Example: 2, 5, 7
+                            </p>
+                            <input type="text" 
+                                   id="invitedUsersInput" 
+                                   class="form-control" 
+                                   placeholder="e.g., 2, 5, 7" />
+                            <small class="form-text text-muted">
+                                You will be automatically added as the group creator.
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> Study groups are independent conversations not tied to any specific course.
+                            You can use them for group projects, exam preparation, or general discussions.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check"></i> Create Study Group
+                            </button>
+                            <a asp-action="StudyGroups" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Parse comma-separated user IDs and populate hidden field
+        document.querySelector('form').addEventListener('submit', function() {
+            const input = document.getElementById('invitedUsersInput').value.trim();
+            
+            if (input) {
+                const userIds = input.split(',')
+                    .map(id => id.trim())
+                    .filter(id => id && !isNaN(id))
+                    .map(id => parseInt(id));
+                
+                // Create hidden inputs for InvitedUserIds array
+                userIds.forEach((userId, index) => {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = `InvitedUserIds[${index}]`;
+                    hiddenInput.value = userId;
+                    this.appendChild(hiddenInput);
+                });
+            }
+        });
+    </script>
+}
+

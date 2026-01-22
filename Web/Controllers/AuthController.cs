@@ -15,7 +15,8 @@ namespace Web.Controllers
         private readonly IForgotPasswordService _forgotPasswordService;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService, IForgotPasswordService forgotPasswordService, ILogger<AuthController> logger)
+        public AuthController(IAuthService authService, IForgotPasswordService forgotPasswordService,
+            ILogger<AuthController> logger)
         {
             _authService = authService;
             _forgotPasswordService = forgotPasswordService;
@@ -78,7 +79,9 @@ namespace Web.Controllers
                 var authProperties = new AuthenticationProperties
                 {
                     IsPersistent = model.RememberMe,
-                    ExpiresUtc = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(30) : DateTimeOffset.UtcNow.AddHours(8)
+                    ExpiresUtc = model.RememberMe
+                        ? DateTimeOffset.UtcNow.AddDays(30)
+                        : DateTimeOffset.UtcNow.AddHours(8)
                 };
 
                 await HttpContext.SignInAsync(
@@ -86,7 +89,7 @@ namespace Web.Controllers
                     new ClaimsPrincipal(claimsIdentity),
                     authProperties);
 
-                _logger.LogInformation("User {Username} logged in successfully with role {Role}", 
+                _logger.LogInformation("User {Username} logged in successfully with role {Role}",
                     result.User.Username, result.User.RoleName);
 
                 // Redirect based on role or returnUrl
@@ -173,7 +176,8 @@ namespace Web.Controllers
                 return View(request);
             }
 
-            var (success, message) = await _forgotPasswordService.ResetPasswordAsync(request.Token, request.NewPassword);
+            var (success, message) =
+                await _forgotPasswordService.ResetPasswordAsync(request.Token, request.NewPassword);
             if (!success)
             {
                 ModelState.AddModelError(string.Empty, message);
@@ -187,14 +191,15 @@ namespace Web.Controllers
         private IActionResult RedirectToRoleHome(string? roleName = null)
         {
             var role = roleName ?? User.FindFirstValue(ClaimTypes.Role);
-
-            return role switch
-            {
-                "Admin" => RedirectToAction("Index", "Admin"),
-                "Teacher" => RedirectToAction("Index", "Teacher"),
-                "Student" => RedirectToAction("Index", "Student"),
-                _ => RedirectToAction(nameof(Login))
-            };
+                return role switch
+                {
+                    "Admin" => RedirectToAction("Index", "Admin"),
+                    "Teacher" => RedirectToAction("Index", "Home"),
+                    "Student" => RedirectToAction("Index", "Home"),
+                    _ => RedirectToAction(nameof(Login))
+                };
+            
         }
     }
 }
+

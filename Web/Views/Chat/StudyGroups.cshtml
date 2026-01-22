@@ -1,0 +1,116 @@
+@model List<BusinessLogic.DTOs.Responses.ConversationResponse>
+
+@{
+    ViewData["Title"] = "Study Groups";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2><i class="fas fa-users"></i> My Study Groups</h2>
+                <div>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> All Conversations
+                    </a>
+                    <a asp-action="CreateStudyGroup" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Create Study Group
+                    </a>
+                </div>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> You haven't joined or created any study groups yet.
+                    <br />
+                    <a asp-action="CreateStudyGroup" class="btn btn-sm btn-primary mt-2">
+                        Create your first study group
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var group in Model)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-users"></i> @group.Title
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-2">
+                                        <i class="fas fa-user-friends"></i>
+                                        <strong>@group.Participants.Count</strong> members
+                                    </p>
+                                    <p class="mb-2 text-muted small">
+                                        <i class="fas fa-calendar"></i>
+                                        Created: @group.CreatedAt.ToString("MMM dd, yyyy")
+                                    </p>
+                                    
+                                    <div class="mb-2">
+                                        <strong>Members:</strong>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach (var participant in group.Participants.Take(3))
+                                            {
+                                                <li class="small">
+                                                    <i class="fas fa-user-circle text-success"></i> 
+                                                    @participant.FullName
+                                                </li>
+                                            }
+                                            @if (group.Participants.Count > 3)
+                                            {
+                                                <li class="small text-muted">
+                                                    ... and @(group.Participants.Count - 3) more
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+
+                                    @if (group.LastMessage != null)
+                                    {
+                                        <div class="border-top pt-2 mt-2">
+                                            <small class="text-muted">Last message:</small>
+                                            <p class="mb-0 small">
+                                                <strong>@group.LastMessage.SenderName:</strong>
+                                                @(group.LastMessage.Body.Length > 40 
+                                                    ? group.LastMessage.Body.Substring(0, 40) + "..." 
+                                                    : group.LastMessage.Body)
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="card-footer">
+                                    <a asp-action="Conversation" asp-route-id="@group.ConversationId" 
+                                       class="btn btn-primary btn-sm w-100">
+                                        <i class="fas fa-comments"></i> Open Chat
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+}
+
