@@ -101,5 +101,16 @@ namespace DataAccess.Repositories.Implements
                              && cp.UserId == userId 
                              && cp.LeftAt == null);
         }
+
+        public async Task<int?> GetDirectConversationIdAsync(int userId1, int userId2)
+        {
+            return await _context.Conversations
+                .Where(c => !c.IsGroup == true)
+                .Where(c => c.ConversationParticipants.Count == 2)
+                .Where(c => c.ConversationParticipants.Any(cp => cp.UserId == userId1 && cp.LeftAt == null))
+                .Where(c => c.ConversationParticipants.Any(cp => cp.UserId == userId2 && cp.LeftAt == null))
+                .Select(c => (int?)c.ConversationId)
+                .FirstOrDefaultAsync();
+        }
     }
 }
