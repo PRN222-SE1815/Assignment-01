@@ -90,7 +90,7 @@ CREATE TABLE Grades (
 );
 
 -- Table: Conversations
-CREATE TABLE Conversations (-
+CREATE TABLE Conversations (
     ConversationId INT IDENTITY(1,1) PRIMARY KEY,
     IsGroup BIT DEFAULT 0,
     Title NVARCHAR(200),

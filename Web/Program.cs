@@ -1,9 +1,15 @@
+using BusinessLogic.DTOs.Settings;
+using BusinessLogic.Services.Implements;
+using BusinessLogic.Services.Interfaces;
+using DataAccess.Entities;
+using DataAccess.Repositories.Implements;
+using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<DataAccess.Entities.SchoolManagementDbContext>(options =>
+builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register Repositories
@@ -24,9 +30,9 @@ builder.Services.AddScoped<BusinessLogic.Services.Interfaces.ICourseConversation
 builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IStudyGroupService, BusinessLogic.Services.Implements.StudyGroupService>();
 
 builder.Services.AddDataProtection();
-builder.Services.Configure<BusinessLogic.DTOs.Settings.SmtpOptions>(builder.Configuration.GetSection("Smtp"));
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IEmailService, BusinessLogic.Services.Implements.MailKitEmailService>();
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IForgotPasswordService, BusinessLogic.Services.Implements.ForgotPasswordService>();
+builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
+builder.Services.AddScoped<IEmailService, MailKitEmailService>();
+builder.Services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
 
 // Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
