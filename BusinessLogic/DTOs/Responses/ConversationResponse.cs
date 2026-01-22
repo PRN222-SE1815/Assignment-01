@@ -8,6 +8,7 @@ namespace BusinessLogic.DTOs.Responses
         public int CreatedByUserId { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<ParticipantResponse> Participants { get; set; } = new();
+
     }
     
 }
