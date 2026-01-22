@@ -100,7 +100,7 @@ namespace Web.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during login for user {Username}", model.Username);
-                ModelState.AddModelError(string.Empty, "Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại.");
+                ModelState.AddModelError(string.Empty, "An error occurred during login. Please try again.");
                 return View(model);
             }
         }
