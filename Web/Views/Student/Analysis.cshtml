@@ -1,0 +1,44 @@
+﻿@model BusinessLogic.DTOs.AI.StudentAiViewModel
+
+<h2>AI Academic Analysis</h2>
+
+<p><b>Level:</b> @Model.Analysis.Level</p>
+<p><b>Trend:</b> @Model.Analysis.Trend</p>
+<p><b>Risk:</b> @Model.Analysis.Risk</p>
+
+<p><b>Strength:</b> @Model.Analysis.Strength</p>
+<p><b>Weakness:</b> @Model.Analysis.Weakness</p>
+<p><b>Recommendation:</b> @Model.Analysis.Recommendation</p>
+
+<hr />
+
+<h3>Chat with AI Academic Advisor</h3>
+
+<div id="chatBox" style="border:1px solid #ccc;padding:10px;height:300px;overflow:auto;">
+</div>
+
+<input type="text" id="msg" class="form-control" placeholder="Ask AI about your study..." />
+<br />
+<button class="btn btn-primary" onclick="send()">Send</button>
+
+<script>
+    async function send() {
+        const text = document.getElementById("msg").value;
+        if (!text) return;
+
+        const box = document.getElementById("chatBox");
+        box.innerHTML += "<div><b>You:</b> " + text + "</div>";
+
+        const res = await fetch("/api/chat/@Model.StudentId", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(text)
+        });
+
+        const data = await res.json();
+        box.innerHTML += "<div style='color:green'><b>AI:</b> " + data.reply + "</div>";
+        box.scrollTop = box.scrollHeight;
+
+        document.getElementById("msg").value = "";
+    }
+</script>
