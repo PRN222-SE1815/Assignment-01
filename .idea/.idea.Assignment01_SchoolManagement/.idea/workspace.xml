@@ -10,22 +10,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="96d852b3-41c9-46db-bd24-e884de7d8354" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/ConversationService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/MessageService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/NotificationService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IConversationService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IMessageService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/INotificationService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/MessageRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/NotificationRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IMessageRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/INotificationRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/Controllers/ChatController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/Controllers/HomeController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/Hubs/ChatHub.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/Conversation.cshtml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/CreateStudyGroup.cshtml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/Index.cshtml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/Notifications.cshtml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/StudyGroups.cshtml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/Views/Home/Index.cshtml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/wwwroot/css/chat.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/wwwroot/js/chat.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Assignment01_SchoolManagement/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Assignment01_SchoolManagement/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Implements/ConversationRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/ConversationRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Implements/UserRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/UserRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IConversationRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IConversationRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/ICourseRepository.cs (.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/ICourseRepository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IUserRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IUserRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/Controllers/AuthController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Controllers/AuthController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/Views/_ViewStart.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Views/_ViewStart.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,13 +60,16 @@
     <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Requests/CreateConversationRequest.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Requests/MarkMessageAsReadRequest.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Requests/SendMessageRequest.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Responses/DashboardStatsResponse.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Responses/MessageResponse.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Responses/NotificationResponse.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Implements/ConversationService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Implements/DashboardService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Implements/MessageService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Implements/NotificationService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Implements/StudyGroupService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IConversationService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IDashboardService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IMessageService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Interfaces/INotificationService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IStudyGroupService.cs" root0="FORCE_HIGHLIGHTING" />
@@ -76,6 +79,19 @@
     <setting file="file://$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IConversationParticipantRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IMessageRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DataAccess/Repositories/Interfaces/INotificationRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Controllers/ChatController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Controllers/HomeController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Hubs/ChatHub.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Views/Chat/Conversation.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Views/Chat/CreateStudyGroup.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Views/Chat/Index.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Views/Chat/Notifications.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Views/Chat/StudyGroups.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Views/Home/Index.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Views/_ViewImports.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/Views/_ViewStart.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/appsettings.Development.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Web/appsettings.json" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -174,6 +190,8 @@
       <workItem from="1768816615560" duration="7103000" />
       <workItem from="1768879047235" duration="6274000" />
       <workItem from="1769043432407" duration="4005000" />
+      <workItem from="1769090050157" duration="8295000" />
+      <workItem from="1769098662991" duration="364000" />
     </task>
     <servers />
   </component>
