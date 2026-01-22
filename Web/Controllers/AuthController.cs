@@ -193,7 +193,7 @@ namespace Web.Controllers
                 "Admin" => RedirectToAction("Index", "Admin"),
                 "Teacher" => RedirectToAction("Index", "Teacher"),
                 "Student" => RedirectToAction("Index", "Student"),
-                _ => RedirectToAction("Index", "Home")
+                _ => RedirectToAction(nameof(Login))
             };
         }
     }
