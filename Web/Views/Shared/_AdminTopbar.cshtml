@@ -1,0 +1,39 @@
+@{
+    var fullName = User.FindFirst("FullName")?.Value;
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+}
+<nav class="navbar navbar-expand-lg navbar-dark admin-topbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" asp-controller="Admin" asp-action="Index">
+            <i class="bi bi-mortarboard-fill"></i> School Management
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminTopbar" aria-controls="adminTopbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="adminTopbar">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i> @User.Identity?.Name
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminUserDropdown">
+                        <li class="px-3 py-2">
+                            <div><strong>@(fullName ?? User.Identity?.Name)</strong></div>
+                            <small class="text-muted">@role</small>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form asp-action="Logout" asp-controller="Auth" method="post" class="d-inline w-100">
+                                <button type="submit" class="dropdown-item">
+                                    <i class="bi bi-box-arrow-right"></i> Sign Out
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
