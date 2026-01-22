@@ -1,6 +1,6 @@
 namespace BusinessLogic.DTOs.Requests;
 
-public class CreateStudyRequestGroup
+public class CreateStudyGroupRequest
 {
     public string GroupName { get; set; }
     public int CreatedByUserId { get; set; }

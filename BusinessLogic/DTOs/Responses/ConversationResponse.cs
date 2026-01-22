@@ -7,7 +7,9 @@ namespace BusinessLogic.DTOs.Responses
         public string? Title { get; set; }
         public int CreatedByUserId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public MessageResponse? LastMessage { get; set; }
         public List<ParticipantResponse> Participants { get; set; } = new();
+        public int UnreadCount { get; set; }
     }
     
 }

@@ -10,7 +10,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="96d852b3-41c9-46db-bd24-e884de7d8354" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/DTOs/Requests/CreateStudyRequest.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/ConversationService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/MessageService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/NotificationService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IConversationService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IMessageService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/INotificationService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/MessageRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/NotificationRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IMessageRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/INotificationRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Assignment01_SchoolManagement/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Assignment01_SchoolManagement/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Implements/ConversationRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/ConversationRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Implements/UserRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/UserRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IConversationRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IConversationRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/ICourseRepository.cs (.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/ICourseRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IUserRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IUserRepository.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,13 +57,34 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Requests/CreateStudyRequest.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Requests/CreateConversationRequest.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Requests/MarkMessageAsReadRequest.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Requests/SendMessageRequest.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Responses/MessageResponse.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/DTOs/Responses/NotificationResponse.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Implements/ConversationService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Implements/MessageService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Implements/NotificationService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Implements/StudyGroupService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IConversationService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IMessageService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Interfaces/INotificationService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IStudyGroupService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DataAccess/Repositories/Implements/ConversationParticipantRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DataAccess/Repositories/Implements/MessageRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DataAccess/Repositories/Implements/NotificationRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IConversationParticipantRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IMessageRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DataAccess/Repositories/Interfaces/INotificationRepository.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
   <component name="ProjectId" id="38CPjhXhbVKTpqQZ4VAFUb0JByy" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -136,6 +172,8 @@
       <workItem from="1768783982214" duration="1040000" />
       <workItem from="1768785122311" duration="6698000" />
       <workItem from="1768816615560" duration="7103000" />
+      <workItem from="1768879047235" duration="6274000" />
+      <workItem from="1769043432407" duration="4005000" />
     </task>
     <servers />
   </component>

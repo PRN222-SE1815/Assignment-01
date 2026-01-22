@@ -12,4 +12,5 @@ public interface IConversationRepository
     Task RemoveParticipantAsync(int conversationId, int userId);
     Task<List<int>> GetParticipantUserIdsAsync(int conversationId);
     Task<bool> IsUserInConversationAsync(int conversationId, int userId);
+  Task<int?> GetDirectConversationIdAsync(int userId1, int userId2);
 }
