@@ -24,4 +24,11 @@
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Admin\" />
+    <Folder Include="Models\Mail\" />
+    <Folder Include="Models\Teacher\" />
+    <Folder Include="Models\Student\" />
+  </ItemGroup>
+
 </Project>
