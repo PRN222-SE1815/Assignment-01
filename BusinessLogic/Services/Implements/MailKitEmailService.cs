@@ -18,7 +18,7 @@ public class MailKitEmailService : IEmailService
 
     public async Task SendAsync(string toEmail, string subject, string htmlBody)
     {
-        var message = new MimeMessage();
+        using var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_options.FromName, _options.FromEmail));
         message.To.Add(MailboxAddress.Parse(toEmail));
         message.Subject = subject;
