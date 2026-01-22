@@ -1,0 +1,196 @@
+/* ============================================
+   Student Dashboard Styles - Modern Blue Theme
+   ============================================ */
+
+/* Topbar - Blue Modern */
+.student-topbar,
+.student-shell .user-topbar {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+    border-bottom: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.student-topbar .navbar-brand,
+.student-shell .user-topbar .navbar-brand {
+    color: white !important;
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.student-topbar .navbar-brand:hover,
+.student-shell .user-topbar .navbar-brand:hover {
+    color: #f0f0f0 !important;
+}
+
+.student-topbar .nav-link,
+.student-shell .user-topbar .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.student-topbar .nav-link:hover,
+.student-shell .user-topbar .nav-link:hover {
+    color: white !important;
+}
+
+.student-topbar .dropdown-menu,
+.student-shell .user-topbar .dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Student Shell */
+.student-shell {
+    min-height: calc(100vh - 56px);
+    background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+}
+
+/* Student Content */
+.student-content {
+    background-color: transparent;
+    min-height: calc(100vh - 120px);
+}
+
+/* Student Footer */
+.student-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Student Dashboard Cards - Modern Gradient Style */
+.student-dashboard-card {
+    border: none;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.student-dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.student-dashboard-card:hover::before {
+    transform: scaleX(1);
+}
+
+.student-dashboard-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 12px 32px rgba(79, 172, 254, 0.3);
+}
+
+.student-dashboard-card .card-body {
+    padding: 2.5rem 2rem;
+}
+
+.student-dashboard-card .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.student-dashboard-card:hover .icon-wrapper {
+    transform: rotate(360deg) scale(1.1);
+}
+
+.student-dashboard-card i {
+    color: white;
+}
+
+.student-dashboard-card h5 {
+    color: #2d3748;
+    font-weight: 700;
+    margin-top: 1.5rem;
+}
+
+.student-dashboard-card .text-muted {
+    color: #718096 !important;
+}
+
+/* Coming Soon Badge */
+.student-dashboard-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.student-dashboard-card.disabled:hover {
+    transform: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.student-dashboard-card.disabled::before {
+    background: #6c757d;
+}
+
+.student-dashboard-card.disabled .icon-wrapper {
+    background: linear-gradient(135deg, #6c757d 0%, #adb5bd 100%);
+}
+
+.student-dashboard-card.disabled:hover .icon-wrapper {
+    transform: none;
+}
+
+/* Welcome Section */
+.student-welcome {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 8px 24px rgba(79, 172, 254, 0.3);
+}
+
+.student-welcome h2 {
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+}
+
+.student-welcome p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+}
+
+/* Quick Stats */
+.student-stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #4facfe;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .student-dashboard-card .card-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .student-welcome {
+        padding: 2rem;
+    }
+    
+    .student-welcome h2 {
+        font-size: 2rem;
+    }
+    
+    .student-dashboard-card .icon-wrapper {
+        width: 70px;
+        height: 70px;
+    }
+}

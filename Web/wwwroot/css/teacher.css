@@ -1,0 +1,133 @@
+/* ============================================
+   Teacher Dashboard Styles - Professional Green Theme
+   ============================================ */
+
+/* Topbar - Green Professional */
+.teacher-topbar,
+.teacher-shell .user-topbar {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    border-bottom: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.teacher-topbar .navbar-brand,
+.teacher-shell .user-topbar .navbar-brand {
+    color: white !important;
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.teacher-topbar .navbar-brand:hover,
+.teacher-shell .user-topbar .navbar-brand:hover {
+    color: #f0f0f0 !important;
+}
+
+.teacher-topbar .nav-link,
+.teacher-shell .user-topbar .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.teacher-topbar .nav-link:hover,
+.teacher-shell .user-topbar .nav-link:hover {
+    color: white !important;
+}
+
+.teacher-topbar .dropdown-menu,
+.teacher-shell .user-topbar .dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Teacher Shell */
+.teacher-shell {
+    min-height: calc(100vh - 56px);
+    background: linear-gradient(to bottom, #f8fffe 0%, #ffffff 100%);
+}
+
+/* Teacher Content */
+.teacher-content {
+    background-color: transparent;
+    min-height: calc(100vh - 120px);
+}
+
+/* Teacher Footer */
+.teacher-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Teacher Dashboard Cards - Clean Professional Style */
+.teacher-dashboard-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    background: white;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.teacher-dashboard-card:hover {
+    border-color: #38ef7d;
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(17, 153, 142, 0.2);
+}
+
+.teacher-dashboard-card .card-body {
+    padding: 2rem;
+}
+
+.teacher-dashboard-card i {
+    color: #11998e;
+    transition: all 0.3s ease;
+}
+
+.teacher-dashboard-card:hover i {
+    color: #38ef7d;
+    transform: scale(1.1);
+}
+
+.teacher-dashboard-card h5 {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.teacher-dashboard-card .text-muted {
+    color: #718096 !important;
+}
+
+/* Coming Soon Badge */
+.teacher-dashboard-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.teacher-dashboard-card.disabled:hover {
+    transform: none;
+    border-color: #e9ecef;
+    box-shadow: none;
+}
+
+/* Welcome Section */
+.teacher-welcome {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.2);
+}
+
+.teacher-welcome h2 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .teacher-dashboard-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .teacher-welcome {
+        padding: 1.5rem;
+    }
+}
