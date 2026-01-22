@@ -159,14 +159,15 @@ INSERT INTO Roles (RoleName) VALUES
 (N'Student');
 
 -- 1. Insert Users (Bao gồm Admin, Giáo viên và Học sinh)
--- Lưu ý: PasswordHash ở đây chỉ là demo string, thực tế phải là chuỗi đã mã hóa
+-- Lưu ý: PasswordHash (123456) ở đây chỉ là demo string, thực tế phải là chuỗi đã mã hóa
 INSERT INTO Users (Username, PasswordHash, FullName, Email, IsActive, RoleId) VALUES 
-(N'admin', N'hash_admin_123', N'Quản Trị Viên', N'admin@school.edu.vn', 1, 1), -- ID: 1 (Admin)
-(N'thay_hung', N'hash_hung_123', N'Nguyễn Văn Hùng', N'hung.nguyen@school.edu.vn', 1, 2), -- ID: 2 (Teacher)
-(N'co_lan', N'hash_lan_123', N'Trần Thị Lan', N'lan.tran@school.edu.vn', 1, 2), -- ID: 3 (Teacher)
-(N'sv_nam', N'hash_nam_123', N'Lê Văn Nam', N'nam.le@student.edu.vn', 1, 3), -- ID: 4 (Student)
-(N'sv_hoa', N'hash_hoa_123', N'Phạm Thị Hoa', N'hoa.pham@student.edu.vn', 1, 3), -- ID: 5 (Student)
-(N'sv_tuan', N'hash_tuan_123', N'Hoàng Minh Tuấn', N'tuan.hoang@student.edu.vn', 1, 3); -- ID: 6 (Student)
+(N'admin', N'$2a$11$3a.c4ZnOaFDpoNSvpsCRreErpfv/4rmvf9IySgcfYcOkXWMJOwpGu', N'Quản Trị Viên', N'datltse182453@fpt.edu.vn', 1, 1), -- ID: 1 (Admin)
+(N'thay_hung', N'$2a$11$3a.c4ZnOaFDpoNSvpsCRreErpfv/4rmvf9IySgcfYcOkXWMJOwpGu', N'Nguyễn Văn Hùng', N'hung.nguyen@school.edu.vn', 1, 2), -- ID: 2 (Teacher)
+(N'co_lan', N'$2a$11$3a.c4ZnOaFDpoNSvpsCRreErpfv/4rmvf9IySgcfYcOkXWMJOwpGu', N'Trần Thị Lan', N'lan.tran@school.edu.vn', 1, 2), -- ID: 3 (Teacher)
+(N'sv_nam', N'$2a$11$3a.c4ZnOaFDpoNSvpsCRreErpfv/4rmvf9IySgcfYcOkXWMJOwpGu', N'Lê Văn Nam', N'nam.le@student.edu.vn', 1, 3), -- ID: 4 (Student)
+(N'sv_hoa', N'$2a$11$3a.c4ZnOaFDpoNSvpsCRreErpfv/4rmvf9IySgcfYcOkXWMJOwpGu', N'Phạm Thị Hoa', N'hoa.pham@student.edu.vn', 1, 3), -- ID: 5 (Student)
+(N'sv_tuan', N'$2a$11$3a.c4ZnOaFDpoNSvpsCRreErpfv/4rmvf9IySgcfYcOkXWMJOwpGu', N'Hoàng Minh Tuấn', N'tuan.hoang@student.edu.vn', 1, 3), -- ID: 6 (Student)
+(N'sv_dat', N'$2a$11$3a.c4ZnOaFDpoNSvpsCRreErpfv/4rmvf9IySgcfYcOkXWMJOwpGu', N'Lê Tiến Đạt', N'datletien1352004@gmail.com', 1, 3); -- ID: 7 (Student)
 GO
 
 -- 2. Insert Teachers (Liên kết với User ID 2 và 3)
