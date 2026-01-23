@@ -1,65 +1,108 @@
 @model BusinessLogic.DTOs.Requests.CreateStudyGroupRequest
+@using BusinessLogic.DTOs.Responses
 
 @{
     ViewData["Title"] = "Create Study Group";
+    var userCourses = ViewBag.UserCourses as List<CourseBasicResponse> ?? new List<CourseBasicResponse>();
 }
 
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
+            <div class="card shadow">
                 <div class="card-header bg-success text-white">
                     <h4 class="mb-0">
                         <i class="fas fa-plus-circle"></i> Create New Study Group
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form asp-action="CreateStudyGroup" method="post">
+                    <form asp-action="CreateStudyGroup" method="post" id="createGroupForm">
                         @Html.AntiForgeryToken()
                         
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display:none;"></div>
 
-                        <div class="mb-3">
-                            <label asp-for="GroupName" class="form-label">
-                                <i class="fas fa-tag"></i> Group Name <span class="text-danger">*</span>
+                        <!-- Course Selection -->
+                        <div class="mb-4">
+                            <label asp-for="CourseId" class="form-label fw-bold">
+                                <i class="fas fa-book text-success"></i> Select Course <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="CourseId" id="courseSelect" class="form-select form-select-lg" required>
+                                <option value="">-- Select a Course --</option>
+                                @foreach (var course in userCourses)
+                                {
+                                    <option value="@course.CourseId">
+                                        @course.CourseCode - @course.CourseName 
+                                        @if (!string.IsNullOrEmpty(course.Semester))
+                                        {
+                                            @:(@course.Semester)
+                                        }
+                                    </option>
+                                }
+                            </select>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> Select a course to see available members.
+                            </div>
+                            <span asp-validation-for="CourseId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Group Name -->
+                        <div class="mb-4">
+                            <label asp-for="GroupName" class="form-label fw-bold">
+                                <i class="fas fa-tag text-success"></i> Group Name <span class="text-danger">*</span>
                             </label>
                             <input asp-for="GroupName" 
-                                   class="form-control" 
+                                   class="form-control form-control-lg" 
                                    placeholder="e.g., PRN222 Project Team" 
                                    required />
                             <span asp-validation-for="GroupName" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="fas fa-users"></i> Invite Members (Optional)
+                        <!-- Invite Members Section -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-users text-success"></i> Invite Members (Optional)
                             </label>
-                            <p class="text-muted small">
-                                Enter User IDs of members you want to invite, separated by commas.
-                                <br />
-                                Example: 2, 5, 7
-                            </p>
-                            <input type="text" 
-                                   id="invitedUsersInput" 
-                                   class="form-control" 
-                                   placeholder="e.g., 2, 5, 7" />
-                            <small class="form-text text-muted">
-                                You will be automatically added as the group creator.
-                            </small>
+                            
+                            <div id="membersSection" class="border rounded p-3 bg-light">
+                                <p class="text-muted mb-3" id="selectCourseMessage">
+                                    <i class="fas fa-arrow-up"></i> Please select a course first to see available members.
+                                </p>
+                                
+                                <!-- Loading indicator -->
+                                <div id="loadingMembers" class="text-center py-3" style="display: none;">
+                                    <div class="spinner-border text-success" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Loading members...</p>
+                                </div>
+                                
+                                <!-- Members list with checkboxes -->
+                                <div id="membersList" style="max-height: 300px; overflow-y: auto;"></div>
+                                
+                                <!-- Selected count -->
+                                <div id="selectedCount" class="mt-2 text-success fw-bold" style="display: none;">
+                                    <i class="fas fa-check-circle"></i> <span id="countNumber">0</span> member(s) selected
+                                </div>
+                            </div>
+                            
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> You will be automatically added as the group creator.
+                            </div>
                         </div>
 
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            <strong>Note:</strong> Study groups are independent conversations not tied to any specific course.
-                            You can use them for group projects, exam preparation, or general discussions.
+                        <!-- Info Alert -->
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-lightbulb"></i>
+                            <strong>Tip:</strong> Study groups are great for project collaboration, exam preparation, or course discussions.
                         </div>
 
+                        <!-- Submit Buttons -->
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg">
+                            <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
                                 <i class="fas fa-check"></i> Create Study Group
                             </button>
-                            <a asp-action="StudyGroups" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Cancel
+                            <a asp-action="StudyGroups" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
                             </a>
                         </div>
                     </form>
@@ -73,25 +116,99 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     
     <script>
-        // Parse comma-separated user IDs and populate hidden field
-        document.querySelector('form').addEventListener('submit', function() {
-            const input = document.getElementById('invitedUsersInput').value.trim();
+        const courseSelect = document.getElementById('courseSelect');
+        const membersList = document.getElementById('membersList');
+        const loadingMembers = document.getElementById('loadingMembers');
+        const selectCourseMessage = document.getElementById('selectCourseMessage');
+        const selectedCount = document.getElementById('selectedCount');
+        const countNumber = document.getElementById('countNumber');
+        
+        // Load members when course changes
+        courseSelect.addEventListener('change', async function() {
+            const courseId = this.value;
             
-            if (input) {
-                const userIds = input.split(',')
-                    .map(id => id.trim())
-                    .filter(id => id && !isNaN(id))
-                    .map(id => parseInt(id));
-                
-                // Create hidden inputs for InvitedUserIds array
-                userIds.forEach((userId, index) => {
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = `InvitedUserIds[${index}]`;
-                    hiddenInput.value = userId;
-                    this.appendChild(hiddenInput);
-                });
+            if (!courseId) {
+                membersList.innerHTML = '';
+                selectCourseMessage.style.display = 'block';
+                selectedCount.style.display = 'none';
+                return;
             }
+            
+            selectCourseMessage.style.display = 'none';
+            loadingMembers.style.display = 'block';
+            membersList.innerHTML = '';
+            
+            try {
+                const response = await fetch(`/Chat/SearchUsers?term=*&courseId=${courseId}`);
+                const users = await response.json();
+                
+                loadingMembers.style.display = 'none';
+                
+                if (!users || users.length === 0) {
+                    membersList.innerHTML = '<p class="text-muted">No other members found in this course.</p>';
+                    return;
+                }
+                
+                // Create checkboxes for each user
+                let html = '';
+                users.forEach(user => {
+                    html += `
+                        <div class="form-check py-2 border-bottom">
+                            <input class="form-check-input member-checkbox" 
+                                   type="checkbox" 
+                                   name="InvitedUserIds" 
+                                   value="${user.id}" 
+                                   id="user_${user.id}">
+                            <label class="form-check-label w-100" for="user_${user.id}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>${escapeHtml(user.fullName)}</strong>
+                                        <br>
+                                        <small class="text-muted">${escapeHtml(user.email || user.username)}</small>
+                                    </div>
+                                    <span class="badge ${user.role === 'Teacher' ? 'bg-warning text-dark' : 'bg-info'}">${user.role}</span>
+                                </div>
+                            </label>
+                        </div>
+                    `;
+                });
+                
+                membersList.innerHTML = html;
+                
+                // Add change listeners to update count
+                document.querySelectorAll('.member-checkbox').forEach(cb => {
+                    cb.addEventListener('change', updateSelectedCount);
+                });
+                
+                selectedCount.style.display = 'block';
+                updateSelectedCount();
+                
+            } catch (error) {
+                console.error('Error loading members:', error);
+                loadingMembers.style.display = 'none';
+                membersList.innerHTML = '<p class="text-danger">Failed to load members. Please try again.</p>';
+            }
+        });
+        
+        function updateSelectedCount() {
+            const checked = document.querySelectorAll('.member-checkbox:checked').length;
+            countNumber.textContent = checked;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Form submit - log for debugging
+        document.getElementById('createGroupForm').addEventListener('submit', function(e) {
+            const checkedBoxes = document.querySelectorAll('.member-checkbox:checked');
+            console.log('Form submitting with', checkedBoxes.length, 'members selected');
+            checkedBoxes.forEach(cb => {
+                console.log('  - User ID:', cb.value);
+            });
         });
     </script>
 }

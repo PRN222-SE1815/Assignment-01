@@ -21,14 +21,15 @@ namespace BusinessLogic.Services.Implements
 
         public async Task<ConversationResponse> CreateStudyGroupAsync(CreateStudyGroupRequest request)
         {
-            // Tạo conversation (CourseId = null)
+            // Create study group conversation (CourseId = NULL to avoid unique constraint)
+            // We use CourseId only for filtering participants during invite
             var conversation = new Conversation
             {
                 IsGroup = true,
                 Title = request.GroupName,
                 CreatedByUserId = request.CreatedByUserId,
                 CreatedAt = DateTime.UtcNow,
-                CourseId = null // ← Không liên kết với course
+                CourseId = null // Study groups are independent, not tied to course conversation
             };
 
             var savedConversation = await _conversationRepository.CreateConversationAsync(conversation);
@@ -40,12 +41,15 @@ namespace BusinessLogic.Services.Implements
             );
 
             // Add invited users
-            foreach (var userId in request.InvitedUserIds)
+            if (request.InvitedUserIds != null && request.InvitedUserIds.Length > 0)
             {
-                await _participantRepository.AddParticipantAsync(
-                    savedConversation.ConversationId,
-                    userId
-                );
+                foreach (var userId in request.InvitedUserIds)
+                {
+                    await _participantRepository.AddParticipantAsync(
+                        savedConversation.ConversationId,
+                        userId
+                    );
+                }
             }
 
             // ✅ Dùng ParticipantRepository để lấy entities
@@ -67,7 +71,8 @@ namespace BusinessLogic.Services.Implements
                 Title = savedConversation.Title,
                 CreatedByUserId = savedConversation.CreatedByUserId ?? 0,
                 CreatedAt = savedConversation.CreatedAt ?? DateTime.UtcNow,
-                Participants = participants // ✅ Dùng biến participants đã map
+                CourseId = savedConversation.CourseId, // NULL for study groups
+                Participants = participants
             };
         }
 
@@ -115,11 +120,38 @@ namespace BusinessLogic.Services.Implements
                     Title = c.Title,
                     CreatedByUserId = c.CreatedByUserId ?? 0,
                     CreatedAt = c.CreatedAt ?? DateTime.UtcNow,
-                    Participants = participants // ✅ Dùng biến participants đã map
+                    CourseId = c.CourseId, // NULL for study groups
+                    Participants = participants
                 });
             }
 
             return result;
+        }
+
+        public async Task<bool> DeleteStudyGroupAsync(int conversationId, int userId)
+        {
+            // Get conversation to check if user is creator
+            var conversation = await _conversationRepository.GetConversationByIdAsync(conversationId);
+            
+            if (conversation == null)
+                return false;
+
+            // Only creator can delete
+            if (conversation.CreatedByUserId != userId)
+                return false;
+
+            // Check if it's a study group (CourseId should be null)
+            if (conversation.CourseId != null)
+                return false; // Cannot delete course conversations
+
+            // Remove all participants (this effectively deletes the group)
+            var participants = await _participantRepository.GetActiveParticipantsAsync(conversationId);
+            foreach (var participant in participants)
+            {
+                await _participantRepository.RemoveParticipantAsync(conversationId, participant.UserId);
+            }
+
+            return true;
         }
     }
 

@@ -194,8 +194,8 @@ namespace Web.Controllers
                 return role switch
                 {
                     "Admin" => RedirectToAction("Index", "Admin"),
-                    "Teacher" => RedirectToAction("Index", "Home"),
-                    "Student" => RedirectToAction("Index", "Home"),
+                    "Teacher" => RedirectToAction("Index", "Teacher"),
+                    "Student" => RedirectToAction("Index", "Student"),
                     _ => RedirectToAction(nameof(Login))
                 };
             
