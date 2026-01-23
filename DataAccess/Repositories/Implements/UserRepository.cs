@@ -1,4 +1,4 @@
-﻿using DataAccess.Entities;
+﻿﻿using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -85,6 +85,23 @@ namespace DataAccess.Repositories.Implements
         public Task<bool> EmailExistsAsync(string email)
         {
             return _context.Users.AnyAsync(u => u.Email == email);
+        }
+
+        public Task<List<User>> SearchUsersAsync(string searchTerm)
+        {
+            var term = searchTerm.ToLower().Trim();
+            
+            return _context.Users
+                .AsNoTracking()
+                .Include(u => u.Role)
+                .Where(u => u.IsActive == true && (
+                    u.FullName.ToLower().Contains(term) ||
+                    (u.Email != null && u.Email.ToLower().Contains(term)) ||
+                    u.Username.ToLower().Contains(term)
+                ))
+                .OrderBy(u => u.FullName)
+                .Take(10) // Limit to 10 results
+                .ToListAsync();
         }
     }
 }

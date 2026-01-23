@@ -10,5 +10,6 @@ namespace BusinessLogic.Services.Interfaces
         Task<UserDto> CreateAsync(CreateUserRequest request);
         Task<UserDto> UpdateAsync(int userId, UpdateUserRequest request);
         Task<bool> DeleteAsync(int userId);
+        Task<List<UserSearchResponse>> SearchUsersAsync(string searchTerm);
     }
 }

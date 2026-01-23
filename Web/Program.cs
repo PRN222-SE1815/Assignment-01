@@ -19,6 +19,8 @@ builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IConversationParti
 builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IMessageRepository, DataAccess.Repositories.Implements.MessageRepository>();
 builder.Services.AddScoped<DataAccess.Repositories.Interfaces.INotificationRepository, DataAccess.Repositories.Implements.NotificationRepository>();
 builder.Services.AddScoped<DataAccess.Repositories.Interfaces.ICourseRepository, DataAccess.Repositories.Implements.CourseRepository>();
+builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IEnrollmentRepository, DataAccess.Repositories.Implements.EnrollmentRepository>();
+builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IStudentRepository, DataAccess.Repositories.Implements.StudentRepository>();
 
 // Register Services
 builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IAuthService, BusinessLogic.Services.Implements.AuthService>();
@@ -28,6 +30,8 @@ builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IMessageService, Bu
 builder.Services.AddScoped<BusinessLogic.Services.Interfaces.INotificationService, BusinessLogic.Services.Implements.NotificationService>();
 builder.Services.AddScoped<BusinessLogic.Services.Interfaces.ICourseConversationService, BusinessLogic.Services.Implements.CourseConversationService>();
 builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IStudyGroupService, BusinessLogic.Services.Implements.StudyGroupService>();
+builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IEnrollmentServiceForChat, BusinessLogic.Services.Implements.EnrollmentServiceForChat>();
+builder.Services.AddScoped<BusinessLogic.Services.Interfaces.ICourseService, BusinessLogic.Services.Implements.CourseService>();
 
 builder.Services.AddDataProtection();
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
