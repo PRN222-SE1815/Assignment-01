@@ -10,22 +10,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="96d852b3-41c9-46db-bd24-e884de7d8354" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Web/Controllers/ChatController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Controllers/HomeController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Hubs/ChatHub.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/Conversation.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/CreateStudyGroup.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/Index.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/Notifications.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/StudyGroups.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Views/Home/Index.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/wwwroot/css/chat.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/wwwroot/js/chat.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Assignment01_SchoolManagement/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Assignment01_SchoolManagement/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IUserRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IUserRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Implements/ConversationRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/ConversationRepository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Web/Controllers/AuthController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Controllers/AuthController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/Views/_ViewStart.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Views/_ViewStart.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/Views/Student/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Views/Student/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/Views/Teacher/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Views/Teacher/Index.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,25 +94,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.Web: IIS Express.executor&quot;: &quot;Run&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat/chat/modify-backend-signalR&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.C#&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.Web: IIS Express.executor": "Run",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "git-widget-placeholder": "feat/chat/modify-frontend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.sourceCode.C#",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.Web: IIS Express">
     <configuration name="Web: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Web/Web.csproj" />
@@ -192,6 +181,7 @@
       <workItem from="1769043432407" duration="4005000" />
       <workItem from="1769090050157" duration="8295000" />
       <workItem from="1769098662991" duration="364000" />
+      <workItem from="1769143173990" duration="4439000" />
     </task>
     <servers />
   </component>
