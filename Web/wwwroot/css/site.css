@@ -1,22 +1,615 @@
-html {
-  font-size: 14px;
+/* ========================================
+   Modern macOS-style Design System
+   ======================================== */
+
+:root {
+    --primary-color: #007AFF;
+    --secondary-color: #5856D6;
+    --success-color: #34C759;
+    --danger-color: #FF3B30;
+    --warning-color: #FF9500;
+    --info-color: #5AC8FA;
+    --dark-color: #1C1C1E;
+    --light-color: #F2F2F7;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
+    --border-radius-xl: 20px;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #1C1C1E;
+    line-height: 1.6;
+}
+
+/* ========================================
+   Hero Section
+   ======================================== */
+.hero-student {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-student::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
+    background-size: 50px 50px;
+    opacity: 0.1;
+}
+
+/* ========================================
+   Navbar - macOS style
+   ======================================== */
+.navbar-custom {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: none !important;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-lg);
+    margin: 20px 20px 0 20px;
+    padding: 12px 24px;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--primary-color) !important;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+}
+
+.nav-link {
+    color: #1C1C1E !important;
+    font-weight: 500;
+    padding: 8px 16px !important;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+    margin: 0 4px;
+}
+
+.nav-link:hover {
+    background: rgba(0, 122, 255, 0.1);
+    color: var(--primary-color) !important;
+    transform: translateY(-2px);
+}
+
+.nav-link.active {
+    background: var(--primary-color);
+    color: white !important;
+}
+
+/* ========================================
+   Dropdown Menu
+   ======================================== */
+.dropdown-menu {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    padding: 8px;
+    margin-top: 8px;
+    z-index: 9999 !important;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dropdown-item {
+    border-radius: 8px;
+    padding: 10px 16px;
+    transition: all 0.2s ease;
+    color: #1C1C1E;
+}
+
+.dropdown-item:hover {
+    background: rgba(0, 122, 255, 0.1);
+    color: var(--primary-color);
+}
+
+.dropdown-item.text-danger:hover {
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--danger-color);
+}
+
+.dropdown-divider {
+    opacity: 0.1;
+    margin: 8px 0;
+}
+
+/* Fix dropdown toggle arrow */
+.dropdown-toggle::after {
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-bottom: 0;
+    border-left: 0.3em solid transparent;
+    margin-left: 0.5em;
+}
+
+/* Ensure dropdown stays above other content */
+.navbar {
+    z-index: 1050 !important;
+}
+
+.dropdown {
+    z-index: 1060 !important;
+}
+
+.dropdown-menu.show {
+    z-index: 9999 !important;
+    position: absolute;
+}
+
+/* ========================================
+   Container & Cards
+   ======================================== */
+.container {
+    background: transparent;
+    padding: 30px 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    z-index: 3;
+}
+
+.card-header {
+    background: rgba(0, 122, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0 !important;
+    padding: 16px 24px;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+.card-footer {
+    background: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 16px 24px;
+}
+
+/* ========================================
+   Buttons - macOS style
+   ======================================== */
+.btn {
+    border-radius: var(--border-radius);
+    padding: 10px 24px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0051D5;
+}
+
+.btn-success {
+    background: var(--success-color);
+}
+
+.btn-success:hover {
+    background: #28A745;
+}
+
+.btn-danger {
+    background: var(--danger-color);
+}
+
+.btn-danger:hover {
+    background: #CC2E24;
+}
+
+.btn-warning {
+    background: var(--warning-color);
+    color: white;
+}
+
+.btn-info {
+    background: var(--info-color);
+}
+
+.btn-secondary {
+    background: #8E8E93;
+    color: white;
+}
+
+.btn-outline-secondary {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    color: #1C1C1E;
+    background: white;
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-outline-light {
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    background: transparent;
+}
+
+.btn-outline-light:hover {
+    background: white;
+    color: var(--primary-color);
+    border-color: white;
+}
+
+.btn-sm {
+    padding: 6px 16px;
+    font-size: 0.875rem;
+    border-radius: 8px;
+}
+
+.btn-lg {
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    border-radius: 14px;
+}
+
+.rounded-pill {
+    border-radius: 50rem !important;
+}
+
+/* ========================================
+   Form Elements
+   ======================================== */
+.form-control {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    outline: none;
+}
+
+.form-select {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    padding: 12px 16px;
+}
+
+.input-group-text {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    background: white;
+}
+
+.input-group-lg .input-group-text {
+    padding: 12px 16px;
+    font-size: 1.1rem;
+}
+
+.input-group-lg .form-control {
+    font-size: 1.1rem;
+}
+
+/* ========================================
+   Alerts
+   ======================================== */
+.alert {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    padding: 16px 24px;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-sm);
+}
+
+.alert-success {
+    background: rgba(52, 199, 89, 0.15);
+    color: #1C6B2D;
+}
+
+.alert-danger {
+    background: rgba(255, 59, 48, 0.15);
+    color: #C41E3A;
+}
+
+.alert-info {
+    background: rgba(90, 200, 250, 0.15);
+    color: #006699;
+}
+
+.alert-warning {
+    background: rgba(255, 149, 0, 0.15);
+    color: #B35900;
+}
+
+/* ========================================
+   Badges
+   ======================================== */
+.badge {
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.rounded-pill {
+    border-radius: 50rem !important;
+}
+
+/* ========================================
+   Tables
+   ======================================== */
+.table {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.table thead th {
+    border: none;
+    background: rgba(0, 122, 255, 0.08);
+    color: #1C1C1E;
+    font-weight: 600;
+    padding: 16px;
+}
+
+.table tbody tr {
+    background: white;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+    transform: scale(1.01);
+    box-shadow: var(--shadow-md);
+}
+
+.table tbody td {
+    border: none;
+    padding: 16px;
+    vertical-align: middle;
+}
+
+.table tbody tr td:first-child {
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+.table tbody tr td:last-child {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.table-responsive {
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+}
+
+/* ========================================
+   Nav Pills
+   ======================================== */
+.nav-pills {
+    border: none;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-lg);
+    padding: 8px;
+}
+
+.nav-pills .nav-link {
+    border: none;
+    color: #8E8E93;
+    border-radius: var(--border-radius);
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link.active {
+    background: white;
+    color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-pills .nav-link:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--primary-color);
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+.footer {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    margin: 40px 20px 0 20px;
+    padding: 24px;
+    box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================
+   Page Title & Headers
+   ======================================== */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: #1C1C1E;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.text-muted {
+    color: #0C0C0C !important;
+}
+
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ========================================
+   Utilities
+   ======================================== */
+.shadow-sm {
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.shadow {
+    box-shadow: var(--shadow-md) !important;
+}
+
+.shadow-lg {
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.rounded-4 {
+    border-radius: var(--border-radius-lg) !important;
+}
+
+.glassmorphism {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================
+   Background Colors
+   ======================================== */
+.bg-light {
+    background-color: rgba(242, 242, 247, 0.7) !important;
+    backdrop-filter: blur(10px);
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+@media (max-width: 768px) {
+    .navbar-custom {
+        margin: 10px;
+        border-radius: var(--border-radius);
+    }
+    
+    .card {
+        margin-bottom: 16px;
+    }
+    
+    .container {
+        padding: 20px 10px;
+    }
+    
+    .hero-student {
+        padding: 2rem 1.5rem !important;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+}
+
+/* ========================================
+   Scrollbar - macOS style
+   ======================================== */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+    background-clip: content-box;
 }

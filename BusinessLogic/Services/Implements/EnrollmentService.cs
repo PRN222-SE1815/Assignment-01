@@ -24,7 +24,7 @@ namespace BusinessLogic.Services.Implements
             _studentRepository = studentRepository;
         }
 
-        public async Task<List<CourseResponse>> GetAvailableCoursesAsync(int studentId, string? searchKeyword)
+        public async Task<List<CourseResponse>> GetAvailableCoursesAsync(int studentId, string? searchKeyword, string? filter)
         {
             var allCourses = await _courseRepository.GetAllCoursesAsync();
             
@@ -45,7 +45,7 @@ namespace BusinessLogic.Services.Implements
                 var isEnrolled = await _enrollmentRepository.IsStudentEnrolledAsync(studentId, course.CourseId);
                 var enrolledCount = await _enrollmentRepository.GetEnrolledCountByCourseAsync(course.CourseId);
                 
-                result.Add(new CourseResponse
+                var courseResponse = new CourseResponse
                 {
                     CourseId = course.CourseId,
                     CourseCode = course.CourseCode,
@@ -56,7 +56,22 @@ namespace BusinessLogic.Services.Implements
                     Department = course.Teacher?.Department,
                     EnrolledCount = enrolledCount,
                     IsEnrolled = isEnrolled
-                });
+                };
+
+                // Áp dụng filter theo trạng thái đăng ký
+                switch (filter?.ToLower())
+                {
+                    case "enrolled":
+                        if (isEnrolled) result.Add(courseResponse);
+                        break;
+                    case "notenrolled":
+                        if (!isEnrolled) result.Add(courseResponse);
+                        break;
+                    case "all":
+                    default:
+                        result.Add(courseResponse);
+                        break;
+                }
             }
 
             return result.OrderBy(c => c.CourseCode).ToList();

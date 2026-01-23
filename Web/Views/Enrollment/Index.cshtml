@@ -56,24 +56,13 @@
         </div>
     }
 
-    <!-- Tabs -->
-    <ul class="nav nav-pills mb-4 gap-2 p-3 bg-light rounded-4">
-        <li class="nav-item">
-            <a class="nav-link active rounded-pill px-4 shadow-sm" asp-action="Index">
-                <i class="fas fa-list me-2"></i>Khóa học có sẵn
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link rounded-pill px-4" asp-action="MyCourses">
-                <i class="fas fa-graduation-cap me-2"></i>Khóa học của tôi
-            </a>
-        </li>
-    </ul>
-
     <!-- Search & Filter -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-body p-4">
             <form asp-action="Index" method="get">
+                <!-- Hidden field để giữ filter hiện tại khi search -->
+                <input type="hidden" name="filter" value="@ViewBag.FilterType" />
+                
                 <div class="row g-3 align-items-end">
                     <div class="col-lg-9">
                         <label class="form-label fw-semibold text-muted small mb-2">
@@ -110,13 +99,16 @@
                 <div class="mt-3 pt-3 border-top">
                     <div class="d-flex gap-2 flex-wrap align-items-center">
                         <span class="text-muted small me-2"><i class="fas fa-filter me-1"></i>Lọc nhanh:</span>
-                        <a class="btn btn-sm btn-outline-primary rounded-pill px-3" asp-action="Index">
+                        <a class="btn btn-sm rounded-pill px-3 @(ViewBag.FilterType == "all" || ViewBag.FilterType == null ? "btn-primary" : "btn-outline-primary")" 
+                           asp-action="Index" asp-route-search="@ViewBag.SearchKeyword" asp-route-filter="all">
                             <i class="fas fa-th me-1"></i>Tất cả
                         </a>
-                        <a class="btn btn-sm btn-outline-warning rounded-pill px-3" asp-action="Index" asp-route-filter="notEnrolled">
+                        <a class="btn btn-sm rounded-pill px-3 @(ViewBag.FilterType == "notenrolled" ? "btn-warning" : "btn-outline-warning")" 
+                           asp-action="Index" asp-route-search="@ViewBag.SearchKeyword" asp-route-filter="notenrolled">
                             <i class="fas fa-clock me-1"></i>Chưa đăng ký
                         </a>
-                        <a class="btn btn-sm btn-outline-success rounded-pill px-3" asp-action="Index" asp-route-filter="enrolled">
+                        <a class="btn btn-sm rounded-pill px-3 @(ViewBag.FilterType == "enrolled" ? "btn-success" : "btn-outline-success")" 
+                           asp-action="Index" asp-route-search="@ViewBag.SearchKeyword" asp-route-filter="enrolled">
                             <i class="fas fa-check-circle me-1"></i>Đã đăng ký
                         </a>
                     </div>
@@ -132,7 +124,18 @@
             <div class="mb-3 d-flex justify-content-between align-items-center">
                 <h5 class="text-muted mb-0">
                     <i class="fas fa-book-reader me-2"></i>
-                    Tìm thấy <strong class="text-primary">@Model.Count</strong> khóa học
+                    @{
+                        string filterText = ViewBag.FilterType switch
+                        {
+                            "enrolled" => "đã đăng ký",
+                            "notenrolled" => "chưa đăng ký", 
+                            _ => ""
+                        };
+                        string displayText = string.IsNullOrEmpty(filterText) 
+                            ? $"Tìm thấy <strong class=\"text-primary\">{Model.Count}</strong> khóa học"
+                            : $"Tìm thấy <strong class=\"text-primary\">{Model.Count}</strong> khóa học {filterText}";
+                    }
+                    @Html.Raw(displayText)
                 </h5>
             </div>
 
@@ -246,11 +249,34 @@
                 <div class="mb-4">
                     <i class="fas fa-search text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
                 </div>
-                <h5 class="text-muted mb-2">Không tìm thấy khóa học nào</h5>
-                <p class="text-muted">Thử đổi từ khóa tìm kiếm hoặc xóa bộ lọc để xem tất cả môn học.</p>
-                <a asp-action="Index" class="btn btn-primary rounded-pill px-4 mt-3">
-                    <i class="fas fa-undo me-2"></i>Xem tất cả môn học
-                </a>
+                @{
+                    string noResultText = ViewBag.FilterType switch
+                    {
+                        "enrolled" => "Bạn chưa đăng ký khóa học nào",
+                        "notenrolled" => "Tất cả khóa học đều đã được đăng ký",
+                        _ => "Không tìm thấy khóa học nào"
+                    };
+                    
+                    string suggestionText = ViewBag.FilterType switch
+                    {
+                        "enrolled" => "Hãy đăng ký thêm các khóa học mới.",
+                        "notenrolled" => "Chúc mừng! Bạn đã đăng ký tất cả các khóa học.",
+                        _ => "Thử đổi từ khóa tìm kiếm hoặc xóa bộ lọc để xem tất cả môn học."
+                    };
+                }
+                <h5 class="text-muted mb-2">@noResultText</h5>
+                <p class="text-muted">@suggestionText</p>
+                <div class="d-flex gap-2 justify-content-center mt-3">
+                    <a asp-action="Index" class="btn btn-primary rounded-pill px-4">
+                        <i class="fas fa-undo me-2"></i>Xem tất cả
+                    </a>
+                    @if (ViewBag.FilterType == "enrolled")
+                    {
+                        <a asp-action="Index" asp-route-filter="notenrolled" class="btn btn-outline-primary rounded-pill px-4">
+                            <i class="fas fa-plus me-2"></i>Tìm môn học mới
+                        </a>
+                    }
+                </div>
             </div>
         }
     </div>

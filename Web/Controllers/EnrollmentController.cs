@@ -22,12 +22,13 @@ namespace Web.Controllers
         }
 
         // GET: /Enrollment - Danh sách khóa học có sẵn để đăng ký
-        public async Task<IActionResult> Index(string? search)
+        public async Task<IActionResult> Index(string? search, string? filter)
         {
             var studentId = GetCurrentStudentId();
-            var courses = await _enrollmentService.GetAvailableCoursesAsync(studentId, search);
+            var courses = await _enrollmentService.GetAvailableCoursesAsync(studentId, search, filter);
             
             ViewBag.SearchKeyword = search;
+            ViewBag.FilterType = filter ?? "all"; // Default là "all"
             return View(courses);
         }
 
