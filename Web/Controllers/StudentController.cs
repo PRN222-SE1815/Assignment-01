@@ -1,31 +1,94 @@
-﻿using BusinessLogic.Interfaces.AI;
+﻿﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using BusinessLogic.DTOs.AI;
+using BusinessLogic.Services.Interfaces;
+using DataAccess.Repositories.Interfaces;
+using System.Security.Claims;
 
 namespace Web.Controllers
 {
+    [Authorize(Roles = "Student")]
     public class StudentController : Controller
     {
-        private readonly IStudentAnalysisService _service;
+        private readonly IEnrollmentServiceForChat _enrollmentServiceForChat;
+        private readonly IStudentRepository _studentRepository;
 
-        public StudentController(IStudentAnalysisService service)
+        public StudentController(
+            IEnrollmentServiceForChat enrollmentServiceForChat,
+            IStudentRepository studentRepository)
         {
-            _service = service;
+            _enrollmentServiceForChat = enrollmentServiceForChat;
+            _studentRepository = studentRepository;
         }
 
-        public async Task<IActionResult> Analysis(int id)
+        public IActionResult Index()
         {
-            var result = await _service.AnalyzeStudent(id);
+            ViewData["Title"] = "Student Dashboard";
+            return View();
+        }
 
-            var vm = new StudentAiViewModel
+        /// <summary>
+        /// Enroll student to course and auto-create course conversation
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EnrollCourse(int courseId)
+        {
+            try
             {
-                StudentId = id,
-                Analysis = result
-            };
+                var studentId = await GetCurrentStudentIdAsync();
+                if (studentId == 0)
+                {
+                    TempData["Error"] = "Student not found.";
+                    return RedirectToAction("Index");
+                }
 
-            return View(vm);
+                await _enrollmentServiceForChat.EnrollStudentToCourseAsync(studentId, courseId);
+                
+                TempData["Success"] = "Enrolled successfully! You can now access the course chat.";
+                return RedirectToAction("Index", "Chat");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
-    }
+        /// <summary>
+        /// Get my enrollments
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> MyEnrollments()
+        {
+            try
+            {
+                var studentId = await GetCurrentStudentIdAsync();
+                if (studentId == 0)
+                {
+                    TempData["Error"] = "Student not found.";
+                    return RedirectToAction("Index");
+                }
 
+                var enrollments = await _enrollmentServiceForChat.GetStudentEnrollmentsAsync(studentId);
+                return View(enrollments);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        private async Task<int> GetCurrentStudentIdAsync()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId) || userId == 0)
+            {
+                return 0;
+            }
+
+            var student = await _studentRepository.GetStudentByUserIdAsync(userId);
+            return student?.StudentId ?? 0;
+        }
+    }
 }

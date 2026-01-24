@@ -12,7 +12,7 @@ When reviewing Pull Requests or generating code, you MUST validate against the f
 ## 2. Architecture (CRITICAL)
 - **3-Layer Architecture:** The code must follow the 3-Layer architecture strictly:
   1.  **Presentation Layer (Web):** Controllers and Views only. Should communicate with the Service/BLL layer.
-  2.  **Business Logic Layer (BLL):** Contains Services (with interfaces and implements for DI), DTOs and Untils. Should communicate with the Data Access Layer.
+  2.  **Business Logic Layer (BLL):** Contains Services (with interfaces and implements for DI), DTOs and Utilities. Should communicate with the Data Access Layer.
   3.  **Data Access Layer (DAL):** Contains Repositories (with interfaces and implements for DI), Entities and DB Context.
   - *Rule:* The Presentation Layer must NOT query the DbContext directly.
 
@@ -38,6 +38,12 @@ When reviewing Pull Requests or generating code, you MUST validate against the f
   - All model fields must have data type validation.
   - Use Data Annotations (e.g., `[Required]`, `[StringLength]`, `[Range]`) in ViewModels or DTOs.
   - Server-side validation (`ModelState.IsValid`) must be checked in Controllers before processing data.
+
+## 6. Authentication
+- Prefer **Cookie Authentication** over **JWT** for authentication in this solution.
+
+## 7. Forgot Password Functionality
+- For Forgot Password, use **IDataProtection-based reset token** (no DB table) and email link flow.
 
 ## Code Review Style Guide
 - Provide constructive feedback.
