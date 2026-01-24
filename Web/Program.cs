@@ -6,7 +6,7 @@ using DataAccess.Repositories.Implements;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-
+using System.Security.Claims;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
@@ -21,6 +21,8 @@ builder.Services.AddScoped<DataAccess.Repositories.Interfaces.INotificationRepos
 builder.Services.AddScoped<DataAccess.Repositories.Interfaces.ICourseRepository, DataAccess.Repositories.Implements.CourseRepository>();
 builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IEnrollmentRepository, DataAccess.Repositories.Implements.EnrollmentRepository>();
 builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IStudentRepository, DataAccess.Repositories.Implements.StudentRepository>();
+builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IGradeRepository,
+                          DataAccess.Repositories.Implements.GradeRepository>();
 
 // Register Services
 builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IAuthService, BusinessLogic.Services.Implements.AuthService>();
@@ -37,6 +39,8 @@ builder.Services.AddDataProtection();
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 builder.Services.AddScoped<IEmailService, MailKitEmailService>();
 builder.Services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
+builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IGradeService,
+                          BusinessLogic.Services.Implements.GradeService>();
 
 // Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -52,8 +56,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SameSite = SameSiteMode.Strict;
     });
 
-builder.Services.AddAuthorization();
-
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("TeacherOnly", p => p.RequireRole("Teacher"));
+    options.AddPolicy("StudentOnly", p => p.RequireRole("Student"));
+});
 // Add SignalR
 builder.Services.AddSignalR();
 
