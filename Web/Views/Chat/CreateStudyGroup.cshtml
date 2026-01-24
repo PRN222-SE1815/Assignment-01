@@ -8,11 +8,11 @@
 
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-plus-circle"></i> Create New Study Group
+        <div class="col-lg-8 col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-plus-circle-fill me-2"></i> Create New Study Group
                     </h4>
                 </div>
                 <div class="card-body">
@@ -23,8 +23,8 @@
 
                         <!-- Course Selection -->
                         <div class="mb-4">
-                            <label asp-for="CourseId" class="form-label fw-bold">
-                                <i class="fas fa-book text-success"></i> Select Course <span class="text-danger">*</span>
+                            <label asp-for="CourseId" class="form-label">
+                                <i class="bi bi-book-half text-primary me-1"></i> Select Course <span class="text-danger">*</span>
                             </label>
                             <select asp-for="CourseId" id="courseSelect" class="form-select form-select-lg" required>
                                 <option value="">-- Select a Course --</option>
@@ -40,15 +40,15 @@
                                 }
                             </select>
                             <div class="form-text">
-                                <i class="fas fa-info-circle"></i> Select a course to see available members.
+                                <i class="bi bi-info-circle me-1"></i> Select a course to see available members.
                             </div>
                             <span asp-validation-for="CourseId" class="text-danger"></span>
                         </div>
 
                         <!-- Group Name -->
                         <div class="mb-4">
-                            <label asp-for="GroupName" class="form-label fw-bold">
-                                <i class="fas fa-tag text-success"></i> Group Name <span class="text-danger">*</span>
+                            <label asp-for="GroupName" class="form-label">
+                                <i class="bi bi-tag-fill text-primary me-1"></i> Group Name <span class="text-danger">*</span>
                             </label>
                             <input asp-for="GroupName" 
                                    class="form-control form-control-lg" 
@@ -59,50 +59,52 @@
 
                         <!-- Invite Members Section -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold">
-                                <i class="fas fa-users text-success"></i> Invite Members (Optional)
+                            <label class="form-label">
+                                <i class="bi bi-people-fill text-primary me-1"></i> Invite Members (Optional)
                             </label>
                             
-                            <div id="membersSection" class="border rounded p-3 bg-light">
+                            <div id="membersSection" class="members-section">
                                 <p class="text-muted mb-3" id="selectCourseMessage">
-                                    <i class="fas fa-arrow-up"></i> Please select a course first to see available members.
+                                    <i class="bi bi-arrow-up-circle me-1"></i> Please select a course first to see available members.
                                 </p>
                                 
                                 <!-- Loading indicator -->
-                                <div id="loadingMembers" class="text-center py-3" style="display: none;">
-                                    <div class="spinner-border text-success" role="status">
+                                <div id="loadingMembers" class="text-center py-4" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
                                         <span class="visually-hidden">Loading...</span>
                                     </div>
                                     <p class="mt-2 text-muted">Loading members...</p>
                                 </div>
                                 
                                 <!-- Members list with checkboxes -->
-                                <div id="membersList" style="max-height: 300px; overflow-y: auto;"></div>
+                                <div id="membersList" class="members-list"></div>
                                 
                                 <!-- Selected count -->
-                                <div id="selectedCount" class="mt-2 text-success fw-bold" style="display: none;">
-                                    <i class="fas fa-check-circle"></i> <span id="countNumber">0</span> member(s) selected
+                                <div id="selectedCount" class="selected-count" style="display: none;">
+                                    <i class="bi bi-check-circle-fill me-1"></i> <span id="countNumber">0</span> member(s) selected
                                 </div>
                             </div>
                             
                             <div class="form-text">
-                                <i class="fas fa-info-circle"></i> You will be automatically added as the group creator.
+                                <i class="bi bi-info-circle me-1"></i> You will be automatically added as the group creator.
                             </div>
                         </div>
 
                         <!-- Info Alert -->
-                        <div class="alert alert-info mb-4">
-                            <i class="fas fa-lightbulb"></i>
-                            <strong>Tip:</strong> Study groups are great for project collaboration, exam preparation, or course discussions.
+                        <div class="alert alert-info d-flex align-items-start mb-4">
+                            <i class="bi bi-lightbulb-fill fs-5 me-3 mt-1"></i>
+                            <div>
+                                <strong>Tip:</strong> Study groups are great for project collaboration, exam preparation, or course discussions.
+                            </div>
                         </div>
 
                         <!-- Submit Buttons -->
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
-                                <i class="fas fa-check"></i> Create Study Group
+                                <i class="bi bi-check-circle me-1"></i> Create Study Group
                             </button>
                             <a asp-action="StudyGroups" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left"></i> Cancel
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
                             </a>
                         </div>
                     </form>
@@ -111,6 +113,63 @@
         </div>
     </div>
 </div>
+
+<style>
+    .members-section {
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 1.25rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    }
+    
+    .members-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .member-item {
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+        background: white;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s ease;
+    }
+    
+    .member-item:hover {
+        border-color: #667eea;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+    }
+    
+    .member-item.selected {
+        border-color: #11998e;
+        background: linear-gradient(135deg, rgba(17, 153, 142, 0.05) 0%, rgba(56, 239, 125, 0.05) 100%);
+    }
+    
+    .teacher-shell .member-item:hover {
+        border-color: #11998e;
+        box-shadow: 0 2px 8px rgba(17, 153, 142, 0.15);
+    }
+    
+    .selected-count {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%);
+        border-radius: 10px;
+        color: #11998e;
+        font-weight: 600;
+    }
+    
+    .form-check-input:checked {
+        background-color: #11998e;
+        border-color: #11998e;
+    }
+    
+    .student-shell .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+</style>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -145,39 +204,54 @@
                 loadingMembers.style.display = 'none';
                 
                 if (!users || users.length === 0) {
-                    membersList.innerHTML = '<p class="text-muted">No other members found in this course.</p>';
+                    membersList.innerHTML = '<p class="text-muted text-center py-3"><i class="bi bi-person-x me-1"></i> No other members found in this course.</p>';
                     return;
                 }
                 
                 // Create checkboxes for each user
                 let html = '';
                 users.forEach(user => {
+                    const roleClass = user.role === 'Teacher' ? 'bg-warning text-dark' : 'bg-info';
+                    const roleIcon = user.role === 'Teacher' ? 'bi-mortarboard-fill' : 'bi-person-fill';
                     html += `
-                        <div class="form-check py-2 border-bottom">
-                            <input class="form-check-input member-checkbox" 
-                                   type="checkbox" 
-                                   name="InvitedUserIds" 
-                                   value="${user.id}" 
-                                   id="user_${user.id}">
-                            <label class="form-check-label w-100" for="user_${user.id}">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>${escapeHtml(user.fullName)}</strong>
-                                        <br>
-                                        <small class="text-muted">${escapeHtml(user.email || user.username)}</small>
+                        <div class="member-item">
+                            <div class="form-check d-flex align-items-center">
+                                <input class="form-check-input me-3" 
+                                       type="checkbox" 
+                                       name="InvitedUserIds" 
+                                       value="${user.id}" 
+                                       id="user_${user.id}"
+                                       style="width: 1.25rem; height: 1.25rem;">
+                                <label class="form-check-label flex-grow-1" for="user_${user.id}">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>${escapeHtml(user.fullName)}</strong>
+                                            <br>
+                                            <small class="text-muted">${escapeHtml(user.email || user.username)}</small>
+                                        </div>
+                                        <span class="badge ${roleClass}">
+                                            <i class="bi ${roleIcon} me-1"></i>${user.role}
+                                        </span>
                                     </div>
-                                    <span class="badge ${user.role === 'Teacher' ? 'bg-warning text-dark' : 'bg-info'}">${user.role}</span>
-                                </div>
-                            </label>
+                                </label>
+                            </div>
                         </div>
                     `;
                 });
                 
                 membersList.innerHTML = html;
                 
-                // Add change listeners to update count
-                document.querySelectorAll('.member-checkbox').forEach(cb => {
-                    cb.addEventListener('change', updateSelectedCount);
+                // Add change listeners to update count and styling
+                document.querySelectorAll('.member-item').forEach(item => {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            item.classList.add('selected');
+                        } else {
+                            item.classList.remove('selected');
+                        }
+                        updateSelectedCount();
+                    });
                 });
                 
                 selectedCount.style.display = 'block';
@@ -186,12 +260,12 @@
             } catch (error) {
                 console.error('Error loading members:', error);
                 loadingMembers.style.display = 'none';
-                membersList.innerHTML = '<p class="text-danger">Failed to load members. Please try again.</p>';
+                membersList.innerHTML = '<p class="text-danger text-center py-3"><i class="bi bi-exclamation-triangle me-1"></i> Failed to load members. Please try again.</p>';
             }
         });
         
         function updateSelectedCount() {
-            const checked = document.querySelectorAll('.member-checkbox:checked').length;
+            const checked = document.querySelectorAll('.member-item input[type="checkbox"]:checked').length;
             countNumber.textContent = checked;
         }
         
@@ -204,7 +278,7 @@
         
         // Form submit - log for debugging
         document.getElementById('createGroupForm').addEventListener('submit', function(e) {
-            const checkedBoxes = document.querySelectorAll('.member-checkbox:checked');
+            const checkedBoxes = document.querySelectorAll('.member-item input[type="checkbox"]:checked');
             console.log('Form submitting with', checkedBoxes.length, 'members selected');
             checkedBoxes.forEach(cb => {
                 console.log('  - User ID:', cb.value);
