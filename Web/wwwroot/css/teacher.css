@@ -69,10 +69,26 @@
     z-index: 1;
 }
 
-/* Teacher Footer */
+/* Teacher Footer - Modern Glass Style */
 .teacher-footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.95) 0%, rgba(56, 239, 125, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    z-index: 10;
+}
+
+.teacher-footer .container {
+    position: relative;
+}
+
+.teacher-footer .text-muted {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+}
+
+.teacher-footer .text-muted:hover {
+    color: white !important;
 }
 
 /* Teacher Dashboard Cards - Glass Morphism Style */

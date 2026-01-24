@@ -9,59 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="96d852b3-41c9-46db-bd24-e884de7d8354" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AUTO_LOAD_MEMBERS_FEATURE.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/DTOs/Responses/CourseBasicResponse.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/DTOs/Responses/EnrollmentResponseForChat.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/DTOs/Responses/UserSearchResponse.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/CourseService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/EnrollmentServiceForChat.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/ICourseService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IEnrollmentServiceForChat.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CHAT_FEATURE_DOCUMENTATION.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CHAT_FEATURE_README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DATABASE_SEED_FOR_CHAT.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/EnrollmentRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/StudentRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IEnrollmentRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IStudentRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FIX_DUPLICATE_KEY_ERROR.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/IMPLEMENTATION_SUMMARY.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/INVITE_MEMBERS_IMPROVEMENT.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OPTION1_COURSE_BASED_STUDY_GROUP.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/QUICK_START.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TESTING_GUIDE.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TEST_INVITE_MEMBERS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UI_PREVIEW_INVITE_MEMBERS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Views/Admin/_ViewStart.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Views/Chat/_ViewStart.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Views/Student/_ViewStart.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Web/Views/Teacher/_ViewStart.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Assignment01_SchoolManagement/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Assignment01_SchoolManagement/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BusinessLogic/DTOs/Requests/CreateStudyGroupRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BusinessLogic/DTOs/Requests/CreateStudyGroupRequest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BusinessLogic/DTOs/Responses/ConversationResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BusinessLogic/DTOs/Responses/ConversationResponse.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BusinessLogic/Services/Implements/ConversationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/ConversationService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BusinessLogic/Services/Implements/StudyGroupService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/StudyGroupService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BusinessLogic/Services/Implements/UserService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BusinessLogic/Services/Implements/UserService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IStudyGroupService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IStudyGroupService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IUserService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BusinessLogic/Services/Interfaces/IUserService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Implements/ConversationRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/ConversationRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Implements/CourseRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/CourseRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Implements/UserRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Implements/UserRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/ICourseRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/ICourseRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IUserRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Interfaces/IUserRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PRN222_G5.sql" beforeDir="false" afterPath="$PROJECT_DIR$/PRN222_G5.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/Controllers/ChatController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Controllers/ChatController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/Controllers/StudentController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Controllers/StudentController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/Views/Chat/Conversation.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Views/Chat/Conversation.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/Views/Chat/CreateStudyGroup.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Views/Chat/CreateStudyGroup.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/Views/Student/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Views/Student/Index.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/Views/Teacher/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Views/Teacher/Index.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/Views/_ViewStart.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Web/Views/_ViewStart.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/wwwroot/css/student.css" beforeDir="false" afterPath="$PROJECT_DIR$/Web/wwwroot/css/student.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/wwwroot/css/teacher.css" beforeDir="false" afterPath="$PROJECT_DIR$/Web/wwwroot/css/teacher.css" afterDir="false" />
-    </list>
+    <list default="true" id="96d852b3-41c9-46db-bd24-e884de7d8354" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -238,6 +186,7 @@
       <workItem from="1769143173990" duration="4439000" />
       <workItem from="1769163074715" duration="3349000" />
       <workItem from="1769167791059" duration="15715000" />
+      <workItem from="1769258559368" duration="195000" />
     </task>
     <servers />
   </component>
