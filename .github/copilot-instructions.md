@@ -42,6 +42,9 @@ When reviewing Pull Requests or generating code, you MUST validate against the f
 ## 6. Authentication
 - Prefer **Cookie Authentication** over **JWT** for authentication in this solution.
 
+## 7. Forgot Password Functionality
+- For Forgot Password, use **IDataProtection-based reset token** (no DB table) and email link flow.
+
 ## Code Review Style Guide
 - Provide constructive feedback.
 - If the 3-Layer architecture is violated (e.g., DbContext in Controller), mark it as a **High Priority** issue.

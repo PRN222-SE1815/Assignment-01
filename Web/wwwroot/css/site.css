@@ -45,6 +45,7 @@ body {
     overflow: hidden;
 }
 
+body {
 .hero-student::before {
     content: '';
     position: absolute;

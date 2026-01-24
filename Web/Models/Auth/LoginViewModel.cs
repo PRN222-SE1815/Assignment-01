@@ -1,0 +1,22 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Web.Models.Auth
+{
+    public class LoginViewModel
+    {
+        [Required(ErrorMessage = "Username is required")]
+        [StringLength(50, ErrorMessage = "Username cannot exceed 50 characters")]
+        [Display(Name = "Username")]
+        public string Username { get; set; } = null!;
+
+        [Required(ErrorMessage = "Password is required")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; } = null!;
+
+        [Display(Name = "Remember me")]
+        public bool RememberMe { get; set; }
+
+        public string? ReturnUrl { get; set; }
+    }
+}

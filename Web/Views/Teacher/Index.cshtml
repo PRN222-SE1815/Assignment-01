@@ -1,0 +1,69 @@
+﻿﻿@{
+    ViewData["Title"] = "Teacher Dashboard";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<!-- Welcome Section -->
+<div class="teacher-welcome">
+    <h2><i class="bi bi-person-badge"></i> Welcome, @User.FindFirst("FullName")?.Value!</h2>
+    <p class="mb-0">Your Teaching Journey Empowers Students</p>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12 mb-4">
+        <h4 class="fw-bold text-white">Quick Actions</h4>
+        <p class="text-white-50">Access your teaching tools and resources</p>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <a asp-action="Index" asp-controller="Grades" class="text-decoration-none">
+            <div class="card teacher-dashboard-card">
+                <div class="card-body text-center">
+                    <div class="icon-wrapper">
+                        <i class="bi bi-clipboard-check-fill" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5 class="mt-4 mb-2">Manage Grades</h5>
+                    <p class="text-muted mb-0">View and update student grades</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <a asp-action="ViewSchedule" asp-controller="Teacher" class="text-decoration-none">
+            <div class="card teacher-dashboard-card">
+                <div class="card-body text-center">
+                    <div class="icon-wrapper">
+                        <i class="bi bi-calendar3" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5 class="mt-4 mb-2">View Schedule</h5>
+                    <p class="text-muted mb-0">Check your teaching schedule</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <a asp-action="Index" asp-controller="Chat" class="text-decoration-none">
+            <div class="card teacher-dashboard-card">
+                <div class="card-body text-center">
+                    <div class="icon-wrapper">
+                        <i class="bi bi-chat-dots-fill" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5 class="mt-4 mb-2">Messages</h5>
+                    <p class="text-muted mb-0">Chat with students and colleagues</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Floating Message Icon (Quick Access) -->
+<a asp-action="Index" asp-controller="Chat" 
+   class="btn position-fixed rounded-circle shadow-lg" 
+   style="bottom: 30px; right: 30px; width: 60px; height: 60px; z-index: 1000; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"
+   title="Open Messages">
+    <i class="bi bi-chat-dots-fill text-white" style="font-size: 1.5rem;"></i>
+</a>
+
