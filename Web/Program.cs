@@ -1,5 +1,7 @@
 using BusinessLogic.DTOs.Settings;
+using BusinessLogic.Interfaces.AI;
 using BusinessLogic.Services.Implements;
+using BusinessLogic.Services.Implements.AI;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
 using DataAccess.Repositories.Implements;
@@ -11,6 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Database
+builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DBDefault")));
+
+//AI
+builder.Services.Configure<GeminiConfig>(
+    builder.Configuration.GetSection("Gemini"));
+builder.Services.AddHttpClient<IOpenAiService, GeminiService>();
+// Business service
+builder.Services.AddScoped<IStudentAnalysisService, StudentAnalysisService>();
 
 // Register Repositories
 builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IUserRepository, DataAccess.Repositories.Implements.UserRepository>();

@@ -14,31 +14,112 @@
 
 <h3>Chat with AI Academic Advisor</h3>
 
-<div id="chatBox" style="border:1px solid #ccc;padding:10px;height:300px;overflow:auto;">
-</div>
+<style>
+    #chatBox {
+        border: 1px solid #ccc;
+        padding: 10px;
+        height: 350px;
+        overflow-y: auto;
+        background: #f9f9f9;
+    }
 
-<input type="text" id="msg" class="form-control" placeholder="Ask AI about your study..." />
+    .message {
+        max-width: 70%;
+        padding: 8px 12px;
+        margin: 6px 0;
+        border-radius: 10px;
+        clear: both;
+        line-height: 1.4;
+    }
+
+    .user-message {
+        background: #d1e7ff;
+        float: right;
+        text-align: right;
+    }
+
+    .ai-message {
+        background: #e5e5e5;
+        float: left;
+        text-align: left;
+    }
+
+    .typing {
+        font-style: italic;
+        color: #888;
+        margin: 5px 0;
+        clear: both;
+    }
+</style>
+
+<div id="chatBox"></div>
+
+<input type="text" id="msg" class="form-control"
+       placeholder="Ask AI about your study..."
+       onkeydown="handleEnter(event)" />
 <br />
 <button class="btn btn-primary" onclick="send()">Send</button>
 
 <script>
+    function handleEnter(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            send();
+        }
+    }
+
     async function send() {
-        const text = document.getElementById("msg").value;
+        const input = document.getElementById("msg");
+        const text = input.value.trim();
         if (!text) return;
 
         const box = document.getElementById("chatBox");
-        box.innerHTML += "<div><b>You:</b> " + text + "</div>";
 
-        const res = await fetch("/api/chat/@Model.StudentId", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(text)
-        });
-
-        const data = await res.json();
-        box.innerHTML += "<div style='color:green'><b>AI:</b> " + data.reply + "</div>";
+        // Hiển thị tin nhắn người dùng (bên phải)
+        box.innerHTML += `
+            <div class="message user-message">
+                <b>You:</b><br/>${text}
+            </div>`;
         box.scrollTop = box.scrollHeight;
 
-        document.getElementById("msg").value = "";
+        input.value = "";
+
+        // Hiển thị loading "AI is typing..."
+        const typingDiv = document.createElement("div");
+        typingDiv.className = "typing ai-message";
+        typingDiv.id = "typing";
+        typingDiv.innerText = "AI is typing...";
+        box.appendChild(typingDiv);
+        box.scrollTop = box.scrollHeight;
+
+        try {
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(text)
+            });
+
+            const data = await res.json();
+
+            // Xoá loading
+            document.getElementById("typing").remove();
+
+            // Hiển thị phản hồi AI (bên trái)
+            box.innerHTML += `
+                <div class="message ai-message">
+                    <b>AI:</b><br/>${data.reply}
+                </div>`;
+            box.scrollTop = box.scrollHeight;
+        }
+        catch (err) {
+            if (document.getElementById("typing")) {
+                document.getElementById("typing").remove();
+            }
+
+            box.innerHTML += `
+                <div class="message ai-message">
+                    <b>AI:</b><br/>Error contacting AI.
+                </div>`;
+        }
     }
 </script>

@@ -1,7 +1,9 @@
-﻿﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using BusinessLogic.DTOs.AI;
+using BusinessLogic.Interfaces.AI;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Repositories.Interfaces;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Web.Controllers
@@ -9,15 +11,18 @@ namespace Web.Controllers
     [Authorize(Roles = "Student")]
     public class StudentController : Controller
     {
+        private readonly IStudentAnalysisService _service;
         private readonly IEnrollmentServiceForChat _enrollmentServiceForChat;
         private readonly IStudentRepository _studentRepository;
 
         public StudentController(
             IEnrollmentServiceForChat enrollmentServiceForChat,
-            IStudentRepository studentRepository)
+            IStudentRepository studentRepository,
+            IStudentAnalysisService service)
         {
             _enrollmentServiceForChat = enrollmentServiceForChat;
             _studentRepository = studentRepository;
+            _service = service;
         }
 
         public IActionResult Index()
@@ -90,5 +95,33 @@ namespace Web.Controllers
             var student = await _studentRepository.GetStudentByUserIdAsync(userId);
             return student?.StudentId ?? 0;
         }
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.TryParse(userIdClaim, out var userId) ? userId : 0;
+        }
+        [HttpGet]
+        public async Task<IActionResult> Analysis()
+        {
+            var userId = GetCurrentUserId();
+            if (userId == 0)
+                return Unauthorized();
+
+            // LẤY STUDENT THEO USER ĐĂNG NHẬP
+            var student = await _studentRepository.GetStudentByUserIdAsync(userId);
+            if (student == null)
+                return Forbid(); // không phải student (role ≠ 3)
+
+            var result = await _service.AnalyzeStudent(student.StudentId);
+
+            var vm = new StudentAiViewModel
+            {
+                StudentId = student.StudentId,
+                Analysis = result
+            };
+
+            return View(vm);
+        }
     }
+
 }
