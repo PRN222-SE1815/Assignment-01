@@ -1,4 +1,6 @@
-﻿﻿using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using BusinessLogic.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Repositories.Interfaces;
@@ -9,13 +11,14 @@ namespace Web.Controllers
     [Authorize(Roles = "Student")]
     public class StudentController : Controller
     {
+        private readonly ICourseScheduleService _scheduleService;
         private readonly IEnrollmentServiceForChat _enrollmentServiceForChat;
         private readonly IStudentRepository _studentRepository;
 
-        public StudentController(
-            IEnrollmentServiceForChat enrollmentServiceForChat,
+        public StudentController(ICourseScheduleService scheduleService, IEnrollmentServiceForChat enrollmentServiceForChat,
             IStudentRepository studentRepository)
         {
+            _scheduleService = scheduleService;
             _enrollmentServiceForChat = enrollmentServiceForChat;
             _studentRepository = studentRepository;
         }
@@ -26,6 +29,35 @@ namespace Web.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult ViewSchedule()
+        {
+            ViewData["Title"] = "My Class Schedule";
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ScheduleEvents(string? start, string? end)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Json(new List<object>());
+            }
+
+            // Parse dates or use defaults
+            var fromDate = !string.IsNullOrEmpty(start) && DateOnly.TryParse(start, out var parsedStart)
+                ? parsedStart
+                : DateOnly.FromDateTime(DateTime.Today.AddMonths(-1));
+
+            var toDate = !string.IsNullOrEmpty(end) && DateOnly.TryParse(end, out var parsedEnd)
+                ? parsedEnd
+                : DateOnly.FromDateTime(DateTime.Today.AddMonths(2));
+
+            var events = await _scheduleService.GetStudentCalendarAsync(userId, fromDate, toDate);
+            return Json(events);
+         }
+         
         /// <summary>
         /// Enroll student to course and auto-create course conversation
         /// </summary>
@@ -92,3 +124,4 @@ namespace Web.Controllers
         }
     }
 }
+
