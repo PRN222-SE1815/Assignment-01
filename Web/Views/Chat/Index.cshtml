@@ -4,17 +4,20 @@
     ViewData["Title"] = "Chat - Conversations";
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2><i class="fas fa-comments"></i> My Conversations</h2>
-                <div>
+            <!-- Header Section -->
+            <div class="conversations-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <h2 class="mb-0">
+                    <i class="bi bi-chat-dots-fill"></i> My Conversations
+                </h2>
+                <div class="d-flex gap-2 flex-wrap">
                     <a asp-action="StudyGroups" class="btn btn-primary">
-                        <i class="fas fa-users"></i> Study Groups
+                        <i class="bi bi-people-fill"></i> Study Groups
                     </a>
                     <a asp-action="CreateStudyGroup" class="btn btn-success">
-                        <i class="fas fa-plus"></i> Create Study Group
+                        <i class="bi bi-plus-circle-fill"></i> Create Study Group
                     </a>
                 </div>
             </div>
@@ -22,6 +25,7 @@
             @if (TempData["SuccessMessage"] != null)
             {
                 <div class="alert alert-success alert-dismissible fade show">
+                    <i class="bi bi-check-circle-fill me-2"></i>
                     @TempData["SuccessMessage"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
@@ -30,6 +34,7 @@
             @if (TempData["ErrorMessage"] != null)
             {
                 <div class="alert alert-danger alert-dismissible fade show">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
                     @TempData["ErrorMessage"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
@@ -38,9 +43,16 @@
             @if (!Model.Any())
             {
                 <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> You don't have any conversations yet.
-                    <br />
-                    <a asp-action="CreateStudyGroup" class="btn btn-sm btn-primary mt-2">Create your first study group</a>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill fs-3 me-3"></i>
+                        <div>
+                            <h5 class="mb-1">No conversations yet</h5>
+                            <p class="mb-2">You don't have any conversations yet. Start by creating your first study group!</p>
+                            <a asp-action="CreateStudyGroup" class="btn btn-success btn-sm">
+                                <i class="bi bi-plus-circle"></i> Create your first study group
+                            </a>
+                        </div>
+                    </div>
                 </div>
             }
             else
@@ -50,41 +62,45 @@
                     {
                         <a asp-action="Conversation" asp-route-id="@conversation.ConversationId" 
                            class="list-group-item list-group-item-action">
-                            <div class="d-flex w-100 justify-content-between">
-                                <div>
-                                    <h5 class="mb-1">
+                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-2">
                                         @if (conversation.IsGroup)
                                         {
-                                            <i class="fas fa-users text-primary"></i>
+                                            <i class="bi bi-people-fill text-primary me-2"></i>
                                         }
                                         else
                                         {
-                                            <i class="fas fa-user text-secondary"></i>
+                                            <i class="bi bi-person-fill text-secondary me-2"></i>
                                         }
                                         @conversation.Title
                                     </h5>
-                                    <p class="mb-1 text-muted small">
-                                        <i class="fas fa-user-friends"></i> 
+                                    <p class="mb-2 text-muted small d-flex align-items-center">
+                                        <i class="bi bi-person-badge me-1"></i>
                                         @conversation.Participants.Count participants
                                     </p>
                                     @if (conversation.LastMessage != null)
                                     {
-                                        <p class="mb-1">
-                                            <strong>@conversation.LastMessage.SenderName:</strong> 
-                                            @(conversation.LastMessage.Body.Length > 50 
-                                                ? conversation.LastMessage.Body.Substring(0, 50) + "..." 
-                                                : conversation.LastMessage.Body)
+                                        <p class="mb-0 text-secondary">
+                                            <strong class="text-dark">@conversation.LastMessage.SenderName:</strong> 
+                                            <span class="text-muted">
+                                                @(conversation.LastMessage.Body.Length > 50 
+                                                    ? conversation.LastMessage.Body.Substring(0, 50) + "..." 
+                                                    : conversation.LastMessage.Body)
+                                            </span>
                                         </p>
                                     }
                                 </div>
-                                <div class="text-end">
-                                    <small class="text-muted">
+                                <div class="text-end ms-3">
+                                    <small class="text-muted d-block mb-2">
+                                        <i class="bi bi-calendar3 me-1"></i>
                                         @conversation.CreatedAt.ToString("MMM dd, yyyy")
                                     </small>
                                     @if (conversation.UnreadCount > 0)
                                     {
-                                        <br />
-                                        <span class="badge bg-danger rounded-pill">@conversation.UnreadCount</span>
+                                        <span class="badge bg-danger rounded-pill">
+                                            <i class="bi bi-envelope-fill me-1"></i>@conversation.UnreadCount new
+                                        </span>
                                     }
                                 </div>
                             </div>
@@ -100,7 +116,10 @@
     <script>
         // Auto-dismiss alerts after 5 seconds
         setTimeout(function() {
-            $('.alert').fadeOut('slow');
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 150);
+            });
         }, 5000);
     </script>
 }

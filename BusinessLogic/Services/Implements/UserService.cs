@@ -1,4 +1,4 @@
-﻿using BusinessLogic.DTOs.Requests;
+﻿﻿using BusinessLogic.DTOs.Requests;
 using BusinessLogic.DTOs.Responses;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
@@ -129,6 +129,25 @@ namespace BusinessLogic.Services.Implements
         public Task<bool> DeleteAsync(int userId)
         {
             return _userRepository.DeleteAsync(userId);
+        }
+
+        public async Task<List<UserSearchResponse>> SearchUsersAsync(string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return new List<UserSearchResponse>();
+            }
+
+            var users = await _userRepository.SearchUsersAsync(searchTerm);
+            
+            return users.Select(u => new UserSearchResponse
+            {
+                UserId = u.UserId,
+                FullName = u.FullName,
+                Email = u.Email,
+                Username = u.Username,
+                RoleName = u.Role?.RoleName ?? "Unknown"
+            }).ToList();
         }
 
         private static UserDto MapToDto(User u)

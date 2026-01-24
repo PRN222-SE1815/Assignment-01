@@ -238,4 +238,3 @@ INSERT INTO Grades (EnrollmentId, Assignment, Midterm, Final, Total) VALUES
 (3, 7.5, 8.0, 7.5, 7.7), -- Điểm của Hoa môn Tiếng Anh
 (4, 6.0, 5.5, 6.0, 5.9); -- Điểm của Tuấn môn IT001
 GO
-GO

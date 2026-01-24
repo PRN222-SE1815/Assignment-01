@@ -6,7 +6,7 @@ using DataAccess.Repositories.Implements;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-
+using System.Security.Claims;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
@@ -20,6 +20,9 @@ builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICourseScheduleRepository, CourseScheduleRepository>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 
 // Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -30,11 +33,14 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ICourseConversationService, CourseConversationService>();
 builder.Services.AddScoped<IStudyGroupService, StudyGroupService>();
 builder.Services.AddScoped<ICourseScheduleService, CourseScheduleService>();
+builder.Services.AddScoped<IEnrollmentServiceForChat, EnrollmentServiceForChat>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IEmailService, MailKitEmailService>();
+builder.Services.AddScoped<IGradeService, GradeService>();
+builder.Services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
 
 builder.Services.AddDataProtection();
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
-builder.Services.AddScoped<IEmailService, MailKitEmailService>();
-builder.Services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
 
 // Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -50,8 +56,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SameSite = SameSiteMode.Strict;
     });
 
-builder.Services.AddAuthorization();
-
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("TeacherOnly", p => p.RequireRole("Teacher"));
+    options.AddPolicy("StudentOnly", p => p.RequireRole("Student"));
+});
 // Add SignalR
 builder.Services.AddSignalR();
 

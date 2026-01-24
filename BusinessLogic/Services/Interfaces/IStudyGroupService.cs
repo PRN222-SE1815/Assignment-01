@@ -9,5 +9,6 @@ namespace BusinessLogic.Services.Interfaces
         Task<bool> InviteUserToGroupAsync(int conversationId, int invitedUserId, int inviterUserId);
         Task<bool> LeaveGroupAsync(int conversationId, int userId);
         Task<List<ConversationResponse>> GetUserStudyGroupsAsync(int userId);
+        Task<bool> DeleteStudyGroupAsync(int conversationId, int userId); // Creator can delete
     }
 }

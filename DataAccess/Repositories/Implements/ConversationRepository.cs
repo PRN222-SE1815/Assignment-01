@@ -40,11 +40,14 @@ namespace DataAccess.Repositories.Implements
         public async Task<List<Conversation>> GetUserConversationsAsync(int userId)
         {
             return await _context.ConversationParticipants
+                .Include(cp => cp.Conversation)
+                    .ThenInclude(c => c.ConversationParticipants)
+                        .ThenInclude(cp => cp.User)
+                .Include(cp => cp.Conversation)
+                    .ThenInclude(c => c.Course)
                 .Where(cp => cp.UserId == userId && cp.LeftAt == null)
                 .Select(cp => cp.Conversation)
-                .Include(c => c.ConversationParticipants)
-                    .ThenInclude(cp => cp.User)
-                .Include(c => c.Course)
+                .Distinct()
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
         }

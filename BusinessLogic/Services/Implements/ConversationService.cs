@@ -102,6 +102,7 @@ namespace BusinessLogic.Services.Implements
                 Title = conversation.Title,
                 CreatedByUserId = conversation.CreatedByUserId ?? 0,
                 CreatedAt = conversation.CreatedAt ?? DateTime.UtcNow,
+                CourseId = conversation.CourseId,
                 Participants = participants,
                 LastMessage = lastMessage,
                 UnreadCount = 0 // TODO: Calculate unread count
