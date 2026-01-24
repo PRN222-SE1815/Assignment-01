@@ -7,5 +7,6 @@ namespace DataAccess.Repositories.Interfaces
         Task<Course?> GetCourseByIdAsync(int courseId);
         Task<Course?> GetCourseWithTeacherAsync(int courseId);
         Task<List<int>> GetEnrolledStudentUserIdsAsync(int courseId);
+        Task<List<int>> GetCourseIdsByTeacherUserIdAsync(int teacherUserId);
     }
 }

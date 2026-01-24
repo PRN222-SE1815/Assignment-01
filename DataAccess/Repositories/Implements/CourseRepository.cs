@@ -34,5 +34,13 @@ namespace DataAccess.Repositories.Implements
                 .Select(e => e.Student.UserId)
                 .ToListAsync();
         }
+
+        public async Task<List<int>> GetCourseIdsByTeacherUserIdAsync(int teacherUserId)
+        {
+            return await _context.Courses
+                .Where(c => c.Teacher.UserId == teacherUserId)
+                .Select(c => c.CourseId)
+                .ToListAsync();
+        }
     }
 }

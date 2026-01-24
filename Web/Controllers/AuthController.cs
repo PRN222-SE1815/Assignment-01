@@ -92,7 +92,6 @@ namespace Web.Controllers
                 _logger.LogInformation("User {Username} logged in successfully with role {Role}",
                     result.User.Username, result.User.RoleName);
 
-                // Redirect based on role or returnUrl
                 if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                 {
                     return Redirect(model.ReturnUrl);
@@ -153,7 +152,6 @@ namespace Web.Controllers
                 _logger.LogError(ex, "Error requesting password reset for email {Email}", request.Email);
             }
 
-            // Always show the same message to avoid account enumeration
             TempData["Success"] = "If the email exists, a reset link has been sent.";
             return RedirectToAction(nameof(ForgotPassword));
         }
@@ -191,14 +189,14 @@ namespace Web.Controllers
         private IActionResult RedirectToRoleHome(string? roleName = null)
         {
             var role = roleName ?? User.FindFirstValue(ClaimTypes.Role);
-                return role switch
-                {
-                    "Admin" => RedirectToAction("Index", "Admin"),
-                    "Teacher" => RedirectToAction("Index", "Home"),
-                    "Student" => RedirectToAction("Index", "Home"),
-                    _ => RedirectToAction(nameof(Login))
-                };
             
+            return role switch
+            {
+                "Admin" => RedirectToAction("Index", "Admin"),
+                "Teacher" => RedirectToAction("Index", "Teacher"),
+                "Student" => RedirectToAction("Index", "Student"),
+                _ => RedirectToAction("Login")
+            };
         }
     }
 }
