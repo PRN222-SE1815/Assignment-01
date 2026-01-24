@@ -1,1 +1,355 @@
+/* ============================================
+   Chat Styles - Modern Messaging Interface
+   ============================================ */
 
+/* Chat Container */
+.chat-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Conversations List */
+.conversations-header {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.conversations-header h2 {
+    color: #2d3748;
+    font-weight: 700;
+    margin: 0;
+    font-size: 1.75rem;
+}
+
+.conversations-header h2 i {
+    margin-right: 0.5rem;
+}
+
+/* Student Theme for Chat */
+.student-shell .conversations-header h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Teacher Theme for Chat */
+.teacher-shell .conversations-header h2 {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Conversation List Items */
+.list-group {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.list-group-item {
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.25rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+    transform: translateX(5px);
+}
+
+.teacher-shell .list-group-item:hover {
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.08) 0%, rgba(56, 239, 125, 0.08) 100%);
+}
+
+.list-group-item h5 {
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.list-group-item h5 i {
+    margin-right: 0.5rem;
+}
+
+/* Buttons Styling */
+.student-shell .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+}
+
+.student-shell .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.student-shell .btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+}
+
+.student-shell .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
+}
+
+.teacher-shell .btn-primary {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+}
+
+.teacher-shell .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
+}
+
+.teacher-shell .btn-success {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+}
+
+.teacher-shell .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+/* Badge Styling */
+.badge.bg-danger {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
+    font-weight: 600;
+    padding: 0.4em 0.8em;
+    box-shadow: 0 2px 10px rgba(255, 65, 108, 0.4);
+}
+
+/* Alert Styling */
+.student-shell .alert-info,
+.teacher-shell .alert-info {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 15px;
+    color: #4a5568;
+    padding: 1.5rem;
+}
+
+.teacher-shell .alert-info {
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%);
+    border: 1px solid rgba(17, 153, 142, 0.3);
+}
+
+.student-shell .alert-success,
+.teacher-shell .alert-success {
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%);
+    border: 1px solid rgba(17, 153, 142, 0.3);
+    border-radius: 15px;
+    color: #234e52;
+    padding: 1rem 1.5rem;
+}
+
+.student-shell .alert-danger,
+.teacher-shell .alert-danger {
+    background: linear-gradient(135deg, rgba(255, 65, 108, 0.1) 0%, rgba(255, 75, 43, 0.1) 100%);
+    border: 1px solid rgba(255, 65, 108, 0.3);
+    border-radius: 15px;
+    color: #742a2a;
+    padding: 1rem 1.5rem;
+}
+
+/* Forms in Chat */
+.student-shell .form-control,
+.teacher-shell .form-control {
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.student-shell .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.teacher-shell .form-control:focus {
+    border-color: #11998e;
+    box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.2);
+}
+
+.student-shell .form-select,
+.teacher-shell .form-select {
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.student-shell .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.teacher-shell .form-select:focus {
+    border-color: #11998e;
+    box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.2);
+}
+
+/* Card Styling for Chat Pages */
+.student-shell .card,
+.teacher-shell .card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.student-shell .card-header {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.teacher-shell .card-header {
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%);
+    border-bottom: 1px solid rgba(17, 153, 142, 0.2);
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.student-shell .card-body,
+.teacher-shell .card-body {
+    padding: 1.5rem;
+}
+
+/* Labels */
+.student-shell .form-label,
+.teacher-shell .form-label {
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+}
+
+/* Multi-select styling */
+.student-shell select[multiple],
+.teacher-shell select[multiple] {
+    min-height: 200px;
+    border-radius: 10px;
+}
+
+/* Page Title */
+.page-title {
+    color: #2d3748;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.student-shell .page-title {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.teacher-shell .page-title {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .conversations-header {
+        padding: 1rem 1.25rem;
+    }
+    
+    .conversations-header h2 {
+        font-size: 1.25rem;
+    }
+    
+    .list-group-item {
+        padding: 1rem;
+    }
+    
+    .btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Outline Button Styles */
+.student-shell .btn-outline-secondary,
+.teacher-shell .btn-outline-secondary {
+    border: 2px solid #6c757d;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.student-shell .btn-outline-secondary:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.teacher-shell .btn-outline-secondary:hover {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
+/* Spinner styling */
+.spinner-border {
+    width: 2rem;
+    height: 2rem;
+}
+
+.student-shell .spinner-border {
+    color: #667eea !important;
+}
+
+.teacher-shell .spinner-border {
+    color: #11998e !important;
+}
