@@ -13,11 +13,13 @@ namespace DataAccess.Repositories.Implements
             _context = context;
         }
 
-        public async Task<Student?> GetStudentByUserIdAsync(int userId)
+        public async Task<List<Student>> GetAllStudentsAsync()
         {
             return await _context.Students
                 .Include(s => s.User)
-                .FirstOrDefaultAsync(s => s.UserId == userId);
+                .Where(s => s.User.IsActive == true)
+                .OrderBy(s => s.User.FullName)
+                .ToListAsync();
         }
 
         public async Task<Student?> GetStudentByIdAsync(int studentId)
@@ -26,6 +28,12 @@ namespace DataAccess.Repositories.Implements
                 .Include(s => s.User)
                 .FirstOrDefaultAsync(s => s.StudentId == studentId);
         }
+
+        public async Task<Student?> GetStudentByUserIdAsync(int userId)
+        {
+            return await _context.Students
+                .Include(s => s.User)
+                .FirstOrDefaultAsync(s => s.UserId == userId);
+        }
     }
 }
-

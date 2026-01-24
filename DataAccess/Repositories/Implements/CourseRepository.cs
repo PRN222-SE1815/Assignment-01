@@ -13,6 +13,15 @@ namespace DataAccess.Repositories.Implements
             _context = context;
         }
 
+        public async Task<List<Course>> GetAllCoursesAsync()
+        {
+            return await _context.Courses
+                .Include(c => c.Teacher)
+                    .ThenInclude(t => t.User)
+                .OrderBy(c => c.CourseCode)
+                .ToListAsync();
+        }
+
         public async Task<Course?> GetCourseByIdAsync(int courseId)
         {
             return await _context.Courses

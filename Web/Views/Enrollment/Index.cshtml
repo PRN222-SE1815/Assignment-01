@@ -1,0 +1,369 @@
+@model List<BusinessLogic.DTOs.Responses.CourseResponse>
+
+@{
+    ViewData["Title"] = "Đăng ký khóa học";
+}
+
+<div class="container py-4">
+
+    <!-- Hero Gradient -->
+    <div class="hero-student rounded-4 p-4 p-md-5 mb-4 text-white position-relative overflow-hidden">
+        <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+            <i class="fas fa-graduation-cap position-absolute" style="font-size: 15rem; top: -3rem; right: -3rem;"></i>
+        </div>
+        <div class="position-relative">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h1 class="fw-bold mb-2 display-6">
+                        <i class="fas fa-book-open me-2"></i>@ViewData["Title"]
+                    </h1>
+                    <p class="fs-5 mb-3 text-white-50">Chọn môn học, kiểm tra thông tin và đăng ký nhanh chóng.</p>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a asp-action="MyCourses" class="btn btn-light btn-lg rounded-pill px-4">
+                            <i class="fas fa-graduation-cap me-2"></i>Môn đã đăng ký
+                        </a>
+                        <a href="#courseList" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                            <i class="fas fa-bolt me-2"></i>Chọn môn ngay
+                        </a>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column gap-2">
+                    <div class="badge rounded-pill bg-white text-dark px-4 py-3 fs-6">
+                        <i class="fas fa-book me-2"></i>Tổng: <strong>@(Model?.Count ?? 0)</strong> môn
+                    </div>
+                    <div class="badge rounded-pill bg-success px-4 py-3 fs-6">
+                        <i class="fas fa-check-circle me-2"></i>Đã đăng ký: <strong>@(Model?.Count(x => x.IsEnrolled) ?? 0)</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm" role="alert">
+            <i class="fas fa-check-circle me-2"></i><strong>Thành công!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-sm" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i><strong>Lỗi!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Search & Filter -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <form asp-action="Index" method="get">
+                <!-- Hidden field để giữ filter hiện tại khi search -->
+                <input type="hidden" name="filter" value="@ViewBag.FilterType" />
+                
+                <div class="row g-3 align-items-end">
+                    <div class="col-lg-9">
+                        <label class="form-label fw-semibold text-muted small mb-2">
+                            <i class="fas fa-search me-1"></i>TÌM KIẾM KHÓA HỌC
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="fas fa-search text-primary"></i>
+                            </span>
+                            <input type="text"
+                                   class="form-control border-start-0 ps-0"
+                                   name="search"
+                                   value="@ViewBag.SearchKeyword"
+                                   placeholder="Nhập mã môn (VD: CS101), tên môn hoặc giảng viên..."
+                                   aria-label="Tìm kiếm" />
+                        </div>
+                        <div class="form-text mt-2">
+                            <i class="fas fa-lightbulb text-warning me-1"></i>
+                            Mẹo: Thử tìm "Cơ sở dữ liệu", "Nguyễn Văn A" hoặc mã môn học.
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                            <i class="fas fa-search me-2"></i>Tìm kiếm
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
+                            <i class="fas fa-undo me-2"></i>Xóa lọc
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Filters -->
+                <div class="mt-3 pt-3 border-top">
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                        <span class="text-muted small me-2"><i class="fas fa-filter me-1"></i>Lọc nhanh:</span>
+                        <a class="btn btn-sm rounded-pill px-3 @(ViewBag.FilterType == "all" || ViewBag.FilterType == null ? "btn-primary" : "btn-outline-primary")" 
+                           asp-action="Index" asp-route-search="@ViewBag.SearchKeyword" asp-route-filter="all">
+                            <i class="fas fa-th me-1"></i>Tất cả
+                        </a>
+                        <a class="btn btn-sm rounded-pill px-3 @(ViewBag.FilterType == "notenrolled" ? "btn-warning" : "btn-outline-warning")" 
+                           asp-action="Index" asp-route-search="@ViewBag.SearchKeyword" asp-route-filter="notenrolled">
+                            <i class="fas fa-clock me-1"></i>Chưa đăng ký
+                        </a>
+                        <a class="btn btn-sm rounded-pill px-3 @(ViewBag.FilterType == "enrolled" ? "btn-success" : "btn-outline-success")" 
+                           asp-action="Index" asp-route-search="@ViewBag.SearchKeyword" asp-route-filter="enrolled">
+                            <i class="fas fa-check-circle me-1"></i>Đã đăng ký
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Courses List -->
+    <div id="courseList">
+        @if (Model != null && Model.Any())
+        {
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <h5 class="text-muted mb-0">
+                    <i class="fas fa-book-reader me-2"></i>
+                    @{
+                        string filterText = ViewBag.FilterType switch
+                        {
+                            "enrolled" => "đã đăng ký",
+                            "notenrolled" => "chưa đăng ký", 
+                            _ => ""
+                        };
+                        string displayText = string.IsNullOrEmpty(filterText) 
+                            ? $"Tìm thấy <strong class=\"text-primary\">{Model.Count}</strong> khóa học"
+                            : $"Tìm thấy <strong class=\"text-primary\">{Model.Count}</strong> khóa học {filterText}";
+                    }
+                    @Html.Raw(displayText)
+                </h5>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                @foreach (var course in Model)
+                {
+                    <div class="col">
+                        <div class="card course-card @(course.IsEnrolled ? "enrolled" : "") h-100 rounded-4 overflow-hidden">
+                            <!-- Card Header -->
+                            <div class="card-header bg-gradient border-0 pt-3 pb-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <span class="badge bg-primary bg-gradient rounded-pill mb-2 px-3 py-2">
+                                            <i class="fas fa-code me-1"></i>@course.CourseCode
+                                        </span>
+                                        <h5 class="card-title fw-bold mb-2 text-dark">@course.CourseName</h5>
+                                        <div class="text-muted small d-flex align-items-center">
+                                            <i class="fas fa-user-tie me-2 text-primary"></i>
+                                            <span>@(course.TeacherName ?? "Chưa phân công")</span>
+                                        </div>
+                                    </div>
+
+                                    @if (course.IsEnrolled)
+                                    {
+                                        <span class="badge bg-success rounded-pill ms-2 px-3 py-2">
+                                            <i class="fas fa-check me-1"></i>Đã đăng ký
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark rounded-pill ms-2 px-3 py-2">
+                                            <i class="fas fa-clock me-1"></i>Mới
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="card-body bg-light">
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="info-box p-3 rounded-3 bg-white border h-100">
+                                            <div class="text-muted small mb-1">
+                                                <i class="fas fa-building text-primary me-1"></i>Khoa
+                                            </div>
+                                            <div class="fw-semibold text-dark text-truncate">
+                                                @(course.Department ?? "N/A")
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="info-box p-3 rounded-3 bg-white border h-100">
+                                            <div class="text-muted small mb-1">
+                                                <i class="fas fa-star text-warning me-1"></i>Tín chỉ
+                                            </div>
+                                            <div class="fw-semibold text-dark">
+                                                @(course.Credits?.ToString() ?? "N/A")
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="info-box p-3 rounded-3 bg-white border h-100">
+                                            <div class="text-muted small mb-1">
+                                                <i class="fas fa-calendar-alt text-info me-1"></i>Học kỳ
+                                            </div>
+                                            <div class="fw-semibold text-dark text-truncate">
+                                                @(course.Semester ?? "N/A")
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="info-box p-3 rounded-3 bg-white border h-100">
+                                            <div class="text-muted small mb-1">
+                                                <i class="fas fa-users text-success me-1"></i>Đã đăng ký
+                                            </div>
+                                            <div class="fw-semibold text-dark">
+                                                @course.EnrolledCount SV
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Footer -->
+                            <div class="card-footer bg-white border-0 p-3">
+                                @if (course.IsEnrolled)
+                                {
+                                    <button class="btn btn-outline-success w-100 rounded-pill btn-lg disabled" disabled>
+                                        <i class="fas fa-check-circle me-2"></i>Đã đăng ký môn này
+                                    </button>
+                                }
+                                else
+                                {
+                                    <form asp-action="Enroll" method="post"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn đăng ký khóa học @course.CourseName (@course.CourseCode) không?');">
+                                        <input type="hidden" name="courseId" value="@course.CourseId" />
+                                        <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm btn-enroll">
+                                            <i class="fas fa-plus-circle me-2"></i>Đăng ký môn này
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-search text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+                </div>
+                @{
+                    string noResultText = ViewBag.FilterType switch
+                    {
+                        "enrolled" => "Bạn chưa đăng ký khóa học nào",
+                        "notenrolled" => "Tất cả khóa học đều đã được đăng ký",
+                        _ => "Không tìm thấy khóa học nào"
+                    };
+                    
+                    string suggestionText = ViewBag.FilterType switch
+                    {
+                        "enrolled" => "Hãy đăng ký thêm các khóa học mới.",
+                        "notenrolled" => "Chúc mừng! Bạn đã đăng ký tất cả các khóa học.",
+                        _ => "Thử đổi từ khóa tìm kiếm hoặc xóa bộ lọc để xem tất cả môn học."
+                    };
+                }
+                <h5 class="text-muted mb-2">@noResultText</h5>
+                <p class="text-muted">@suggestionText</p>
+                <div class="d-flex gap-2 justify-content-center mt-3">
+                    <a asp-action="Index" class="btn btn-primary rounded-pill px-4">
+                        <i class="fas fa-undo me-2"></i>Xem tất cả
+                    </a>
+                    @if (ViewBag.FilterType == "enrolled")
+                    {
+                        <a asp-action="Index" asp-route-filter="notenrolled" class="btn btn-outline-primary rounded-pill px-4">
+                            <i class="fas fa-plus me-2"></i>Tìm môn học mới
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Hero Gradient */
+    .hero-student {
+        background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 60%, #22c55e 120%);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.15);
+    }
+
+    /* Course Cards */
+    .course-card {
+        transition: all .2s ease;
+        border: 2px solid rgba(15, 23, 42, .08);
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 2rem rgba(79, 70, 229, .15);
+            border-color: rgba(79, 70, 229, .4);
+        }
+
+        .course-card.enrolled {
+            border-color: rgba(34, 197, 94, .5);
+            background: linear-gradient(to bottom, rgba(34, 197, 94, .03), white);
+        }
+
+            .course-card.enrolled:hover {
+                border-color: rgba(34, 197, 94, .7);
+                box-shadow: 0 1rem 2rem rgba(34, 197, 94, .2);
+            }
+
+    /* Card Header Gradient */
+    .card-header.bg-gradient {
+        background: linear-gradient(to bottom, #f8f9fa, white) !important;
+    }
+
+    /* Info Boxes */
+    .info-box {
+        transition: all .15s ease;
+    }
+
+        .info-box:hover {
+            background: #f8f9fa !important;
+            transform: scale(1.02);
+        }
+
+    /* Button Enroll Animation */
+    .btn-enroll {
+        transition: all .2s ease;
+        background: linear-gradient(135deg, #4f46e5, #06b6d4);
+        border: none;
+    }
+
+        .btn-enroll:hover {
+            background: linear-gradient(135deg, #4338ca, #0891b2);
+            transform: scale(1.02);
+            box-shadow: 0 .5rem 1rem rgba(79, 70, 229, .3) !important;
+        }
+
+    /* Nav Pills */
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    }
+
+    .nav-pills .nav-link {
+        transition: all .15s ease;
+    }
+
+        .nav-pills .nav-link:hover:not(.active) {
+            background: rgba(79, 70, 229, .1);
+        }
+
+    /* Smooth Scroll */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Badge Animations */
+    .badge {
+        transition: all .15s ease;
+    }
+
+        .badge:hover {
+            transform: scale(1.05);
+        }
+</style>
