@@ -59,9 +59,8 @@ namespace Web.Controllers
             {
                 TempData["ErrorMessage"] = ex.Message;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Có lỗi xảy ra khi đăng ký khóa học!";
             }
 
             return RedirectToAction(nameof(Index));
@@ -82,9 +81,8 @@ namespace Web.Controllers
             {
                 TempData["ErrorMessage"] = ex.Message;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Có lỗi xảy ra khi hủy đăng ký khóa học!";
             }
 
             return RedirectToAction(nameof(MyCourses));
