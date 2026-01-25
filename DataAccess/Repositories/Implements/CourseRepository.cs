@@ -51,6 +51,7 @@ namespace DataAccess.Repositories.Implements
                 .Select(c => c.CourseId)
                 .ToListAsync();
         }
+
         public async Task<List<Course>> GetUserCoursesAsync(int userId)
         {
             // Get courses where user is either teacher or enrolled student
@@ -95,6 +96,44 @@ namespace DataAccess.Repositories.Implements
             participantIds.AddRange(studentIds);
 
             return participantIds.Distinct().ToList();
+        }
+
+        // CRUD methods implementation
+        public async Task<Course> CreateCourseAsync(Course course)
+        {
+            _context.Courses.Add(course);
+            await _context.SaveChangesAsync();
+            return course;
+        }
+
+        public async Task<Course> UpdateCourseAsync(Course course)
+        {
+            _context.Courses.Update(course);
+            await _context.SaveChangesAsync();
+            return course;
+        }
+
+        public async Task<bool> DeleteCourseAsync(int courseId)
+        {
+            var course = await _context.Courses.FindAsync(courseId);
+            if (course == null)
+                return false;
+
+            _context.Courses.Remove(course);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> CourseCodeExistsAsync(string courseCode, int? excludeCourseId = null)
+        {
+            var query = _context.Courses.Where(c => c.CourseCode == courseCode);
+            
+            if (excludeCourseId.HasValue)
+            {
+                query = query.Where(c => c.CourseId != excludeCourseId.Value);
+            }
+
+            return await query.AnyAsync();
         }
     }
 }

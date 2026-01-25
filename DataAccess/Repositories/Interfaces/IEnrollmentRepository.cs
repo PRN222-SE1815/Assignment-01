@@ -12,5 +12,9 @@ namespace DataAccess.Repositories.Interfaces
         Task<bool> UpdateEnrollmentStatusAsync(int enrollmentId, string status);
         Task<bool> IsStudentEnrolledAsync(int studentId, int courseId);
         Task<int> GetEnrolledCountByCourseAsync(int courseId);
+        
+        // For EnrollmentServiceForChat compatibility
+        Task<Enrollment?> GetEnrollmentByIdAsync(int enrollmentId);
+        Task<List<Enrollment>> GetEnrollmentsByCourseIdAsync(int courseId);
     }
 }
