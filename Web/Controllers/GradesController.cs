@@ -1,8 +1,11 @@
 ﻿using BusinessLogic.DTOs.Requests;
+using BusinessLogic.Services.Implements;
 using BusinessLogic.Services.Interfaces;
+using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 using Web.Models;
 
 namespace Web.Controllers;
@@ -19,11 +22,34 @@ public class GradesController : Controller
 
     // Student + Teacher xem được
     [Authorize(Roles = "Student,Teacher")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? courseId, string? student)
     {
+        // Đổ dropdown course
+        await LoadCourseDropdownAsync();
+
+        // Lấy toàn bộ grade
         var grades = await _gradeService.GetAllAsync();
+
+        // Filter theo course
+        if (courseId.HasValue && courseId.Value > 0)
+        {
+            grades = grades.Where(g => g.CourseId == courseId.Value).ToList();
+        }
+
+        // Filter theo tên sinh viên
+        if (!string.IsNullOrWhiteSpace(student))
+        {
+            var key = student.Trim().ToLower();
+            grades = grades.Where(g => (g.StudentName ?? "").ToLower().Contains(key)).ToList();
+        }
+
+        // Giữ lại giá trị search để view hiển thị lại
+        ViewBag.SelectedCourseId = courseId;
+        ViewBag.StudentKeyword = student;
+
         return View(grades);
     }
+
 
     // Student + Teacher xem được
     [Authorize(Roles = "Student,Teacher")]
@@ -171,4 +197,47 @@ public class GradesController : Controller
         var items = await _gradeService.GetEnrollmentOptionsByCourseAsync(courseId);
         return Json(items.Select(x => new { enrollmentId = x.EnrollmentId, displayText = x.DisplayText }));
     }
+    
+
+[Authorize(Roles = "Student")]
+public async Task<IActionResult> MyGrades(int? courseId)
+{
+    // Lấy fullname từ claim (đang dùng ở dashboard)
+    var fullName = User.FindFirst("FullName")?.Value?.Trim();
+
+    // Lấy tất cả grades
+    var grades = await _gradeService.GetAllAsync();
+
+    // Lọc đúng student
+    if (string.IsNullOrWhiteSpace(fullName))
+        return View(new List<BusinessLogic.DTOs.Responses.GradeResponse>());
+
+    var myGrades = grades
+        .Where(g => (g.StudentName ?? "").Trim().Equals(fullName, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+
+    // ✅ Dropdown course chỉ gồm môn mà student này có trong myGrades
+    ViewBag.Courses = myGrades
+        .Where(g => g.CourseId > 0)
+        .GroupBy(g => new { g.CourseId, g.CourseName })
+        .Select(x => new SelectListItem
+        {
+            Value = x.Key.CourseId.ToString(),
+            Text = x.Key.CourseName
+        })
+        .OrderBy(x => x.Text)
+        .ToList();
+
+    // giữ lựa chọn
+    ViewBag.SelectedCourseId = courseId;
+
+    // ✅ Filter theo course (nếu chọn)
+    if (courseId.HasValue && courseId.Value > 0)
+    {
+        myGrades = myGrades.Where(g => g.CourseId == courseId.Value).ToList();
+    }
+
+    return View(myGrades);
+}
+
 }
