@@ -3,8 +3,17 @@
 
 @{
     ViewData["Title"] = "Grades";
-    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+    // roles
+    bool isAdmin = User.IsInRole("Admin");
     bool isTeacher = User.IsInRole("Teacher");
+    bool canEdit = isTeacher || isAdmin;
+
+    // Layout: CHỈ dùng nếu bạn chắc chắn có file _LayoutAdmin.cshtml
+    // Nếu chưa có layout admin thì để luôn _LayoutTeacher.cshtml cho khỏi build lỗi.
+    Layout = isAdmin
+        ? "~/Views/Shared/_LayoutAdmin.cshtml"
+        : "~/Views/Shared/_LayoutTeacher.cshtml";
 
     // Dropdown courses (nếu controller có set ViewBag.Courses)
     var courses = ViewBag.Courses as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
@@ -13,6 +22,7 @@
     string selectedCourse = (ViewContext.HttpContext.Request.Query["courseId"].ToString() ?? "");
     string studentKeyword = (ViewContext.HttpContext.Request.Query["student"].ToString() ?? "");
 }
+
 
 <div class="container py-4">
 
@@ -25,18 +35,25 @@
 
     <!-- RIGHT: Back + Add -->
     <div class="d-flex align-items-center gap-2">
-       
 
-        @if (isTeacher)
-        {
-            <a asp-controller="Grades" asp-action="Create" class="btn btn-success shadow">
-                Add Grade
-            </a>
-        }
-         <a asp-controller="Teacher" asp-action="Index"
-           class="btn btn-outline-light shadow">
-           Back
+
+    @* Add Grade: Admin + Teacher *@
+    @if (canEdit)
+    {
+        <a asp-controller="Grades" asp-action="Create" class="btn btn-success shadow">
+            Add Grade
         </a>
+    }
+
+    @* Back: luôn hiện, đi đúng theo role *@
+    <a asp-controller="@(isAdmin ? "Admin" : "Teacher")"
+       asp-action="Index"
+       class="btn btn-outline-dark shadow">
+        Back
+    </a>
+
+</div>
+
     </div>
 </div>
 
@@ -147,29 +164,35 @@
                                                     </a>
                                                 </li>
 
-                                                @if (isTeacher)
-                                                {
-                                                    <li>
-                                                        <a class="dropdown-item"
-                                                           asp-controller="Grades"
-                                                           asp-action="Edit"
-                                                           asp-route-id="@g.GradeId">
-                                                            Edit
-                                                        </a>
-                                                    </li>
-                                                    <li><hr class="dropdown-divider" /></li>
-                                                    <li>
-                                                        <button type="button"
-                                                                class="dropdown-item text-danger"
-                                                                data-id="@g.GradeId"
-                                                                data-student="@g.StudentName"
-                                                                data-course="@g.CourseName"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#deleteConfirmModal">
-                                                            Delete
-                                                        </button>
-                                                    </li>
-                                                }
+                                                @if (canEdit)
+{
+    <li>
+        <a class="dropdown-item"
+           asp-controller="Grades"
+           asp-action="Edit"
+           asp-route-id="@g.GradeId">
+            Edit
+        </a>
+    </li>
+}
+
+@if (isAdmin)
+{
+    <li><hr class="dropdown-divider" /></li>
+    <li>
+        <button type="button"
+                class="dropdown-item text-danger"
+                data-id="@g.GradeId"
+                data-student="@g.StudentName"
+                data-course="@g.CourseName"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteConfirmModal">
+            Delete
+        </button>
+    </li>
+}
+
+                                                
                                             </ul>
                                         </div>
                                     </td>
@@ -185,7 +208,7 @@
 
 </div>
 
-@if (isTeacher)
+@if (isAdmin)
 {
     <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
