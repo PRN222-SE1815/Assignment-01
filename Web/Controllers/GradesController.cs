@@ -21,7 +21,7 @@ public class GradesController : Controller
     }
 
     // Student + Teacher xem được
-    [Authorize(Roles = "Student,Teacher")]
+    [Authorize(Roles = "Student,Teacher,Admin")]
     public async Task<IActionResult> Index(int? courseId, string? student)
     {
         // Đổ dropdown course
@@ -52,7 +52,7 @@ public class GradesController : Controller
 
 
     // Student + Teacher xem được
-    [Authorize(Roles = "Student,Teacher")]
+    [Authorize(Roles = "Student,Teacher,Admin")]
     public async Task<IActionResult> Details(int id)
     {
         var grade = await _gradeService.GetByIdAsync(id);
@@ -61,7 +61,7 @@ public class GradesController : Controller
     }
 
     // Teacher mới được tạo
-    [Authorize(Roles = "Teacher")]
+    [Authorize(Roles = "Teacher,Admin")]
     public async Task<IActionResult> Create()
     {
         await LoadCourseDropdownAsync();
@@ -70,7 +70,7 @@ public class GradesController : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = "Teacher")]
+    [Authorize(Roles = "Teacher,Admin")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(GradeInputModel vm)
     {
@@ -94,7 +94,7 @@ public class GradesController : Controller
     }
 
     // Teacher mới được sửa
-    [Authorize(Roles = "Teacher")]
+    [Authorize(Roles = "Teacher,Admin")]
     public async Task<IActionResult> Edit(int id)
     {
         var grade = await _gradeService.GetByIdAsync(id);
@@ -118,7 +118,7 @@ public class GradesController : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = "Teacher")]
+    [Authorize(Roles = "Teacher,Admin")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, GradeInputModel vm)
     {
@@ -143,7 +143,7 @@ public class GradesController : Controller
     }
 
     // GET: Grades/Delete/5
-    [Authorize(Roles = "Teacher")]
+    [Authorize(Roles = "Teacher,Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var grade = await _gradeService.GetByIdAsync(id);
@@ -153,7 +153,7 @@ public class GradesController : Controller
 
     // POST: Grades/Delete/5
     [HttpPost, ActionName("Delete")]
-    [Authorize(Roles = "Teacher")]
+    [Authorize(Roles = "Teacher,Admin")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
@@ -191,7 +191,7 @@ public class GradesController : Controller
 
     // AJAX: chọn course -> trả list student theo course
     [HttpGet]
-    [Authorize(Roles = "Teacher")]
+    [Authorize(Roles = "Teacher,Admin")]
     public async Task<IActionResult> StudentsByCourse(int courseId)
     {
         var items = await _gradeService.GetEnrollmentOptionsByCourseAsync(courseId);
