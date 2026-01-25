@@ -8,7 +8,7 @@ using DataAccess.Repositories.Implements;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-
+using System.Security.Claims;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
@@ -25,30 +25,34 @@ builder.Services.AddHttpClient<IOpenAiService, GeminiService>();
 builder.Services.AddScoped<IStudentAnalysisService, StudentAnalysisService>();
 
 // Register Repositories
-builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IUserRepository, DataAccess.Repositories.Implements.UserRepository>();
-builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IConversationRepository, DataAccess.Repositories.Implements.ConversationRepository>();
-builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IConversationParticipantRepository, DataAccess.Repositories.Implements.ConversationParticipantRepository>();
-builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IMessageRepository, DataAccess.Repositories.Implements.MessageRepository>();
-builder.Services.AddScoped<DataAccess.Repositories.Interfaces.INotificationRepository, DataAccess.Repositories.Implements.NotificationRepository>();
-builder.Services.AddScoped<DataAccess.Repositories.Interfaces.ICourseRepository, DataAccess.Repositories.Implements.CourseRepository>();
-builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IEnrollmentRepository, DataAccess.Repositories.Implements.EnrollmentRepository>();
-builder.Services.AddScoped<DataAccess.Repositories.Interfaces.IStudentRepository, DataAccess.Repositories.Implements.StudentRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+builder.Services.AddScoped<IConversationParticipantRepository, ConversationParticipantRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ICourseScheduleRepository, CourseScheduleRepository>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 
 // Register Services
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IAuthService, BusinessLogic.Services.Implements.AuthService>();
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IUserService, BusinessLogic.Services.Implements.UserService>();
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IConversationService, BusinessLogic.Services.Implements.ConversationService>();
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IMessageService, BusinessLogic.Services.Implements.MessageService>();
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.INotificationService, BusinessLogic.Services.Implements.NotificationService>();
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.ICourseConversationService, BusinessLogic.Services.Implements.CourseConversationService>();
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IStudyGroupService, BusinessLogic.Services.Implements.StudyGroupService>();
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.IEnrollmentServiceForChat, BusinessLogic.Services.Implements.EnrollmentServiceForChat>();
-builder.Services.AddScoped<BusinessLogic.Services.Interfaces.ICourseService, BusinessLogic.Services.Implements.CourseService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IConversationService, ConversationService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<ICourseConversationService, CourseConversationService>();
+builder.Services.AddScoped<IStudyGroupService, StudyGroupService>();
+builder.Services.AddScoped<ICourseScheduleService, CourseScheduleService>();
+builder.Services.AddScoped<IEnrollmentServiceForChat, EnrollmentServiceForChat>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IEmailService, MailKitEmailService>();
+builder.Services.AddScoped<IGradeService, GradeService>();
+builder.Services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
 
 builder.Services.AddDataProtection();
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
-builder.Services.AddScoped<IEmailService, MailKitEmailService>();
-builder.Services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
 
 // Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -64,20 +68,46 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SameSite = SameSiteMode.Strict;
     });
 
-builder.Services.AddAuthorization();
-
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("TeacherOnly", p => p.RequireRole("Teacher"));
+    options.AddPolicy("StudentOnly", p => p.RequireRole("Student"));
+});
 // Add SignalR
 builder.Services.AddSignalR();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Configure Session
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// Configure DbContext
+builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register Repositories
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+
+// Register Services
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<ICourseConversationService, CourseConversationService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Enrollment/Index");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -87,6 +117,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 

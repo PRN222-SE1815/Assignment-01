@@ -13,6 +13,15 @@ namespace DataAccess.Repositories.Implements
             _context = context;
         }
 
+        public async Task<List<Course>> GetAllCoursesAsync()
+        {
+            return await _context.Courses
+                .Include(c => c.Teacher)
+                    .ThenInclude(t => t.User)
+                .OrderBy(c => c.CourseCode)
+                .ToListAsync();
+        }
+
         public async Task<Course?> GetCourseByIdAsync(int courseId)
         {
             return await _context.Courses
@@ -35,6 +44,13 @@ namespace DataAccess.Repositories.Implements
                 .ToListAsync();
         }
 
+        public async Task<List<int>> GetCourseIdsByTeacherUserIdAsync(int teacherUserId)
+        {
+            return await _context.Courses
+                .Where(c => c.Teacher.UserId == teacherUserId)
+                .Select(c => c.CourseId)
+                .ToListAsync();
+        }
         public async Task<List<Course>> GetUserCoursesAsync(int userId)
         {
             // Get courses where user is either teacher or enrolled student

@@ -1,0 +1,156 @@
+﻿/* Page background */
+.grades-page {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    justify-content: center;
+    padding: 36px 16px;
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 35%, #22c55e 100%);
+}
+
+/* Card */
+.grades-card {
+    width: 100%;
+    max-width: 1000px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .18);
+    overflow: hidden;
+}
+
+/* Card header */
+.grades-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid #eef2f7;
+    background: #fafbff;
+}
+
+.grades-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    color: #111827;
+}
+
+.grades-subtitle {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* Add button */
+.btn-add-grade {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 0;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform .08s ease, box-shadow .2s ease, background .2s ease;
+    box-shadow: 0 10px 18px rgba(37, 99, 235, .25);
+}
+
+    .btn-add-grade:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 14px 24px rgba(37, 99, 235, .28);
+    }
+
+    .btn-add-grade:active {
+        transform: translateY(0);
+    }
+
+/* Table wrapper */
+.grades-card__body {
+    padding: 14px 16px 18px;
+}
+
+.table-wrap {
+    width: 100%;
+    overflow: auto;
+    border: 1px solid #eef2f7;
+    border-radius: 12px;
+}
+
+/* Table */
+.grades-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 720px; /* giúp không bị co quá nhỏ */
+}
+
+    .grades-table thead th {
+        position: sticky;
+        top: 0;
+        background: #f8fafc;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 12px 12px;
+        border-bottom: 1px solid #e5e7eb;
+        z-index: 1;
+    }
+
+    .grades-table tbody td {
+        padding: 12px 12px;
+        border-bottom: 1px solid #eef2f7;
+        color: #111827;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+
+    .grades-table tbody tr:hover td {
+        background: #f9fafb;
+    }
+
+    .grades-table .num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .grades-table .total {
+        font-weight: 800;
+        color: #111827;
+    }
+
+/* Small badge for course/assignment (optional) */
+.badge-soft {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-weight: 600;
+}
+
+/* Actions column */
+.action-col {
+    width: 60px;
+    text-align: center;
+    color: #6b7280;
+}
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+    .grades-card__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .btn-add-grade {
+        width: 100%;
+        justify-content: center;
+    }
+}

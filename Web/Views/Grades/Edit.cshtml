@@ -1,0 +1,121 @@
+﻿@model Web.Models.GradeInputModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Edit Grade";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+    int gradeId = (int)(ViewBag.GradeId ?? 0);
+
+    var courses = ViewBag.Courses as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+    var students = ViewBag.Students as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+}
+
+<div class="container py-4">
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <div>
+            <h2 class="mb-1 fw-bold">Edit Grade</h2>
+            <div class="text-muted">Update grade information</div>
+        </div>
+
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form asp-controller="Grades" asp-action="Edit" asp-route-id="@gradeId" method="post" novalidate>
+                        <div class="row g-3">
+
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Course</label>
+                                <select asp-for="CourseId" asp-items="courses" class="form-select" id="CourseId">
+                                    <option value="">-- Select course --</option>
+                                </select>
+                                <span asp-validation-for="CourseId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Student</label>
+                                <select asp-for="EnrollmentId" asp-items="students" class="form-select" id="studentSelect">
+                                    <option value="">-- Select student --</option>
+                                </select>
+                                <div class="form-text">Changing course will refresh student list.</div>
+                                <span asp-validation-for="EnrollmentId" class="text-danger small"></span>
+                            </div>
+
+                            <hr class="my-2" />
+
+                            <div class="col-md-4">
+                                <label asp-for="Assignment" class="form-label fw-semibold">Assignment</label>
+                                <div class="input-group">
+                                    <input asp-for="Assignment" class="form-control" inputmode="decimal" placeholder="0 - 10" />
+                                    <span class="input-group-text">/10</span>
+                                </div>
+                                <span asp-validation-for="Assignment" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Midterm" class="form-label fw-semibold">Midterm</label>
+                                <div class="input-group">
+                                    <input asp-for="Midterm" class="form-control" inputmode="decimal" placeholder="0 - 10" />
+                                    <span class="input-group-text">/10</span>
+                                </div>
+                                <span asp-validation-for="Midterm" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Final" class="form-label fw-semibold">Final</label>
+                                <div class="input-group">
+                                    <input asp-for="Final" class="form-control" inputmode="decimal" placeholder="0 - 10" />
+                                    <span class="input-group-text">/10</span>
+                                </div>
+                                <span asp-validation-for="Final" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+                                <a asp-controller="Grades" asp-action="Index" class="btn btn-light">Cancel</a>
+                                <button type="submit" class="btn btn-primary px-4">Update</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const courseSelect = document.getElementById("CourseId");
+        const studentSelect = document.getElementById("studentSelect");
+
+        async function loadStudents(courseId) {
+            const selectedBefore = studentSelect.value;
+
+            studentSelect.innerHTML = '<option value="">-- Select student --</option>';
+            if (!courseId) return;
+
+            const res = await fetch(`/Grades/StudentsByCourse?courseId=${courseId}`);
+            const data = await res.json();
+
+            for (const item of data) {
+                const opt = document.createElement("option");
+                opt.value = item.enrollmentId;
+                opt.textContent = item.displayText;
+                studentSelect.appendChild(opt);
+            }
+
+            if ([...studentSelect.options].some(o => o.value === selectedBefore)) {
+                studentSelect.value = selectedBefore;
+            }
+        }
+
+        courseSelect.addEventListener("change", () => loadStudents(courseSelect.value));
+    </script>
+}

@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "My Class Schedule";
+    Layout = "~/Views/Shared/_LayoutStudent.cshtml";
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-calendar-week-fill"></i> My Class Schedule</h2>
+            <p class="text-muted">View your enrolled courses schedule</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-primary">
+                <i class="bi bi-house-door"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0" style="border-radius: 16px;">
+    <div class="card-body p-4">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<!-- Event Detail Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border: none;">
+                <h5 class="modal-title" id="eventModalLabel">
+                    <i class="bi bi-calendar-event"></i> Class Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1"><i class="bi bi-book"></i> Course</h6>
+                    <p class="mb-0 fw-bold" id="modal-course"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1"><i class="bi bi-clock"></i> Time</h6>
+                    <p class="mb-0" id="modal-time"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1"><i class="bi bi-geo-alt"></i> Location</h6>
+                    <p class="mb-0" id="modal-location"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1"><i class="bi bi-person"></i> Teacher</h6>
+                    <p class="mb-0" id="modal-teacher"></p>
+                </div>
+                <div class="mb-0">
+                    <h6 class="text-muted mb-1"><i class="bi bi-info-circle"></i> Note</h6>
+                    <p class="mb-0" id="modal-note"></p>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                slotMinTime: '07:00:00',
+                slotMaxTime: '22:00:00',
+                height: 'auto',
+                nowIndicator: true,
+                events: '@Url.Action("ScheduleEvents")',
+                eventClick: function(info) {
+                    var props = info.event.extendedProps;
+                    document.getElementById('modal-course').textContent = 
+                        props.courseCode + ' - ' + props.courseName;
+                    document.getElementById('modal-time').textContent = 
+                        info.event.start.toLocaleString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) + ' - ' + 
+                        info.event.end.toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                        });
+                    document.getElementById('modal-location').textContent = props.location || 'TBA';
+                    document.getElementById('modal-teacher').textContent = props.teacherName || 'N/A';
+                    document.getElementById('modal-note').textContent = props.note || 'No additional notes';
+                    
+                    var modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                    modal.show();
+                }
+            });
+            calendar.render();
+        });
+    </script>
+}
+
