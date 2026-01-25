@@ -1,0 +1,164 @@
+/* ============================================
+   Course Management Styles
+   ============================================ */
+
+/* Course Management Header */
+.course-management-header h2 {
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+/* Course Table Card */
+.course-table-card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.course-table-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Course Table Styling */
+.course-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.course-table thead th {
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+    border: none;
+}
+
+.course-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.course-table tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+    transform: scale(1.01);
+}
+
+.course-table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Teacher Avatar */
+.teacher-avatar i {
+    font-size: 1.8rem;
+    color: #667eea;
+}
+
+/* Empty State */
+.empty-state {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* Action Buttons */
+.course-table .btn-group .btn {
+    transition: all 0.2s ease;
+}
+
+.course-table .btn-group .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Create Course Form Styles
+   ============================================ */
+
+.create-course-container {
+    padding: 2rem 0;
+}
+
+.create-course-card {
+    border-radius: 20px;
+    overflow: hidden;
+    animation: slideInUp 0.5s ease;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.create-course-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+}
+
+.create-course-card .form-control,
+.create-course-card .form-select {
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.create-course-card .form-control:focus,
+.create-course-card .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+}
+
+.create-course-card .form-label {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.create-course-card .form-label i {
+    color: #667eea;
+}
+
+.create-course-card .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.create-course-card .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+/* Alert Styling */
+.alert {
+    border: none;
+    border-radius: 12px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .course-table-card {
+        border-radius: 12px;
+    }
+    
+    .course-table thead th {
+        font-size: 0.75rem;
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .course-table tbody td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .teacher-avatar {
+        display: none;
+    }
+}

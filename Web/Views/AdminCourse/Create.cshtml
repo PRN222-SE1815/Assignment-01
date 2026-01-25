@@ -2,9 +2,8 @@
 
 @{
     ViewData["Title"] = "Create Course";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-
-<div class="container mt-4 fade-in">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card shadow-sm rounded-4">
@@ -12,41 +11,44 @@
                     <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create New Course</h4>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="Create" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <form asp-action="Create" method="post" class="needs-validation" novalidate>
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3"></div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
+                        <div class="row g-3">
+                            <!-- Course Code -->
+                            <div class="col-md-6">
                                 <label asp-for="CourseCode" class="form-label fw-semibold">
-                                    Course Code <span class="text-danger">*</span>
+                                    <i class="bi bi-tag me-1"></i>Course Code <span class="text-danger">*</span>
                                 </label>
-                                <input asp-for="CourseCode" class="form-control" placeholder="e.g., CS101" />
-                                <span asp-validation-for="CourseCode" class="text-danger"></span>
+                                <input asp-for="CourseCode" class="form-control form-control-lg" placeholder="e.g., CS101" required />
+                                <span asp-validation-for="CourseCode" class="text-danger small"></span>
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <!-- Credits -->
+                            <div class="col-md-6">
                                 <label asp-for="Credits" class="form-label fw-semibold">
-                                    Credits
+                                    <i class="bi bi-award me-1"></i>Credits
                                 </label>
-                                <input asp-for="Credits" class="form-control" type="number" min="1" max="10" />
-                                <span asp-validation-for="Credits" class="text-danger"></span>
+                                <input asp-for="Credits" class="form-control form-control-lg" type="number" min="1" max="10" placeholder="3" />
+                                <span asp-validation-for="Credits" class="text-danger small"></span>
                             </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <label asp-for="CourseName" class="form-label fw-semibold">
-                                Course Name <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="CourseName" class="form-control" placeholder="e.g., Introduction to Computer Science" />
-                            <span asp-validation-for="CourseName" class="text-danger"></span>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Semester" class="form-label fw-semibold">
-                                    Semester
+                            <!-- Course Name -->
+                            <div class="col-12">
+                                <label asp-for="CourseName" class="form-label fw-semibold">
+                                    <i class="bi bi-book me-1"></i>Course Name <span class="text-danger">*</span>
                                 </label>
-                                <select asp-for="Semester" class="form-control">
+                                <input asp-for="CourseName" class="form-control form-control-lg" placeholder="e.g., Introduction to Computer Science" required />
+                                <span asp-validation-for="CourseName" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Semester -->
+                            <div class="col-md-6">
+                                <label asp-for="Semester" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar-event me-1"></i>Semester
+                                </label>
+                                <select asp-for="Semester" class="form-select form-select-lg">
                                     <option value="">-- Select Semester --</option>
                                     <option value="Fall 2024">Fall 2024</option>
                                     <option value="Spring 2025">Spring 2025</option>
@@ -54,27 +56,30 @@
                                     <option value="Fall 2025">Fall 2025</option>
                                     <option value="Spring 2026">Spring 2026</option>
                                 </select>
-                                <span asp-validation-for="Semester" class="text-danger"></span>
+                                <span asp-validation-for="Semester" class="text-danger small"></span>
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <!-- Assigned Teacher -->
+                            <div class="col-md-6">
                                 <label asp-for="TeacherId" class="form-label fw-semibold">
-                                    Assigned Teacher
+                                    <i class="bi bi-person-badge me-1"></i>Assigned Teacher
                                 </label>
-                                <select asp-for="TeacherId" class="form-control" asp-items="ViewBag.Teachers">
+                                <select asp-for="TeacherId" class="form-select form-select-lg" asp-items="ViewBag.Teachers">
                                     <option value="">-- Not Assigned --</option>
                                 </select>
-                                <span asp-validation-for="TeacherId" class="text-danger"></span>
+                                <span asp-validation-for="TeacherId" class="text-danger small"></span>
                             </div>
                         </div>
 
-                        <div class="mt-4 d-flex gap-2">
-                            <button type="submit" class="btn btn-primary rounded-pill px-4">
-                                <i class="fas fa-save me-2"></i>Create Course
-                            </button>
+                        <hr class="my-4">
+
+                        <div class="d-flex gap-2 justify-content-end">
                             <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
-                                <i class="fas fa-times me-2"></i>Cancel
+                                <i class="bi bi-x-circle me-2"></i>Cancel
                             </a>
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                                <i class="bi bi-check-circle me-2"></i>Create Course
+                            </button>
                         </div>
                     </form>
                 </div>
