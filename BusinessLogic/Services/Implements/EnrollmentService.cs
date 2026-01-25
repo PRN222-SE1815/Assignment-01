@@ -168,8 +168,6 @@ namespace BusinessLogic.Services.Implements
 
         private async Task AddStudentToCourseConversationAsync(int courseId, int studentId)
         {
-            try
-            {
                 var conversation = await _conversationRepository.GetConversationByCourseIdAsync(courseId);
                 if (conversation != null)
                 {
@@ -179,27 +177,15 @@ namespace BusinessLogic.Services.Implements
                         await _conversationRepository.AddParticipantAsync(conversation.ConversationId, student.UserId);
                     }
                 }
-            }
-            catch
-            {
-                // Silent fail - conversation integration is optional
-            }
         }
 
         private async Task RemoveStudentFromCourseConversationAsync(int courseId, int userId)
         {
-            try
-            {
                 var conversation = await _conversationRepository.GetConversationByCourseIdAsync(courseId);
                 if (conversation != null)
                 {
                     await _conversationRepository.RemoveParticipantAsync(conversation.ConversationId, userId);
                 }
-            }
-            catch
-            {
-                // Silent fail - conversation integration is optional
-            }
         }
     }
 }

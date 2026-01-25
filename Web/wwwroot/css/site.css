@@ -169,9 +169,7 @@ body {
    ======================================== */
 .container {
     background: transparent;
-    padding: 30px 20px;
     position: relative;
-    z-index: 1;
 }
 
 .card {
@@ -184,13 +182,11 @@ body {
     transition: all 0.3s ease;
     overflow: hidden;
     position: relative;
-    z-index: 2;
 }
 
 .card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
-    z-index: 3;
 }
 
 .card-header {
