@@ -176,7 +176,7 @@
     </li>
 }
 
-@if (isAdmin)
+@if (canEdit)
 {
     <li><hr class="dropdown-divider" /></li>
     <li>
@@ -208,7 +208,7 @@
 
 </div>
 
-@if (isAdmin)
+@if (canEdit)
 {
     <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

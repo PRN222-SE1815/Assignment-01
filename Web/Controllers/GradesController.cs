@@ -143,7 +143,7 @@ public class GradesController : Controller
     }
 
     // GET: Grades/Delete/5
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Teacher,Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var grade = await _gradeService.GetByIdAsync(id);
@@ -153,7 +153,7 @@ public class GradesController : Controller
 
     // POST: Grades/Delete/5
     [HttpPost, ActionName("Delete")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Teacher,Admin")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
