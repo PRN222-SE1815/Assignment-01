@@ -25,9 +25,8 @@
             <small class="text-muted text-uppercase">Academic</small>
         </div>
 
-        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">
+        <a class="nav-link @(currentController == "admincourse" ? "active" : "")" asp-controller="AdminCourse" asp-action="Index">
             <i class="bi bi-journal-text"></i> Course Management
-            <span class="badge bg-secondary ms-2">Soon</span>
         </a>
 
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">

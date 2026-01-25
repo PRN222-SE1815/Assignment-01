@@ -1,0 +1,105 @@
+@model BusinessLogic.DTOs.Requests.CreateCourseRequest
+
+@{
+    ViewData["Title"] = "Create Course";
+}
+
+<div class="container mt-4 fade-in">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm rounded-4">
+                <div class="card-header bg-primary text-white rounded-top-4">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create New Course</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CourseCode" class="form-label fw-semibold">
+                                    Course Code <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="CourseCode" class="form-control" placeholder="e.g., CS101" />
+                                <span asp-validation-for="CourseCode" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Credits" class="form-label fw-semibold">
+                                    Credits
+                                </label>
+                                <input asp-for="Credits" class="form-control" type="number" min="1" max="10" />
+                                <span asp-validation-for="Credits" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CourseName" class="form-label fw-semibold">
+                                Course Name <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="CourseName" class="form-control" placeholder="e.g., Introduction to Computer Science" />
+                            <span asp-validation-for="CourseName" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Semester" class="form-label fw-semibold">
+                                    Semester
+                                </label>
+                                <select asp-for="Semester" class="form-control">
+                                    <option value="">-- Select Semester --</option>
+                                    <option value="Fall 2024">Fall 2024</option>
+                                    <option value="Spring 2025">Spring 2025</option>
+                                    <option value="Summer 2025">Summer 2025</option>
+                                    <option value="Fall 2025">Fall 2025</option>
+                                    <option value="Spring 2026">Spring 2026</option>
+                                </select>
+                                <span asp-validation-for="Semester" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TeacherId" class="form-label fw-semibold">
+                                    Assigned Teacher
+                                </label>
+                                <select asp-for="TeacherId" class="form-control" asp-items="ViewBag.Teachers">
+                                    <option value="">-- Not Assigned --</option>
+                                </select>
+                                <span asp-validation-for="TeacherId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">
+                                <i class="fas fa-save me-2"></i>Create Course
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Client-side course code uniqueness validation
+        $('#CourseCode').on('blur', function() {
+            var courseCode = $(this).val();
+            if (courseCode) {
+                $.get('@Url.Action("CheckCourseCode")', { courseCode: courseCode }, function(data) {
+                    if (!data) {
+                        $('#CourseCode').addClass('is-invalid');
+                        $('#CourseCode').after('<div class="invalid-feedback">Course code already exists!</div>');
+                    } else {
+                        $('#CourseCode').removeClass('is-invalid');
+                        $('#CourseCode').next('.invalid-feedback').remove();
+                    }
+                });
+            }
+        });
+    </script>
+}
