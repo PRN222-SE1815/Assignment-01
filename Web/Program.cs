@@ -8,21 +8,15 @@ using DataAccess.Repositories.Implements;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// Database
-builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DBDefault")));
 
 //AI
 builder.Services.Configure<GeminiConfig>(
     builder.Configuration.GetSection("Gemini"));
 builder.Services.AddHttpClient<IOpenAiService, GeminiService>();
-// Business service
-builder.Services.AddScoped<IStudentAnalysisService, StudentAnalysisService>();
 
 // Register Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -52,6 +46,7 @@ builder.Services.AddScoped<IEmailService, MailKitEmailService>();
 builder.Services.AddScoped<IGradeService, GradeService>();
 builder.Services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<IStudentAnalysisService, StudentAnalysisService>();
 
 builder.Services.AddDataProtection();
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
@@ -89,20 +84,6 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
-// Configure DbContext
-builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Register Repositories
-builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
-
-// Register Services
-builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
-builder.Services.AddScoped<ICourseConversationService, CourseConversationService>();
 
 var app = builder.Build();
 

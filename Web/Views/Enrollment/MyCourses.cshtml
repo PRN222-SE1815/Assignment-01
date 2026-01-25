@@ -48,20 +48,6 @@
         </div>
     }
 
-    <!-- Tabs -->
-    <ul class="nav nav-pills mb-4 gap-2 p-3 bg-light rounded-4">
-        <li class="nav-item">
-            <a class="nav-link rounded-pill px-4" asp-action="Index">
-                <i class="fas fa-list me-2"></i>Khóa học có sẵn
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active rounded-pill px-4 shadow-sm" asp-action="MyCourses">
-                <i class="fas fa-graduation-cap me-2"></i>Khóa học của tôi
-            </a>
-        </li>
-    </ul>
-
     <!-- Summary Cards -->
     @if (Model != null && Model.Any())
     {
