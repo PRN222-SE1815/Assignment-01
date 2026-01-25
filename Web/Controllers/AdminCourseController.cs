@@ -1,6 +1,5 @@
 using BusinessLogic.DTOs.Requests;
 using BusinessLogic.Services.Interfaces;
-using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -9,14 +8,14 @@ namespace Web.Controllers
     public class AdminCourseController : Controller
     {
         private readonly ICourseService _courseService;
-        private readonly ITeacherRepository _teacherRepository;
+        private readonly ITeacherService _teacherService;
 
         public AdminCourseController(
             ICourseService courseService,
-            ITeacherRepository teacherRepository)
+            ITeacherService teacherService)
         {
             _courseService = courseService;
-            _teacherRepository = teacherRepository;
+            _teacherService = teacherService;
         }
 
         // GET: AdminCourse
@@ -180,7 +179,7 @@ namespace Web.Controllers
 
         private async Task PopulateTeachersDropdownAsync(int? selectedTeacherId = null)
         {
-            var teachers = await _teacherRepository.GetAllTeachersAsync();
+            var teachers = await _teacherService.GetAllTeachersAsync();
             ViewBag.Teachers = new SelectList(
                 teachers.Select(t => new 
                 { 

@@ -47,6 +47,8 @@ builder.Services.AddScoped<IGradeService, GradeService>();
 builder.Services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IStudentAnalysisService, StudentAnalysisService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<ITeacherService, TeacherService>();
 
 builder.Services.AddDataProtection();
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));

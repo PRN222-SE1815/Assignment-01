@@ -53,7 +53,7 @@ namespace BusinessLogic.Services.Implements
                     Title = notification.Title ?? "",
                     Message = notification.Message ?? "",
                     CreatedAt = notification.CreatedAt ?? DateTime.Now,
-                    IsRead = false, // TODO: Get from NotificationRecipients
+                    IsRead = false,
                     ReadAt = null
                 });
             }

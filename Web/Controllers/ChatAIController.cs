@@ -1,5 +1,5 @@
 ﻿using BusinessLogic.Interfaces.AI;
-using DataAccess.Repositories.Interfaces;
+using BusinessLogic.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,14 +12,14 @@ namespace Web.Controllers
     public class ChatAIController : ControllerBase
     {
         private readonly IStudentAnalysisService _service;
-        private readonly IStudentRepository _studentRepository;
+        private readonly IStudentService _studentService;
 
         public ChatAIController(
             IStudentAnalysisService service,
-            IStudentRepository studentRepository)
+            IStudentService studentService)
         {
             _service = service;
-            _studentRepository = studentRepository;
+            _studentService = studentService;
         }
 
         // GIỐNG HỆT ChatController
@@ -37,7 +37,7 @@ namespace Web.Controllers
                 return Unauthorized("Invalid user");
 
             // LẤY STUDENT THEO USER ĐĂNG NHẬP
-            var student = await _studentRepository.GetStudentByUserIdAsync(userId);
+            var student = await _studentService.GetStudentByUserIdAsync(userId);
             if (student == null)
                 return Forbid(); // user không phải student (role ≠ 3)
 

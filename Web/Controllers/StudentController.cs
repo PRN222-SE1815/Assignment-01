@@ -2,7 +2,6 @@ using BusinessLogic.DTOs.AI;
 using BusinessLogic.Interfaces.AI;
 using System.Security.Claims;
 using BusinessLogic.Services.Interfaces;
-using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,18 +14,18 @@ namespace Web.Controllers
 
        private readonly ICourseScheduleService _scheduleService;
 private readonly IEnrollmentServiceForChat _enrollmentServiceForChat;
-private readonly IStudentRepository _studentRepository;
+private readonly IStudentService _studentService;
 private readonly IStudentAnalysisService _service;
 
 public StudentController(
     ICourseScheduleService scheduleService,
     IEnrollmentServiceForChat enrollmentServiceForChat,
-    IStudentRepository studentRepository,
+    IStudentService studentService,
     IStudentAnalysisService service)
 {
     _scheduleService = scheduleService;
     _enrollmentServiceForChat = enrollmentServiceForChat;
-    _studentRepository = studentRepository;
+    _studentService = studentService;
     _service = service;
 }
 
@@ -127,7 +126,7 @@ public StudentController(
                 return 0;
             }
 
-            var student = await _studentRepository.GetStudentByUserIdAsync(userId);
+            var student = await _studentService.GetStudentByUserIdAsync(userId);
             return student?.StudentId ?? 0;
         }
         private int GetCurrentUserId()
@@ -143,7 +142,7 @@ public StudentController(
                 return Unauthorized();
 
             // LẤY STUDENT THEO USER ĐĂNG NHẬP
-            var student = await _studentRepository.GetStudentByUserIdAsync(userId);
+            var student = await _studentService.GetStudentByUserIdAsync(userId);
             if (student == null)
                 return Forbid(); // không phải student (role ≠ 3)
 

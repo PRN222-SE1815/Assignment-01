@@ -21,26 +21,22 @@ namespace BusinessLogic.Services.Implements
 
         public async Task<ConversationResponse> CreateStudyGroupAsync(CreateStudyGroupRequest request)
         {
-            // Create study group conversation (CourseId = NULL to avoid unique constraint)
-            // We use CourseId only for filtering participants during invite
             var conversation = new Conversation
             {
                 IsGroup = true,
                 Title = request.GroupName,
                 CreatedByUserId = request.CreatedByUserId,
                 CreatedAt = DateTime.UtcNow,
-                CourseId = null // Study groups are independent, not tied to course conversation
+                CourseId = null 
             };
 
             var savedConversation = await _conversationRepository.CreateConversationAsync(conversation);
 
-            // Add creator
             await _participantRepository.AddParticipantAsync(
                 savedConversation.ConversationId,
                 request.CreatedByUserId
             );
 
-            // Add invited users
             if (request.InvitedUserIds != null && request.InvitedUserIds.Length > 0)
             {
                 foreach (var userId in request.InvitedUserIds)

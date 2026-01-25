@@ -3,7 +3,6 @@ using BusinessLogic.DTOs.Responses;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic.Services.Implements
 {
@@ -35,13 +34,13 @@ namespace BusinessLogic.Services.Implements
 
             var savedConversation = await _conversationRepository.CreateConversationAsync(conversation);
 
-            // Add participants
+
             foreach (var userId in request.ParticipantUserIds)
             {
                 await _conversationRepository.AddParticipantAsync(savedConversation.ConversationId, userId);
             }
 
-            return await GetConversationDetailsAsync(savedConversation.ConversationId, request.CreatedByUserId) 
+            return await GetConversationDetailsAsync(savedConversation.ConversationId, request.CreatedByUserId)
                    ?? new ConversationResponse();
         }
 
@@ -105,7 +104,7 @@ namespace BusinessLogic.Services.Implements
                 CourseId = conversation.CourseId,
                 Participants = participants,
                 LastMessage = lastMessage,
-                UnreadCount = 0 // TODO: Calculate unread count
+                UnreadCount = 0
             };
         }
 

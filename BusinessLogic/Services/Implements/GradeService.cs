@@ -114,8 +114,7 @@ public class GradeService : IGradeService
         return enrollments.Select(e => new EnrollmentOptionResponse
         {
             EnrollmentId = e.EnrollmentId,
-            DisplayText = e.Student.User.FullName  // hoặc $"{e.Student.User.FullName}" (chỉ tên)
-                                                   // nếu bạn muốn vẫn hiện cả môn: $"{e.Student.User.FullName} - {e.Course.CourseName}"
+            DisplayText = e.Student.User.FullName                                                     
         }).ToList();
     }
 
