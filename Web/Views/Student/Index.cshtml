@@ -1,4 +1,4 @@
-﻿﻿@{
+﻿@{
     ViewData["Title"] = "Student Dashboard";
     Layout = "~/Views/Shared/_LayoutStudent.cshtml";
 }
@@ -16,6 +16,7 @@
         <p class="text-white-50">Manage your courses and schedule</p>
     </div>
 
+    <!-- Enroll Courses -->
     <div class="col-md-6 mb-4">
         <a asp-action="EnrollCourses" asp-controller="Student" class="text-decoration-none">
             <div class="card student-dashboard-card">
@@ -30,6 +31,7 @@
         </a>
     </div>
 
+    <!-- View Schedule -->
     <div class="col-md-6 mb-4">
         <a asp-action="ViewSchedule" asp-controller="Student" class="text-decoration-none">
             <div class="card student-dashboard-card">
@@ -44,6 +46,7 @@
         </a>
     </div>
 
+    <!-- Messages -->
     <div class="col-md-6 mb-4">
         <a asp-action="Index" asp-controller="Chat" class="text-decoration-none">
             <div class="card student-dashboard-card">
@@ -57,13 +60,27 @@
             </div>
         </a>
     </div>
+
+    <!-- ✅ Manage Grades (NEW) -->
+    <div class="col-md-6 mb-4">
+        <a asp-controller="Grades" asp-action="MyGrades" class="text-decoration-none">
+            <div class="card student-dashboard-card">
+                <div class="card-body text-center">
+                    <div class="icon-wrapper">
+                        <i class="bi bi-journal-check" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5>Manage Grades</h5>
+                    <p class="text-muted mb-0">View your grades by course</p>
+                </div>
+            </div>
+        </a>
+    </div>
 </div>
 
 <!-- Floating Message Icon (Quick Access) -->
-<a asp-action="Index" asp-controller="Chat" 
-   class="btn position-fixed rounded-circle shadow-lg" 
+<a asp-action="Index" asp-controller="Chat"
+   class="btn position-fixed rounded-circle shadow-lg"
    style="bottom: 30px; right: 30px; width: 60px; height: 60px; z-index: 1000; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"
    title="Open Messages">
     <i class="bi bi-chat-dots-fill text-white" style="font-size: 1.5rem;"></i>
 </a>
-
