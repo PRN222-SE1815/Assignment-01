@@ -1,4 +1,6 @@
-﻿namespace BusinessLogic.DTOs.AI
+﻿using BusinessLogic.DTOs.Responses;
+
+namespace BusinessLogic.DTOs.AI
 {
     public class AiStudentDataDTO
     {
@@ -14,5 +16,6 @@
         // Danh sách môn + điểm
         public List<CourseScoreDTO> Scores { get; set; }
         public List<AiScheduleDTO> Schedules { get; set; }
+        public List<CalendarEventDto> CalendarEvents { get; set; } = new();
     }
 }

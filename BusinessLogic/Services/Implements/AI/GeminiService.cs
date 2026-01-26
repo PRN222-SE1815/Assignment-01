@@ -37,25 +37,46 @@ namespace BusinessLogic.Services.Implements.AI
         // ================= CHAT (STRICT ANSWER) =================
         public async Task<string> ChatAsync(AiStudentDataDTO data, string message)
         {
+            var scoresText = data.Scores.Any()
+                ? string.Join("\n", data.Scores.Select(s =>
+                    $"- {s.Course}: Total = {s.Total}, Assignment = {s.Assignment}, Midterm = {s.Midterm}, Final = {s.Final}"))
+                : "No score data available.";
+
+            var scheduleText = data.CalendarEvents.Any()
+                ? string.Join("\n", data.CalendarEvents.Select(e =>
+                    $"- {e.Title}: {e.Start:dddd HH:mm} - {e.End:HH:mm}, Room: {e.ExtendedProps.GetValueOrDefault("Location")}"))
+                : "No schedule data available.";
+
             var prompt = $"""
-You are an academic advisor.
+You are an academic advisor helping a student understand their academic performance and study schedule.
 
-Student info:
+STUDENT ACADEMIC DATA:
 - GPA: {data.GPA}
-- Scores:
-{string.Join("\n", data.Scores.Select(s => $"- {s.Course}: {s.Total}"))}
 
-IMPORTANT RULES:
-- Answer ONLY what is asked in the question.
-- No extra explanations.
-- You MAY give a simple recommendation
-  ONLY if it can be directly inferred from the scores.
-- Keep the answer short.
-- If the question cannot be answered from the data, reply exactly: "Not enough information."
+COURSE SCORES:
+{scoresText}
+
+CLASS SCHEDULE:
+{scheduleText}
+
+INSTRUCTIONS:
+- Answer the student's question using ONLY the information provided above.
+- You MAY analyze GPA, course scores, and class schedule together.
+- You MAY point out heavy workload days, low-performing courses, or schedule issues if they are clearly supported by the data.
+- You MAY give brief and practical study or time-management advice when appropriate.
+- Do NOT invent any data, courses, grades, rooms, or schedules.
+- If the question cannot be answered using the provided information, reply exactly:
+  "Not enough information."
+
+STYLE:
+- Be concise, professional, and supportive.
+- Prefer bullet points or short paragraphs when explaining.
+- Do not include greetings or closing sentences.
 
 Question:
 {message}
 """;
+
 
             var body = new
             {
