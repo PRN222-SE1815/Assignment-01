@@ -88,16 +88,47 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        // Parse số kiểu "7,5" hoặc "7.5" (tự xử lý dấu . và ,)
+        function parseFlexibleNumber(value) {
+            if (value == null) return NaN;
+            value = value.toString().trim();
+
+            if (value === "") return NaN;
+
+            // Nếu có dấu phẩy -> coi ',' là thập phân, '.' là ngăn cách hàng nghìn
+            if (value.includes(",")) {
+                value = value.replace(/\./g, "").replace(",", ".");
+            }
+            // Nếu không có dấu phẩy -> coi '.' là thập phân bình thường
+            return Number(value);
+        }
+
+        // Override number + range của jQuery Validate
+        if (window.jQuery && $.validator) {
+            $.validator.methods.number = function (value, element) {
+                if (this.optional(element)) return true;
+                return !Number.isNaN(parseFlexibleNumber(value));
+            };
+
+            $.validator.methods.range = function (value, element, param) {
+                if (this.optional(element)) return true;
+                const val = parseFlexibleNumber(value);
+                if (Number.isNaN(val)) return false;
+                return val >= param[0] && val <= param[1];
+            };
+        }
+    </script>
+
+    <script>
+        // (giữ lại code loadStudents của bạn ở đây)
         const courseSelect = document.getElementById("CourseId");
         const studentSelect = document.getElementById("studentSelect");
 
         async function loadStudents(courseId) {
             const selectedBefore = studentSelect.value;
-
             studentSelect.innerHTML = '<option value="">-- Select student --</option>';
             if (!courseId) return;
 
@@ -117,5 +148,10 @@
         }
 
         courseSelect.addEventListener("change", () => loadStudents(courseSelect.value));
+        // Parse lại unobtrusive sau khi override methods
+const form = document.querySelector("form");
+$.validator.unobtrusive.parse(form);
+
     </script>
 }
+
