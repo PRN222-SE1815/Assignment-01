@@ -43,9 +43,15 @@ namespace BusinessLogic.Services.Implements.AI
                 : "No score data available.";
 
             var scheduleText = data.CalendarEvents.Any()
-                ? string.Join("\n", data.CalendarEvents.Select(e =>
-                    $"- {e.Title}: {e.Start:dddd HH:mm} - {e.End:HH:mm}, Room: {e.ExtendedProps.GetValueOrDefault("Location")}"))
-                : "No schedule data available.";
+    ? string.Join("\n", data.CalendarEvents.Select(e =>
+    {
+        var dayOfWeek = e.ExtendedProps.GetValueOrDefault("DayOfWeek")?.ToString() ?? "Unknown day";
+        var location = e.ExtendedProps.GetValueOrDefault("Location")?.ToString() ?? "Unknown room";
+
+        return $"- {e.Title}: {dayOfWeek}, {e.Start:HH:mm} - {e.End:HH:mm}, Room: {location}";
+    }))
+    : "No schedule data available.";
+
 
             var prompt = $"""
 You are an academic advisor helping a student understand their academic performance and study schedule.
