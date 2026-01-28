@@ -1,25 +1,17 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DataAccess.Entities;
+﻿using DataAccess.Entities;
 
-namespace DataAccess.Repositories.Interfaces
+namespace DataAccess.Repositories.Interfaces;
+
+public interface IUserRepository
 {
-    public interface IUserRepository
-    {
-        Task<User?> GetByUsernameAsync(string username);
-        Task<User?> GetByEmailAsync(string email);
-        Task<User?> GetByIdAsync(int userId);
-
-        Task<List<User>> GetAllAsync();
-        Task<User> CreateAsync(User user);
-        Task<User> UpdateAsync(User user);
-        Task<bool> DeleteAsync(int userId);
-
-        Task<bool> UsernameExistsAsync(string username);
-        Task<bool> EmailExistsAsync(string email);
-        Task<List<User>> SearchUsersAsync(string searchTerm);
-    }
+    Task<bool> UsernameExistsAsync(string username);
+    Task<bool> StudentCodeExistsAsync(string studentCode, int? excludeUserId = null);
+    Task<bool> TeacherCodeExistsAsync(string teacherCode, int? excludeUserId = null);
+    Task<User?> GetActiveUserByUsernameAsync(string username);
+    Task<User> CreateUserWithProfileAsync(User user, Student? student, Teacher? teacher);
+    Task<User?> GetUserWithDetailsAsync(int id);
+    Task<User?> GetUserByIdAsync(int id);
+    Task<(IReadOnlyList<User> Users, int TotalCount)> GetUsersAsync(string? role, string? search, int page, int pageSize);
+    Task UpdateUserAsync(User user);
+    Task<IReadOnlyList<User>> SearchActiveUsersAsync(string? search, int excludeUserId, int limit);
 }

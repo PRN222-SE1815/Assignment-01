@@ -23,12 +23,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
-    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+    <ProjectReference Include="..\BusinessObject\BusinessObject.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Admin\" />
-    <Folder Include="Models\Student\" />
+    <Folder Include="wwwroot\css\Admin\CourseManagement\" />
   </ItemGroup>
 
 </Project>

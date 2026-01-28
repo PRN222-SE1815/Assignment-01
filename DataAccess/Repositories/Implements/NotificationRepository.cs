@@ -1,68 +1,39 @@
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess.Repositories.Implements
+namespace DataAccess.Repositories.Implements;
+
+public sealed class NotificationRepository : INotificationRepository
 {
-    public class NotificationRepository : INotificationRepository
+    private readonly SchoolManagementDbContext _context;
+
+    public NotificationRepository(SchoolManagementDbContext context)
     {
-        private readonly SchoolManagementDbContext _context;
+        _context = context;
+    }
 
-        public NotificationRepository(SchoolManagementDbContext context)
+    public async Task<long> CreateNotificationAsync(Notification notification, IReadOnlyCollection<int> recipientUserIds)
+    {
+        if (recipientUserIds.Count == 0)
         {
-            _context = context;
+            return 0;
         }
 
-        public async Task<Notification> CreateNotificationAsync(Notification notification)
-        {
-            _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync();
-            return notification;
-        }
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync();
 
-        public async Task AddRecipientAsync(int notificationId, int receiverUserId)
-        {
-            var recipient = new NotificationRecipient
+        var recipients = recipientUserIds
+            .Distinct()
+            .Select(userId => new NotificationRecipient
             {
-                NotificationId = notificationId,
-                ReceiverUserId = receiverUserId,
-                IsRead = false
-            };
+                NotificationId = notification.NotificationId,
+                UserId = userId
+            })
+            .ToList();
 
-            _context.NotificationRecipients.Add(recipient);
-            await _context.SaveChangesAsync();
-        }
+        _context.NotificationRecipients.AddRange(recipients);
+        await _context.SaveChangesAsync();
 
-        public async Task<List<Notification>> GetUserNotificationsAsync(int userId, int skip = 0, int take = 20)
-        {
-            return await _context.NotificationRecipients
-                .Where(nr => nr.ReceiverUserId == userId)
-                .OrderByDescending(nr => nr.Notification.CreatedAt)
-                .Skip(skip)
-                .Take(take)
-                .Select(nr => nr.Notification)
-                .Include(n => n.SenderUser)
-                .ToListAsync();
-        }
-
-        public async Task<bool> MarkAsReadAsync(int notificationId, int userId)
-        {
-            var recipient = await _context.NotificationRecipients
-                .FirstOrDefaultAsync(nr => nr.NotificationId == notificationId && nr.ReceiverUserId == userId);
-
-            if (recipient == null || recipient.IsRead == true)
-                return false;
-
-            recipient.IsRead = true;
-            recipient.ReadAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<int> GetUnreadCountAsync(int userId)
-        {
-            return await _context.NotificationRecipients
-                .CountAsync(nr => nr.ReceiverUserId == userId && nr.IsRead != true);
-        }
+        return notification.NotificationId;
     }
 }

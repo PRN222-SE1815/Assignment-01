@@ -1,98 +1,76 @@
-using BusinessLogic.DTOs.Settings;
-using BusinessLogic.Interfaces.AI;
 using BusinessLogic.Services.Implements;
-using BusinessLogic.Services.Implements.AI;
 using BusinessLogic.Services.Interfaces;
-using DataAccess.Entities;
+using BusinessLogic.Settings;
+using DataAccess;
 using DataAccess.Repositories.Implements;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Web.Hubs;
+using Web.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 builder.Services.AddDbContext<SchoolManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//AI
-builder.Services.Configure<GeminiConfig>(
-    builder.Configuration.GetSection("Gemini"));
-builder.Services.AddHttpClient<IOpenAiService, GeminiService>();
-
-// Register Repositories
+// DI for repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
-builder.Services.AddScoped<IConversationParticipantRepository, ConversationParticipantRepository>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-builder.Services.AddScoped<ICourseScheduleRepository, CourseScheduleRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
-builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddScoped<IGradeRepository, GradeRepository>();
-builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<IClassSectionRepository, ClassSectionRepository>();
+builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IPrerequisiteRepository, PrerequisiteRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IGradebookRepository, GradebookRepository>();
+builder.Services.AddScoped<IGradeItemRepository, GradeItemRepository>();
+builder.Services.AddScoped<IGradeEntryRepository, GradeEntryRepository>();
+builder.Services.AddScoped<IGradeAuditLogRepository, GradeAuditLogRepository>();
+builder.Services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
+builder.Services.AddScoped<IChatRoomMemberRepository, ChatRoomMemberRepository>();
+builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+builder.Services.AddScoped<IChatMessageAttachmentRepository, ChatMessageAttachmentRepository>();
+builder.Services.AddScoped<IChatModerationLogRepository, ChatModerationLogRepository>();
+builder.Services.AddScoped<IAIChatSessionRepository, AIChatSessionRepository>();
+builder.Services.AddScoped<IAIChatMessageRepository, AIChatMessageRepository>();
+builder.Services.AddScoped<IAIToolCallRepository, AIToolCallRepository>();
 
-// Register Services
+// DI for services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IConversationService, ConversationService>();
-builder.Services.AddScoped<IMessageService, MessageService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<ICourseConversationService, CourseConversationService>();
-builder.Services.AddScoped<IStudyGroupService, StudyGroupService>();
-builder.Services.AddScoped<ICourseScheduleService, CourseScheduleService>();
-builder.Services.AddScoped<IEnrollmentServiceForChat, EnrollmentServiceForChat>();
-builder.Services.AddScoped<ICourseService, CourseService>();
-builder.Services.AddScoped<IEmailService, MailKitEmailService>();
-builder.Services.AddScoped<IGradeService, GradeService>();
-builder.Services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
-builder.Services.AddScoped<IStudentAnalysisService, StudentAnalysisService>();
-builder.Services.AddScoped<IStudentService, StudentService>();
-builder.Services.AddScoped<ITeacherService, TeacherService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<INotificationPublisher, NotificationPublisher>();
+builder.Services.AddScoped<IGradebookService, GradebookService>();
+builder.Services.AddScoped<IStudentGradeService, StudentGradeService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
-builder.Services.AddDataProtection();
-builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
+// AI Chatbot services
+builder.Services.Configure<GeminiOptions>(builder.Configuration.GetSection("Gemini"));
+builder.Services.AddHttpClient<IGeminiClient, GeminiClient>();
+builder.Services.AddScoped<IAIChatService, AIChatService>();
 
 // Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Auth/Login";
-        options.LogoutPath = "/Auth/Logout";
-        options.AccessDeniedPath = "/Auth/AccessDenied";
-        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.Cookie.Name = "SchoolManagement.Auth";
         options.SlidingExpiration = true;
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Strict;
     });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("TeacherOnly", p => p.RequireRole("Teacher"));
-    options.AddPolicy("StudentOnly", p => p.RequireRole("Student"));
-});
-// Add SignalR
-builder.Services.AddSignalR();
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-// Configure Session
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Enrollment/Index");
+    app.UseExceptionHandler("/Account/AccessDenied");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -102,15 +80,14 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Map SignalR Hub
-app.MapHub<Web.Hubs.ChatHub>("/chatHub");
+app.MapHub<NotificationHub>("/hubs/notifications");
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Auth}/{action=Login}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
