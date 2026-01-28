@@ -1,15 +1,16 @@
-﻿using BusinessLogic.DTOs.Requests;
-using BusinessLogic.DTOs.Responses;
+using BusinessLogic.DTOs.Request;
+using BusinessLogic.DTOs.Response;
 
-namespace BusinessLogic.Services.Interfaces
+namespace BusinessLogic.Services.Interfaces;
+
+public interface IUserService
 {
-    public interface IUserService
-    {
-        Task<PagedResult<UserDto>> GetAllAsync(string? search, int pageNumber, int pageSize);
-        Task<UserDto?> GetByIdAsync(int userId);
-        Task<UserDto> CreateAsync(CreateUserRequest request);
-        Task<UserDto> UpdateAsync(int userId, UpdateUserRequest request);
-        Task<bool> DeleteAsync(int userId);
-        Task<List<UserSearchResponse>> SearchUsersAsync(string searchTerm);
-    }
+    Task<CreateUserResultDto> CreateUserAsync(CreateUserRequestDto dto);
+    Task<CreateUserResultDto> CreateStudentAsync(CreateStudentDto dto);
+    Task<CreateUserResultDto> CreateTeacherAsync(CreateTeacherDto dto);
+    Task<CreateUserResultDto> CreateAdminAsync(CreateUserDto dto);
+    Task<UserDetailDto?> GetUserByIdAsync(int id);
+    Task<PagedResultDto<UserListItemDto>> GetUsersAsync(UserFilterDto filter);
+    Task UpdateUserAsync(int id, UpdateUserDto dto);
+    Task ToggleUserStatusAsync(int id);
 }

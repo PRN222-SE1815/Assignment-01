@@ -1,191 +1,367 @@
-using BusinessLogic.DTOs.Responses;
+using BusinessLogic.DTOs.Request;
+using BusinessLogic.DTOs.Response;
 using BusinessLogic.Services.Interfaces;
+using BusinessObject.Enum;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 
-namespace BusinessLogic.Services.Implements
+namespace BusinessLogic.Services.Implements;
+
+public sealed class EnrollmentService : IEnrollmentService
 {
-    public class EnrollmentService : IEnrollmentService
+    private readonly IClassSectionRepository _classSectionRepository;
+    private readonly IEnrollmentRepository _enrollmentRepository;
+    private readonly ISemesterRepository _semesterRepository;
+    private readonly IPrerequisiteRepository _prerequisiteRepository;
+    private readonly IScheduleService _scheduleService;
+    private readonly IChatService _chatService;
+
+    public EnrollmentService(
+        IClassSectionRepository classSectionRepository,
+        IEnrollmentRepository enrollmentRepository,
+        ISemesterRepository semesterRepository,
+        IPrerequisiteRepository prerequisiteRepository,
+        IScheduleService scheduleService,
+        IChatService chatService)
     {
-        private readonly IEnrollmentRepository _enrollmentRepository;
-        private readonly ICourseRepository _courseRepository;
-        private readonly IConversationRepository _conversationRepository;
-        private readonly IStudentRepository _studentRepository;
+        _classSectionRepository = classSectionRepository;
+        _enrollmentRepository = enrollmentRepository;
+        _semesterRepository = semesterRepository;
+        _prerequisiteRepository = prerequisiteRepository;
+        _scheduleService = scheduleService;
+        _chatService = chatService;
+    }
 
-        public EnrollmentService(
-            IEnrollmentRepository enrollmentRepository,
-            ICourseRepository courseRepository,
-            IConversationRepository conversationRepository,
-            IStudentRepository studentRepository)
+    public async Task<IReadOnlyList<ClassSectionDto>> GetOpenSectionsAsync(int? semesterId = null)
+    {
+        var resolvedSemesterId = semesterId;
+        if (!resolvedSemesterId.HasValue)
         {
-            _enrollmentRepository = enrollmentRepository;
-            _courseRepository = courseRepository;
-            _conversationRepository = conversationRepository;
-            _studentRepository = studentRepository;
-        }
-
-        public async Task<List<CourseResponse>> GetAvailableCoursesAsync(int studentId, string? searchKeyword, string? filter)
-        {
-            var allCourses = await _courseRepository.GetAllCoursesAsync();
-            
-            // Lọc theo từ khóa tìm kiếm
-            if (!string.IsNullOrWhiteSpace(searchKeyword))
+            var activeSemester = await _semesterRepository.GetActiveSemesterAsync();
+            if (activeSemester == null)
             {
-                allCourses = allCourses
-                    .Where(c => c.CourseCode.Contains(searchKeyword, StringComparison.OrdinalIgnoreCase) ||
-                                c.CourseName.Contains(searchKeyword, StringComparison.OrdinalIgnoreCase) ||
-                                (c.Teacher?.User?.FullName?.Contains(searchKeyword, StringComparison.OrdinalIgnoreCase) ?? false))
-                    .ToList();
+                return Array.Empty<ClassSectionDto>();
             }
 
-            var result = new List<CourseResponse>();
-            
-            foreach (var course in allCourses)
+            resolvedSemesterId = activeSemester.SemesterId;
+        }
+
+        var sections = await _classSectionRepository.GetOpenSectionsAsync(resolvedSemesterId.Value);
+        return sections.Select(MapSection).ToList();
+    }
+
+    public async Task<IReadOnlyList<EnrollmentDto>> GetMyCoursesAsync(int studentId, int? semesterId = null)
+    {
+        var resolvedSemesterId = semesterId;
+        if (!resolvedSemesterId.HasValue)
+        {
+            var activeSemester = await _semesterRepository.GetActiveSemesterAsync();
+            if (activeSemester == null)
             {
-                var isEnrolled = await _enrollmentRepository.IsStudentEnrolledAsync(studentId, course.CourseId);
-                var enrolledCount = await _enrollmentRepository.GetEnrolledCountByCourseAsync(course.CourseId);
-                
-                var courseResponse = new CourseResponse
+                return Array.Empty<EnrollmentDto>();
+            }
+
+            resolvedSemesterId = activeSemester.SemesterId;
+        }
+
+        var statuses = new[]
+        {
+            EnrollmentStatus.ENROLLED.ToString(),
+            EnrollmentStatus.WAITLIST.ToString(),
+            EnrollmentStatus.DROPPED.ToString(),
+            EnrollmentStatus.WITHDRAWN.ToString(),
+            EnrollmentStatus.COMPLETED.ToString(),
+            EnrollmentStatus.CANCELED.ToString()
+        };
+
+        var enrollments = await _enrollmentRepository.GetStudentEnrollmentsAsync(studentId, resolvedSemesterId.Value, statuses);
+        return enrollments.Select(MapEnrollment).ToList();
+    }
+
+    private async Task<ValidationResult> ValidateRegistrationAsync(int studentId, ClassSection classSection, Semester semester, int? overrideCredits)
+    {
+        // Check if section is open
+        if (!classSection.IsOpen)
+        {
+            return ValidationResult.Fail("This class section is closed for registration.");
+        }
+
+        // Check registration period
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        if (semester.RegistrationEndDate.HasValue && today > semester.RegistrationEndDate.Value)
+        {
+            return ValidationResult.Fail("Registration period has ended.");
+        }
+
+        // Check if already registered for same course in same semester
+        var alreadyEnrolled = await _enrollmentRepository.ExistsEnrollmentAsync(
+            studentId, classSection.CourseId, classSection.SemesterId, 
+            new[] { EnrollmentStatus.ENROLLED.ToString(), EnrollmentStatus.WAITLIST.ToString() });
+        if (alreadyEnrolled)
+        {
+            return ValidationResult.Fail("You are already registered for this course in this semester.");
+        }
+
+        // Check prerequisites
+        var prerequisiteCourseIds = await _prerequisiteRepository.GetPrerequisiteCourseIdsAsync(classSection.CourseId);
+        if (prerequisiteCourseIds.Count > 0)
+        {
+            var passedCourseIds = await _prerequisiteRepository.GetPassedCourseIdsAsync(studentId);
+            var unmet = prerequisiteCourseIds.Except(passedCourseIds).ToList();
+            if (unmet.Count > 0)
+            {
+                return ValidationResult.Fail("Prerequisites not met for this course.");
+            }
+        }
+
+        // Check time conflicts with currently enrolled classes
+        var hasConflict = await _scheduleService.DetectConflictsAsync(
+            studentId, classSection.ClassSectionId, classSection.SemesterId);
+        if (hasConflict)
+        {
+            return ValidationResult.Fail("This class section conflicts with your existing schedule.");
+        }
+
+        // Check credit limit
+        var currentCredits = overrideCredits ?? await _enrollmentRepository.GetTotalCreditsAsync(
+            studentId, classSection.SemesterId, new[] { EnrollmentStatus.ENROLLED.ToString() });
+        var maxCredits = semester.MaxCredits;
+        if (currentCredits + classSection.Course.Credits > maxCredits)
+        {
+            return ValidationResult.Fail($"Adding this course would exceed the maximum credit limit ({maxCredits} credits).");
+        }
+
+        // Determine status based on capacity
+        if (classSection.CurrentEnrollment >= classSection.MaxCapacity)
+        {
+            return ValidationResult.Success(EnrollmentStatus.WAITLIST.ToString());
+        }
+
+        return ValidationResult.Success(EnrollmentStatus.ENROLLED.ToString());
+    }
+
+    private sealed class ValidationResult
+    {
+        public bool IsValid { get; private set; }
+        public string? ErrorMessage { get; private set; }
+        public string? DesiredStatus { get; private set; }
+
+        private ValidationResult() { }
+
+        public static ValidationResult Fail(string message)
+            => new() { IsValid = false, ErrorMessage = message };
+
+        public static ValidationResult Success(string status)
+            => new() { IsValid = true, DesiredStatus = status };
+    }
+
+    public async Task<OperationResult> RegisterAsync(RegisterCourseRequest request)
+    {
+        var classSection = await _classSectionRepository.GetSectionForRegistrationAsync(request.ClassSectionId);
+        if (classSection == null)
+        {
+            return OperationResult.Failed("Class section not found.");
+        }
+
+        var semester = classSection.Semester;
+        if (semester == null)
+        {
+            return OperationResult.Failed("Semester data is missing for this class section.");
+        }
+        var validation = await ValidateRegistrationAsync(request.StudentId, classSection, semester, null);
+        if (!validation.IsValid)
+        {
+            return OperationResult.Failed(validation.ErrorMessage ?? "Unable to register for this class section.");
+        }
+
+        var enrollment = new Enrollment
+        {
+            StudentId = request.StudentId,
+            ClassSectionId = classSection.ClassSectionId,
+            SemesterId = classSection.SemesterId,
+            CourseId = classSection.CourseId,
+            CreditsSnapshot = classSection.Course.Credits,
+            Status = validation.DesiredStatus,
+            EnrolledAt = DateTime.UtcNow
+        };
+
+        var enrolled = await _enrollmentRepository.RegisterEnrollmentAsync(enrollment, validation.DesiredStatus == EnrollmentStatus.ENROLLED.ToString());
+        if (!enrolled && validation.DesiredStatus == EnrollmentStatus.ENROLLED.ToString())
+        {
+            enrollment.Status = EnrollmentStatus.WAITLIST.ToString();
+            var waitlisted = await _enrollmentRepository.RegisterEnrollmentAsync(enrollment, false);
+            if (!waitlisted)
+            {
+                return OperationResult.Failed("Unable to register at this time. Please try again.");
+            }
+
+            return OperationResult.Ok("The class section is full. You have been added to the waitlist.");
+        }
+
+        
+        if (enrollment.Status == EnrollmentStatus.ENROLLED.ToString())
+        {
+            await _chatService.EnsureClassChatMembershipAsync(classSection.ClassSectionId, request.StudentId);
+        }
+
+        return OperationResult.Ok(validation.DesiredStatus == EnrollmentStatus.WAITLIST.ToString()
+            ? "The class section is full. You have been added to the waitlist."
+            : "Enrollment successful.");
+    }
+
+    public async Task<OperationResult<PlanSimulationResultDto>> SimulatePlanAsync(int studentId, int semesterId, IReadOnlyList<int> plannedSectionIds)
+    {
+        if (plannedSectionIds.Count == 0)
+        {
+            return OperationResult<PlanSimulationResultDto>.Failed("No planned sections provided.");
+        }
+
+        var semester = await _semesterRepository.GetSemesterAsync(semesterId);
+        if (semester == null)
+        {
+            return OperationResult<PlanSimulationResultDto>.Failed("Semester not found.");
+        }
+
+        var currentCredits = await _enrollmentRepository.GetTotalCreditsAsync(studentId, semesterId, new[]
+        {
+            EnrollmentStatus.ENROLLED.ToString()
+        });
+
+        var results = new List<PlanSimulationSectionDto>();
+        var runningCredits = currentCredits;
+
+        foreach (var sectionId in plannedSectionIds.Distinct())
+        {
+            var section = await _classSectionRepository.GetSectionForRegistrationAsync(sectionId);
+            if (section == null)
+            {
+                results.Add(new PlanSimulationSectionDto
                 {
-                    CourseId = course.CourseId,
-                    CourseCode = course.CourseCode,
-                    CourseName = course.CourseName,
-                    Credits = course.Credits,
-                    Semester = course.Semester,
-                    TeacherName = course.Teacher?.User?.FullName,
-                    Department = course.Teacher?.Department,
-                    EnrolledCount = enrolledCount,
-                    IsEnrolled = isEnrolled
-                };
-
-                // Áp dụng filter theo trạng thái đăng ký
-                switch (filter?.ToLower())
-                {
-                    case "enrolled":
-                        if (isEnrolled) result.Add(courseResponse);
-                        break;
-                    case "notenrolled":
-                        if (!isEnrolled) result.Add(courseResponse);
-                        break;
-                    case "all":
-                    default:
-                        result.Add(courseResponse);
-                        break;
-                }
+                    ClassSectionId = sectionId,
+                    IsValid = false,
+                    ErrorMessage = "Class section not found."
+                });
+                continue;
             }
 
-            return result.OrderBy(c => c.CourseCode).ToList();
-        }
-
-        public async Task<List<MyEnrolledCourseResponse>> GetMyEnrolledCoursesAsync(int studentId)
-        {
-            var enrollments = await _enrollmentRepository.GetEnrollmentsByStudentIdAsync(studentId);
-            
-            return enrollments.Select(e => new MyEnrolledCourseResponse
+            var validation = await ValidateRegistrationAsync(studentId, section, semester, runningCredits);
+            var result = new PlanSimulationSectionDto
             {
-                EnrollmentId = e.EnrollmentId,
-                CourseId = e.CourseId,
-                CourseCode = e.Course?.CourseCode ?? "Unknown",
-                CourseName = e.Course?.CourseName ?? "Unknown",
-                Credits = e.Course?.Credits,
-                Semester = e.Course?.Semester,
-                TeacherName = e.Course?.Teacher?.User?.FullName,
-                EnrollDate = e.EnrollDate,
-                Status = e.Status ?? "Unknown"
-            }).ToList();
-        }
-
-        public async Task<bool> EnrollCourseAsync(int studentId, int courseId)
-        {
-            // Kiểm tra đã đăng ký Active chưa
-            var isEnrolled = await _enrollmentRepository.IsStudentEnrolledAsync(studentId, courseId);
-            if (isEnrolled)
-            {
-                throw new InvalidOperationException("Bạn đã đăng ký khóa học này rồi!");
-            }
-
-            // Kiểm tra xem có enrollment cũ bị Dropped không
-            var existingEnrollment = await _enrollmentRepository.GetEnrollmentByStudentAndCourseAsync(studentId, courseId);
-            
-            if (existingEnrollment != null && existingEnrollment.Status == "Dropped")
-            {
-                // Nếu có enrollment đã bị Dropped, cập nhật lại thành Active
-                await _enrollmentRepository.UpdateEnrollmentStatusAsync(existingEnrollment.EnrollmentId, "Active");
-                
-                // Thêm lại vào group chat
-                await AddStudentToCourseConversationAsync(courseId, studentId);
-                
-                return true;
-            }
-
-            // Kiểm tra khóa học có tồn tại không
-            var course = await _courseRepository.GetCourseByIdAsync(courseId);
-            if (course == null)
-            {
-                throw new KeyNotFoundException("Khóa học không tồn tại!");
-            }
-
-            // Tạo enrollment mới
-            var enrollment = new Enrollment
-            {
-                StudentId = studentId,
-                CourseId = courseId,
-                EnrollDate = DateOnly.FromDateTime(DateTime.Now),
-                Status = "Active"
+                ClassSectionId = section.ClassSectionId,
+                CourseId = section.CourseId,
+                CourseCode = section.Course.CourseCode,
+                CourseName = section.Course.CourseName,
+                SectionCode = section.SectionCode,
+                Status = validation.DesiredStatus ?? string.Empty,
+                IsValid = validation.IsValid,
+                ErrorMessage = validation.ErrorMessage
             };
 
-            await _enrollmentRepository.CreateEnrollmentAsync(enrollment);
+            results.Add(result);
 
-            // Thêm sinh viên vào group chat của khóa học (nếu có)
-            await AddStudentToCourseConversationAsync(courseId, studentId);
-
-            return true;
-        }
-
-        public async Task<bool> UnenrollCourseAsync(int studentId, int courseId)
-        {
-            var enrollment = await _enrollmentRepository.GetEnrollmentByStudentAndCourseAsync(studentId, courseId);
-            if (enrollment == null || enrollment.Status != "Active")
+            if (validation.IsValid && validation.DesiredStatus == EnrollmentStatus.ENROLLED.ToString())
             {
-                throw new KeyNotFoundException("Bạn chưa đăng ký khóa học này hoặc đã hủy trước đó!");
+                runningCredits += section.Course.Credits;
             }
+        }
 
-            // Cập nhật status thành "Dropped" thay vì xóa
-            var result = await _enrollmentRepository.UpdateEnrollmentStatusAsync(enrollment.EnrollmentId, "Dropped");
-            
-            if (result)
+        return OperationResult<PlanSimulationResultDto>.Ok(new PlanSimulationResultDto
+        {
+            SemesterId = semesterId,
+            TotalCredits = runningCredits,
+            Sections = results
+        });
+    }
+
+    public async Task<OperationResult> DropAsync(DropRequest request)
+    {
+        var enrollment = await _enrollmentRepository.GetEnrollmentByIdAsync(request.EnrollmentId);
+        if (enrollment == null || enrollment.StudentId != request.StudentId)
+        {
+            return OperationResult.Failed("Enrollment not found.");
+        }
+
+        if (enrollment.Semester.AddDropDeadline.HasValue)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            if (today > enrollment.Semester.AddDropDeadline.Value)
             {
-                // Xóa khỏi group chat của khóa học
-                var student = await _studentRepository.GetStudentByIdAsync(studentId);
-                if (student != null)
-                {
-                    await RemoveStudentFromCourseConversationAsync(courseId, student.UserId);
-                }
+                return OperationResult.Failed("The add/drop deadline has passed.");
             }
-
-            return result;
         }
 
-        private async Task AddStudentToCourseConversationAsync(int courseId, int studentId)
+        if (enrollment.Status != EnrollmentStatus.ENROLLED.ToString() && enrollment.Status != EnrollmentStatus.WAITLIST.ToString())
         {
-                var conversation = await _conversationRepository.GetConversationByCourseIdAsync(courseId);
-                if (conversation != null)
-                {
-                    var student = await _studentRepository.GetStudentByIdAsync(studentId);
-                    if (student != null)
-                    {
-                        await _conversationRepository.AddParticipantAsync(conversation.ConversationId, student.UserId);
-                    }
-                }
+            return OperationResult.Failed("Only active enrollments can be dropped.");
         }
 
-        private async Task RemoveStudentFromCourseConversationAsync(int courseId, int userId)
+        var shouldDecrement = enrollment.Status == EnrollmentStatus.ENROLLED.ToString();
+        await _enrollmentRepository.UpdateEnrollmentStatusAsync(enrollment.EnrollmentId, EnrollmentStatus.DROPPED.ToString(), shouldDecrement);
+        return OperationResult.Ok("Course dropped successfully.");
+    }
+
+    public async Task<OperationResult> WithdrawAsync(WithdrawRequest request)
+    {
+        var enrollment = await _enrollmentRepository.GetEnrollmentByIdAsync(request.EnrollmentId);
+        if (enrollment == null || enrollment.StudentId != request.StudentId)
         {
-                var conversation = await _conversationRepository.GetConversationByCourseIdAsync(courseId);
-                if (conversation != null)
-                {
-                    await _conversationRepository.RemoveParticipantAsync(conversation.ConversationId, userId);
-                }
+            return OperationResult.Failed("Enrollment not found.");
         }
+
+        if (enrollment.Semester.WithdrawalDeadline.HasValue)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            if (today > enrollment.Semester.WithdrawalDeadline.Value)
+            {
+                return OperationResult.Failed("The withdrawal deadline has passed.");
+            }
+        }
+
+        if (enrollment.Status != EnrollmentStatus.ENROLLED.ToString())
+        {
+            return OperationResult.Failed("Only enrolled courses can be withdrawn.");
+        }
+
+        await _enrollmentRepository.UpdateEnrollmentStatusAsync(enrollment.EnrollmentId, EnrollmentStatus.WITHDRAWN.ToString(), false);
+        return OperationResult.Ok("Course withdrawn successfully.");
+    }
+
+    private static ClassSectionDto MapSection(ClassSection section)
+    {
+        return new ClassSectionDto
+        {
+            ClassSectionId = section.ClassSectionId,
+            CourseId = section.CourseId,
+            CourseCode = section.Course.CourseCode,
+            CourseName = section.Course.CourseName,
+            SemesterId = section.SemesterId,
+            SemesterName = section.Semester.SemesterName,
+            SectionCode = section.SectionCode,
+            TeacherName = section.Teacher.TeacherNavigation?.FullName,
+            Credits = section.Course.Credits,
+            IsOpen = section.IsOpen,
+            MaxCapacity = section.MaxCapacity,
+            CurrentEnrollment = section.CurrentEnrollment,
+            Room = section.Room,
+            OnlineUrl = section.OnlineUrl
+        };
+    }
+
+    private static EnrollmentDto MapEnrollment(Enrollment enrollment)
+    {
+        return new EnrollmentDto
+        {
+            EnrollmentId = enrollment.EnrollmentId,
+            ClassSectionId = enrollment.ClassSectionId,
+            CourseId = enrollment.CourseId,
+            CourseCode = enrollment.Course.CourseCode,
+            CourseName = enrollment.Course.CourseName,
+            SemesterId = enrollment.SemesterId,
+            SemesterName = enrollment.Semester.SemesterName,
+            SectionCode = enrollment.ClassSection.SectionCode,
+            TeacherName = enrollment.ClassSection.Teacher.TeacherNavigation?.FullName,
+            CreditsSnapshot = enrollment.CreditsSnapshot,
+            Status = enrollment.Status
+        };
     }
 }

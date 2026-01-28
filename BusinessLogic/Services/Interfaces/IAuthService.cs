@@ -1,10 +1,8 @@
-﻿using BusinessLogic.DTOs.Requests;
-using BusinessLogic.DTOs.Responses;
+using BusinessLogic.DTOs.Response;
 
-namespace BusinessLogic.Services.Interfaces
+namespace BusinessLogic.Services.Interfaces;
+
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        Task<LoginResponse> LoginAsync(LoginRequest request);
-    }
+    Task<AuthUserDto?> LoginAsync(string username, string password);
 }
