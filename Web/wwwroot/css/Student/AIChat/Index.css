@@ -1,0 +1,196 @@
+/* AI Chat Index Page Styles */
+/* Theme: Student Blue (#2563EB) */
+
+.ai-chat-index {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    color: #1E293B;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.page-header h1 i {
+    color: #2563EB;
+    margin-right: 0.5rem;
+}
+
+.page-subtitle {
+    color: #64748B;
+    font-size: 1rem;
+}
+
+.alert-error {
+    background-color: #FEF2F2;
+    color: #DC2626;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.purpose-form {
+    margin-bottom: 2rem;
+}
+
+.purpose-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.purpose-card {
+    cursor: pointer;
+}
+
+.purpose-card input[type="radio"] {
+    display: none;
+}
+
+.purpose-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem 1rem;
+    background: #FFFFFF;
+    border: 2px solid #E2E8F0;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.purpose-card-content i {
+    font-size: 2rem;
+    color: #64748B;
+    transition: color 0.2s ease;
+}
+
+.purpose-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #475569;
+    text-align: center;
+}
+
+.purpose-card input[type="radio"]:checked + .purpose-card-content {
+    border-color: #2563EB;
+    background: #EFF6FF;
+}
+
+.purpose-card input[type="radio"]:checked + .purpose-card-content i {
+    color: #2563EB;
+}
+
+.purpose-card:hover .purpose-card-content {
+    border-color: #93C5FD;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+}
+
+.form-actions {
+    text-align: center;
+}
+
+.btn-start {
+    background: #2563EB;
+    color: white;
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s ease;
+}
+
+.btn-start:hover {
+    background: #1D4ED8;
+}
+
+.btn-start:disabled {
+    background: #94A3B8;
+    cursor: not-allowed;
+}
+
+.ai-info {
+    margin-top: 2rem;
+}
+
+.info-card {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.info-card h3 {
+    color: #1E293B;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-card h3 i {
+    color: #2563EB;
+}
+
+.info-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-card li {
+    color: #64748B;
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.info-card li::before {
+    content: "•";
+    color: #2563EB;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+@media (max-width: 640px) {
+    .ai-chat-index {
+        padding: 1rem;
+    }
+
+    .purpose-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .purpose-card-content {
+        padding: 1rem 0.75rem;
+    }
+
+    .purpose-card-content i {
+        font-size: 1.5rem;
+    }
+
+    .purpose-title {
+        font-size: 0.8rem;
+    }
+}

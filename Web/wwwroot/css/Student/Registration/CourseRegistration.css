@@ -1,0 +1,313 @@
+/* Course Registration - Student Theme (#2563EB Blue) */
+
+.registration-page {
+    padding: 2rem;
+    min-height: calc(100vh - 200px);
+    background: linear-gradient(135deg, #EFF6FF 0%, #F3F4F6 100%);
+}
+
+/* Header Section */
+.registration-header {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(37, 99, 235, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.registration-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+}
+
+.registration-header p {
+    font-size: 1rem;
+    color: #DBEAFE;
+    margin: 0;
+}
+
+/* Alerts */
+.alert-success {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+    color: #065F46;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #10B981;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.1);
+    font-weight: 500;
+    animation: slideIn 0.3s ease-out;
+}
+
+.alert-error {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+    color: #991B1B;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #EF4444;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.1);
+    font-weight: 500;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Table Section */
+.registration-table {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.registration-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.registration-table thead {
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+}
+
+.registration-table th {
+    padding: 16px 20px;
+    text-align: left;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.registration-table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.registration-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.registration-table tbody tr:hover {
+    background: #EFF6FF;
+    transform: scale(1.005);
+}
+
+.registration-table td {
+    padding: 16px 20px;
+    color: #374151;
+    vertical-align: middle;
+}
+
+.registration-table td strong {
+    color: #2563EB;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.registration-table td span {
+    color: #6B7280;
+    font-size: 0.875rem;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-enrolled {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.status-waitlist {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.status-dropped {
+    background: #E5E7EB;
+    color: #6B7280;
+}
+
+.status-withdrawn {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #64748B 0%, #475569 100%);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(71, 85, 105, 0.4);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.inline-form {
+    display: inline;
+}
+
+/* Capacity Badge */
+.capacity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #EFF6FF;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.capacity-badge.full {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.capacity-badge.available {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+/* Credits Badge */
+.credits-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    color: #ffffff;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6B7280;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .registration-table {
+        overflow-x: auto;
+    }
+    
+    .registration-table table {
+        min-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .registration-page {
+        padding: 1rem;
+    }
+    
+    .registration-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    
+    .actions {
+        flex-direction: column;
+    }
+}

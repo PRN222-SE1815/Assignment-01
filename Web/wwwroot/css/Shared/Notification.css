@@ -1,0 +1,122 @@
+/* Shared Notifications */
+.notification-toast-container {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 3000;
+    max-width: 380px;
+    pointer-events: none;
+}
+
+.notification-toast {
+    background: #ffffff;
+    border-left: 4px solid #2563EB;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    border-radius: 12px;
+    padding: 0;
+    color: #1E293B;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    animation: toast-slide-in 0.3s ease-out;
+    pointer-events: auto;
+    overflow: hidden;
+}
+
+.notification-toast.teacher {
+    border-left-color: #0F766E;
+}
+
+.notification-toast.admin {
+    border-left-color: #1E293B;
+}
+
+.notification-toast .toast-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px 8px;
+    background: #F9FAFB;
+}
+
+.notification-toast .toast-icon {
+    font-size: 1.2rem;
+}
+
+.notification-toast .toast-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.notification-toast .toast-close {
+    background: none;
+    border: none;
+    color: #9CA3AF;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.notification-toast .toast-close:hover {
+    color: #EF4444;
+}
+
+.notification-toast .toast-meta {
+    padding: 0 16px;
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+.notification-toast .toast-reason {
+    padding: 4px 16px 0;
+    font-size: 0.8rem;
+    color: #374151;
+    font-style: italic;
+}
+
+.notification-toast .toast-link {
+    display: block;
+    padding: 10px 16px;
+    color: #2563EB;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+
+.notification-toast .toast-link:hover {
+    background: #EFF6FF;
+}
+
+.notification-toast.teacher .toast-link {
+    color: #0F766E;
+}
+
+.notification-toast.teacher .toast-link:hover {
+    background: #F0FDFA;
+}
+
+.notification-toast.admin .toast-link {
+    color: #3730A3;
+}
+
+.notification-toast.admin .toast-link:hover {
+    background: #EEF2FF;
+}
+
+@keyframes toast-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
