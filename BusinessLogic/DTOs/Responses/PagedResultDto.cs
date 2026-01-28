@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BusinessLogic.DTOs.Response;
 
-public sealed class PagedResult<T>
+public sealed class PagedResultDto<T>
 {
     public int Page { get; set; }
     public int PageSize { get; set; }
