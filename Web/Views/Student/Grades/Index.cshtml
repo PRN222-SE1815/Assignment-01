@@ -1,0 +1,65 @@
+@model Web.Models.Student.StudentGradesIndexViewModel
+@{
+    ViewBag.Title = "My Grades";
+}
+
+<section class="grades-index">
+    <div class="page-header">
+        <h1><i class="fas fa-graduation-cap"></i> My Grades</h1>
+        <p class="page-subtitle">View your grades for all enrolled courses</p>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+        </div>
+    }
+
+    @if (Model.Sections.Count == 0)
+    {
+        <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <h3>No Grades Available</h3>
+            <p>Your grades will appear here once they are published by your teachers.</p>
+        </div>
+    }
+    else
+    {
+        <div class="grades-list">
+            @foreach (var classSection in Model.Sections)
+            {
+                var statusClass = classSection.Status.ToLower();
+                <div class="grade-card">
+                    <div class="grade-card-header">
+                        <div class="course-info">
+                            <span class="course-code">@classSection.CourseCode</span>
+                            <span class="section-code">@classSection.SectionCode</span>
+                        </div>
+                        <span class="status-badge status-@statusClass">@classSection.Status</span>
+                    </div>
+                    <div class="grade-card-body">
+                        <h3 class="course-name">@classSection.CourseName</h3>
+                        <div class="grade-meta">
+                            <span><i class="fas fa-calendar"></i> @classSection.SemesterName</span>
+                            @if (classSection.PublishedAt.HasValue)
+                            {
+                                <span><i class="fas fa-clock"></i> Published: @classSection.PublishedAt.Value.ToString("MMM dd, yyyy")</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="grade-card-footer">
+                        <a asp-action="Details" asp-route-id="@classSection.ClassSectionId" class="btn btn-primary">
+                            <i class="fas fa-eye"></i> View Grades
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Student/Grades/Grades.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}

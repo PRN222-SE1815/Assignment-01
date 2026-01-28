@@ -1,0 +1,72 @@
+@model Web.Models.Admin.ScheduleOverrideViewModel
+@using BusinessObject.Enum
+@{
+    ViewBag.Title = "Schedule Override";
+}
+
+<section class="admin-schedule">
+    <a asp-action="Index" class="back-link">
+        Back to Schedule
+    </a>
+    
+    <h1><i class="fas fa-edit"></i> Schedule Override</h1>
+    
+    <p style="color: #6B7280; margin-bottom: 1.5rem;">
+        Create an exception for a recurring event. You can reschedule or cancel a specific occurrence.
+    </p>
+
+    <form asp-action="Override" method="post" class="form-grid">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ScheduleEventId" />
+        <input type="hidden" asp-for="RecurrenceId" />
+
+        <label>
+            <i class="fas fa-calendar"></i> Original Date
+            <input asp-for="OriginalDate" type="date" />
+        </label>
+        
+        <label>
+            <i class="fas fa-exchange-alt"></i> Override Type
+            <select asp-for="OverrideType">
+                <option value="@ScheduleEventOverrideType.RESCHEDULE">?? Reschedule</option>
+                <option value="@ScheduleEventOverrideType.CANCEL">? Cancel</option>
+            </select>
+        </label>
+        
+        <label>
+            <i class="fas fa-play"></i> New Start Time (UTC)
+            <input asp-for="NewStartAtUtc" type="datetime-local" />
+        </label>
+        
+        <label>
+            <i class="fas fa-stop"></i> New End Time (UTC)
+            <input asp-for="NewEndAtUtc" type="datetime-local" />
+        </label>
+        
+        <label>
+            <i class="fas fa-map-marker-alt"></i> New Location
+            <input asp-for="NewLocation" placeholder="Leave empty to keep original" />
+        </label>
+        
+        <label>
+            <i class="fas fa-chalkboard-teacher"></i> New Teacher ID
+            <input asp-for="NewTeacherId" type="number" placeholder="Leave empty to keep original" />
+        </label>
+        
+        <label style="grid-column: 1 / -1;">
+            <i class="fas fa-comment"></i> Reason for Override
+            <input asp-for="Reason" placeholder="e.g., Teacher unavailable, Room maintenance..." />
+        </label>
+
+        <div style="grid-column: 1 / -1; margin-top: 1rem;">
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-save"></i> Save Override
+            </button>
+        </div>
+    </form>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Admin/ScheduleManagement/Schedule.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}

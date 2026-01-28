@@ -1,0 +1,128 @@
+@model Web.ViewModels.ChatRoomVm
+@using System.Security.Claims
+@{
+    ViewBag.Title = Model.Room.RoomName;
+    ViewBag.HideFooter = true;
+    var userRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "";
+    Layout = userRole == "TEACHER" ? "~/Views/Teacher/_LayoutTeacher.cshtml" : "~/Views/Student/_LayoutStudent.cshtml";
+    
+    // Vietnam timezone (UTC+7)
+    var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+    Func<DateTime, string> toVietnamTime = (utcTime) => 
+        TimeZoneInfo.ConvertTimeFromUtc(utcTime, vietnamTimeZone).ToString("HH:mm");
+}
+
+<section class="chat-room-page">
+    <div class="chat-room-container">
+        <div class="chat-room-header">
+            <a asp-action="Index" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="room-title-section">
+                <h1 class="room-title">@Model.Room.RoomName</h1>
+                <span class="room-type-badge @Model.Room.RoomType.ToLower()">@Model.Room.RoomType</span>
+            </div>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+            <div class="messages-list" id="messagesList">
+                @foreach (var message in Model.Messages)
+                {
+                    var isOwn = message.SenderId == Model.CurrentUserId;
+                    var isDeleted = message.DeletedAt.HasValue;
+                    var isSystem = message.MessageType == "SYSTEM";
+
+                    <div class="message @(isOwn ? "own" : "") @(isSystem ? "system" : "") @(isDeleted ? "deleted" : "")"
+                         data-message-id="@message.MessageId"
+                         data-sender-id="@message.SenderId">
+                        @if (isSystem)
+                        {
+                            <div class="message-system-content">
+                                <i class="fas fa-info-circle"></i>
+                                @message.Content
+                            </div>
+                        }
+                        else if (isDeleted)
+                        {
+                            <div class="message-deleted-content">
+                                <i class="fas fa-ban"></i>
+                                <em>This message has been deleted</em>
+                            </div>
+                        }
+                        else
+                        {
+                            @if (isOwn)
+                            {
+                                <div class="message-actions">
+                                    <button type="button" class="action-btn edit-btn" onclick="startEdit(@message.MessageId)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="action-btn delete-btn" onclick="deleteMessage(@message.MessageId)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            }
+                            <div class="message-bubble">
+                                <div class="message-content">@message.Content</div>
+                                <div class="message-meta">
+                                    <span class="message-time">@toVietnamTime(message.CreatedAt)</span>
+                                    @if (message.EditedAt.HasValue)
+                                    {
+                                        <span class="message-edited">(edited)</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="message-input-container">
+            <form id="messageForm" class="message-form">
+                <input type="hidden" id="roomId" value="@Model.Room.RoomId" />
+                <input type="hidden" id="currentUserId" value="@Model.CurrentUserId" />
+                <div class="input-wrapper">
+                    <textarea id="messageInput"
+                              class="message-input"
+                              placeholder="Type a message..."
+                              rows="1"
+                              maxlength="2000"></textarea>
+                    <button type="submit" class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Message</h3>
+            <button type="button" class="modal-close" onclick="closeEditModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <textarea id="editMessageInput" class="edit-input" rows="3" maxlength="2000"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="confirmEdit()">Save</button>
+        </div>
+        <input type="hidden" id="editMessageId" value="" />
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Chat/Room.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.12/signalr.min.js"></script>
+    <script src="~/js/Chat/room.js" asp-append-version="true"></script>
+}

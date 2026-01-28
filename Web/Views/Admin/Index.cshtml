@@ -1,41 +1,93 @@
-﻿@{
-    ViewData["Title"] = "Admin Dashboard";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+﻿@using System.Security.Claims
+@{
+    ViewBag.Title = "Admin Dashboard";
+    var userName = User.Identity?.Name ?? "Administrator";
 }
 
-<!-- Welcome Section -->
-<div class="mb-4">
-    <h2>Welcome, @User.FindFirst("FullName")?.Value!</h2>
-    <p class="text-muted">School Management System - Administrator Dashboard</p>
-</div>
-
-<!-- Quick Actions -->
-<div class="row mb-4">
-    <div class="col-12">
-        <h4 class="mb-3">Quick Actions</h4>
-    </div>
-
-    <div class="col-md-6 col-lg-3 mb-3">
-        <a asp-action="UserManagement" asp-controller="Admin" class="text-decoration-none">
-            <div class="card dashboard-card text-center">
-                <div class="card-body py-4">
-                    <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
-                    <h5 class="mt-3 mb-2">Manage Users</h5>
-                    <p class="text-muted small mb-0">View, create, edit users</p>
-                </div>
+<section class="admin-dashboard">
+    <div class="dashboard-container">
+        <!-- Welcome Header -->
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <h1 class="welcome-title">Welcome back, <span class="user-highlight">@userName</span>!</h1>
+                <p class="welcome-subtitle">Manage users, courses, and oversee the entire system.</p>
             </div>
-        </a>
-    </div>
-
-    <div class="col-md-6 col-lg-3 mb-3">
-        <a asp-action="Create" asp-controller="AdminCourse" class="text-decoration-none">
-            <div class="card dashboard-card text-center">
-                <div class="card-body py-4">
-                    <i class="bi bi-journal-plus text-success" style="font-size: 3rem;"></i>
-                    <h5 class="mt-3 mb-2">Add Course</h5>
-                    <p class="text-muted small mb-0">Create new course</p>
-                </div>
+            <div class="welcome-icon">
+                <i class="fas fa-shield-alt"></i>
             </div>
-        </a>
+        </div>
+
+        <!-- Navigation Cards -->
+        <div class="nav-cards-section">
+            <h2 class="section-title">System Management</h2>
+            <div class="nav-cards-grid">
+                <!-- User Management -->
+                <a asp-controller="AdminUser" asp-action="Index" class="nav-card">
+                    <div class="nav-card-icon">
+                        <i class="fas fa-user-cog"></i>
+                    </div>
+                    <div class="nav-card-content">
+                        <h3 class="nav-card-title">User Management</h3>
+                        <p class="nav-card-description">Create, edit, and manage student, teacher, and admin accounts.</p>
+                    </div>
+                    <div class="nav-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <!-- Course Management -->
+                <a href="#" class="nav-card">
+                    <div class="nav-card-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="nav-card-content">
+                        <h3 class="nav-card-title">Course Management</h3>
+                        <p class="nav-card-description">Manage courses, programs, semesters, and class sections.</p>
+                    </div>
+                    <div class="nav-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Additional Admin Tools -->
+        <div class="nav-cards-section">
+            <h2 class="section-title">Additional Tools</h2>
+            <div class="nav-cards-grid">
+                <!-- Reports -->
+                <a href="#" class="nav-card admin-tool-card">
+                    <div class="nav-card-icon secondary">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="nav-card-content">
+                        <h3 class="nav-card-title">Reports & Analytics</h3>
+                        <p class="nav-card-description">View enrollment statistics, grade reports, and system analytics.</p>
+                    </div>
+                    <div class="nav-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <!-- System Settings -->
+                <a href="#" class="nav-card admin-tool-card">
+                    <div class="nav-card-icon secondary">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="nav-card-content">
+                        <h3 class="nav-card-title">System Settings</h3>
+                        <p class="nav-card-description">Configure system parameters, semester settings, and policies.</p>
+                    </div>
+                    <div class="nav-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
     </div>
-</div>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Admin/Index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}

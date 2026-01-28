@@ -1,0 +1,78 @@
+@model Web.Models.Admin.ScheduleEventFormViewModel
+@{
+    ViewBag.Title = "Create Schedule Event";
+}
+
+<section class="admin-schedule">
+    <a asp-action="Index" asp-route-classSectionId="@Model.ClassSectionId" class="back-link">
+        Back to Schedule
+    </a>
+    
+    <h1><i class="fas fa-plus-circle"></i> Create Schedule Event</h1>
+
+    <form asp-action="Create" method="post" class="form-grid">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ClassSectionId" />
+
+        <label>
+            <i class="fas fa-heading"></i> Title
+            <input asp-for="Title" placeholder="e.g., Lecture - Introduction to Programming" />
+        </label>
+        
+        <label>
+            <i class="fas fa-play"></i> Start Time (UTC)
+            <input asp-for="StartAtUtc" type="datetime-local" />
+        </label>
+        
+        <label>
+            <i class="fas fa-stop"></i> End Time (UTC)
+            <input asp-for="EndAtUtc" type="datetime-local" />
+        </label>
+        
+        <label>
+            <i class="fas fa-globe"></i> Timezone
+            <input asp-for="Timezone" placeholder="e.g., Asia/Ho_Chi_Minh" />
+        </label>
+        
+        <label>
+            <i class="fas fa-map-marker-alt"></i> Location
+            <input asp-for="Location" placeholder="e.g., Room A101" />
+        </label>
+        
+        <label>
+            <i class="fas fa-link"></i> Online URL
+            <input asp-for="OnlineUrl" placeholder="e.g., https://meet.google.com/..." />
+        </label>
+        
+        <label>
+            <i class="fas fa-chalkboard-teacher"></i> Teacher ID
+            <input asp-for="TeacherId" type="number" placeholder="Enter teacher ID" />
+        </label>
+        
+        <label>
+            <i class="fas fa-redo"></i> Recurrence Rule (iCalendar RRULE)
+            <input asp-for="RecurrenceRule" placeholder="e.g., FREQ=WEEKLY;BYDAY=MO,WE;INTERVAL=1" />
+        </label>
+        
+        <label>
+            <i class="fas fa-calendar-day"></i> Recurrence Start Date
+            <input asp-for="RecurrenceStartDate" type="date" />
+        </label>
+        
+        <label>
+            <i class="fas fa-calendar-check"></i> Recurrence End Date
+            <input asp-for="RecurrenceEndDate" type="date" />
+        </label>
+
+        <div style="grid-column: 1 / -1; margin-top: 1rem;">
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-save"></i> Create Event
+            </button>
+        </div>
+    </form>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Admin/ScheduleManagement/Schedule.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}

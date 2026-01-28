@@ -1,0 +1,126 @@
+@model Web.Models.Student.StudentGradeDetailsViewModel
+@{
+    ViewBag.Title = $"Grades - {Model.Gradebook.CourseCode}";
+    var passClass = Model.Student.FinalScore.HasValue && Model.Student.FinalScore >= 5 ? "pass" : Model.Student.FinalScore.HasValue ? "fail" : "";
+}
+
+<section class="grade-details">
+    <div class="page-header">
+        <a asp-action="Index" class="back-link"><i class="fas fa-arrow-left"></i> Back to My Grades</a>
+        <h1>@Model.Gradebook.CourseCode - @Model.Gradebook.CourseName</h1>
+        <p class="page-subtitle">Section: @Model.Gradebook.SectionCode | @Model.Gradebook.SemesterName</p>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+        </div>
+    }
+
+    <!-- Summary Card -->
+    <div class="summary-card">
+        <div class="summary-header">
+            <h2>Grade Summary</h2>
+            <span class="status-badge status-@Model.Gradebook.Status.ToLower()">@Model.Gradebook.Status</span>
+        </div>
+        <div class="summary-body">
+            <div class="final-score-display @passClass">
+                <span class="score-label">Final Score</span>
+                <span class="score-value">@(Model.Student.FinalScore.HasValue ? Model.Student.FinalScore.Value.ToString("0.00") : "N/A")</span>
+                @if (Model.Student.FinalScore.HasValue)
+                {
+                    <span class="score-status">@(Model.Student.FinalScore >= 5 ? "PASS" : "FAIL")</span>
+                }
+            </div>
+            <div class="summary-info">
+                <p><strong>Student:</strong> @Model.Student.StudentName (@Model.Student.StudentCode)</p>
+                @if (Model.Gradebook.PublishedAt.HasValue)
+                {
+                    <p><strong>Published:</strong> @Model.Gradebook.PublishedAt.Value.ToString("MMMM dd, yyyy")</p>
+                }
+                @if (Model.Gradebook.LockedAt.HasValue)
+                {
+                    <p><strong>Locked:</strong> @Model.Gradebook.LockedAt.Value.ToString("MMMM dd, yyyy")</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Items Table -->
+    <div class="grades-section">
+        <h2><i class="fas fa-list"></i> Grade Breakdown</h2>
+        @if (Model.Items.Count == 0)
+        {
+            <div class="empty-state">
+                <p>No grade items available.</p>
+            </div>
+        }
+        else
+        {
+            <div class="grades-table-wrapper">
+                <table class="grades-table">
+                    <thead>
+                        <tr>
+                            <th>Grade Item</th>
+                            <th>Max Score</th>
+                            <th>Weight</th>
+                            <th>Your Score</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            var score = Model.GetScore(item.GradeItemId);
+                            var percentage = score.HasValue && item.MaxScore > 0
+                                ? (score.Value / item.MaxScore * 100)
+                                : (decimal?)null;
+                            var itemClass = percentage.HasValue ? (percentage >= 50 ? "pass" : "fail") : "";
+
+                            <tr class="@itemClass">
+                                <td class="item-name">
+                                    @item.ItemName
+                                    @if (item.IsRequired)
+                                    {
+                                        <span class="required-badge" title="Required">*</span>
+                                    }
+                                </td>
+                                <td>@item.MaxScore.ToString("0.##")</td>
+                                <td>@(item.Weight.HasValue ? (item.Weight.Value * 100).ToString("0.##") + "%" : "-")</td>
+                                <td class="score-cell">
+                                    @if (score.HasValue)
+                                    {
+                                        <span class="score">@score.Value.ToString("0.##")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="not-graded">Not graded</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (percentage.HasValue)
+                                    {
+                                        <div class="percentage-bar">
+                                            <div class="percentage-fill @(percentage >= 50 ? "pass" : "fail")" style="width: @percentage.Value.ToString("0")%"></div>
+                                            <span class="percentage-text">@percentage.Value.ToString("0.#")%</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Student/Grades/Grades.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}

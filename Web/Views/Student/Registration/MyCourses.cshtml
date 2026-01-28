@@ -1,0 +1,112 @@
+@model Web.Models.Student.MyCoursesViewModel
+@using BusinessObject.Enum
+@{
+    ViewBag.Title = "My Courses";
+}
+
+<section class="registration-page">
+    <div class="registration-header">
+        <div>
+            <h1><i class="fas fa-book-open"></i> My Courses</h1>
+            <p><i class="fas fa-calendar"></i> Semester: @Model.SemesterName</p>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-success">
+            <i class="fas fa-check-circle"></i>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (!Model.Courses.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">??</div>
+            <h3>No Courses Enrolled</h3>
+            <p>You haven't registered for any courses yet.</p>
+            <a asp-action="Index" class="btn-primary" style="display: inline-block; margin-top: 1rem; text-decoration: none;">
+                <i class="fas fa-plus-circle"></i> Browse Courses
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="registration-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-book"></i> Course</th>
+                        <th><i class="fas fa-layer-group"></i> Section</th>
+                        <th><i class="fas fa-info-circle"></i> Status</th>
+                        <th><i class="fas fa-star"></i> Credits</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var course in Model.Courses)
+                {
+                    var statusClass = course.Status switch
+                    {
+                        "ENROLLED" => "status-enrolled",
+                        "WAITLIST" => "status-waitlist",
+                        "DROPPED" => "status-dropped",
+                        "WITHDRAWN" => "status-withdrawn",
+                        _ => ""
+                    };
+                    <tr>
+                        <td>
+                            <strong>@course.CourseCode</strong><br />
+                            <span>@course.CourseName</span>
+                        </td>
+                        <td>@course.SectionCode</td>
+                        <td>
+                            <span class="status-badge @statusClass">
+                                @course.Status
+                            </span>
+                        </td>
+                        <td>
+                            <span class="credits-badge">@course.CreditsSnapshot</span>
+                        </td>
+                        <td class="actions">
+                            @if (course.Status == EnrollmentStatus.ENROLLED.ToString() || course.Status == EnrollmentStatus.WAITLIST.ToString())
+                            {
+                                <form asp-action="Drop" method="post" class="inline-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="enrollmentId" value="@course.EnrollmentId" />
+                                    <button type="submit" class="btn-secondary">
+                                        <i class="fas fa-times"></i> Drop
+                                    </button>
+                                </form>
+                            }
+                            @if (course.Status == EnrollmentStatus.ENROLLED.ToString())
+                            {
+                                <form asp-action="Withdraw" method="post" class="inline-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="enrollmentId" value="@course.EnrollmentId" />
+                                    <button type="submit" class="btn-warning">
+                                        <i class="fas fa-sign-out-alt"></i> Withdraw
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Student/Registration/CourseRegistration.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}

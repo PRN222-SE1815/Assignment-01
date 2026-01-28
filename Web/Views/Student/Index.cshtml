@@ -1,100 +1,102 @@
-﻿@{
-    ViewData["Title"] = "Student Dashboard";
-    Layout = "~/Views/Shared/_LayoutStudent.cshtml";
+﻿@using System.Security.Claims
+@{
+    ViewBag.Title = "Student Dashboard";
+    var userName = User.Identity?.Name ?? "Student";
+    var studentId = User.FindFirst("StudentId")?.Value ?? "";
 }
 
-<!-- Welcome Section -->
-<div class="student-welcome">
-    <h2><i class="bi bi-mortarboard-fill"></i> Welcome, @User.FindFirst("FullName")?.Value!</h2>
-    <p class="mb-0">Your Learning Journey Starts Here</p>
-</div>
-
-<!-- Quick Actions -->
-<div class="row mb-4">
-    <div class="col-12 mb-4">
-        <h4 class="fw-bold text-white">Quick Actions</h4>
-        <p class="text-white-50">Manage your courses and schedule</p>
-    </div>
-
-    <!-- Enroll Courses -->
-    <div class="col-md-6 mb-4">
-        <a asp-action="Index" asp-controller="Enrollment" class="text-decoration-none">
-            <div class="card student-dashboard-card">
-                <div class="card-body text-center">
-                    <div class="icon-wrapper">
-                        <i class="bi bi-plus-circle-fill" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <h5>Enroll Courses</h5>
-                    <p class="text-muted mb-0">Browse and register for new courses</p>
-                </div>
+<section class="student-dashboard">
+    <div class="dashboard-container">
+        <!-- Welcome Header -->
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <h1 class="welcome-title">Welcome back, <span class="user-highlight">@userName</span>!</h1>
+                <p class="welcome-subtitle">Access your courses, schedule, and connect with your classmates.</p>
             </div>
-        </a>
-    </div>
-
-    <!-- View Schedule -->
-    <div class="col-md-6 mb-4">
-        <a asp-action="ViewSchedule" asp-controller="Student" class="text-decoration-none">
-            <div class="card student-dashboard-card">
-                <div class="card-body text-center">
-                    <div class="icon-wrapper">
-                        <i class="bi bi-calendar-week-fill" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <h5>View Schedule</h5>
-                    <p class="text-muted mb-0">Check your class timetable</p>
-                </div>
+            <div class="welcome-icon">
+                <i class="fas fa-user-graduate"></i>
             </div>
-        </a>
-    </div>
+        </div>
 
-    <!-- Messages -->
-    <div class="col-md-6 mb-4">
-        <a asp-action="Index" asp-controller="Chat" class="text-decoration-none">
-            <div class="card student-dashboard-card">
-                <div class="card-body text-center">
-                    <div class="icon-wrapper">
-                        <i class="bi bi-chat-dots-fill" style="font-size: 2.5rem;"></i>
+        <!-- Navigation Cards -->
+        <div class="nav-cards-section">
+            <h2 class="section-title">Actions</h2>
+            <div class="nav-cards-grid">
+                <!-- Course Registration -->
+                <a asp-controller="StudentRegistration" asp-action="Index" class="nav-card">
+                    <div class="nav-card-icon">
+                        <i class="fas fa-plus-circle"></i>
                     </div>
-                    <h5>Messages</h5>
-                    <p class="text-muted mb-0">Chat with classmates and teachers</p>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-md-6 mb-4">
-        <a asp-action="Analysis" asp-controller="Student" class="text-decoration-none">
-            <div class="card student-dashboard-card">
-                <div class="card-body text-center">
-                    <div class="icon-wrapper">
-                        <i class="bi bi-bar-chart-fill" style="font-size: 2.5rem;"></i>
+                    <div class="nav-card-content">
+                        <h3 class="nav-card-title">Course Registration</h3>
+                        <p class="nav-card-description">Browse available courses and register for the upcoming semester.</p>
                     </div>
-                    <h5>AI Academic Analysis</h5>
-                    <p class="text-muted mb-0">View your AI learning report</p>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <!-- ✅ Manage Grades (NEW) -->
-    <div class="col-md-6 mb-4">
-        <a asp-controller="Grades" asp-action="MyGrades" class="text-decoration-none">
-            <div class="card student-dashboard-card">
-                <div class="card-body text-center">
-                    <div class="icon-wrapper">
-                        <i class="bi bi-journal-check" style="font-size: 2.5rem;"></i>
+                    <div class="nav-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
                     </div>
-                    <h5>View your Grades</h5>
-                    <p class="text-muted mb-0">View your grades by course</p>
-                </div>
+                </a>
+
+                <!-- View Grades -->
+                <a asp-controller="StudentGrades" asp-action="Index" class="nav-card">
+                    <div class="nav-card-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="nav-card-content">
+                        <h3 class="nav-card-title">My Grades</h3>
+                        <p class="nav-card-description">View your grades and academic performance for all courses.</p>
+                    </div>
+                    <div class="nav-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <!-- View Schedule -->
+                <a asp-controller="StudentSchedule" asp-action="Index" class="nav-card">
+                    <div class="nav-card-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="nav-card-content">
+                        <h3 class="nav-card-title">View Schedule</h3>
+                        <p class="nav-card-description">Check your class schedule, room assignments, and upcoming events.</p>
+                    </div>
+                    <div class="nav-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <!-- Chat Room -->
+                <a asp-controller="Chat" asp-action="Index" class="nav-card">
+                    <div class="nav-card-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="nav-card-content">
+                        <h3 class="nav-card-title">Chat Room</h3>
+                        <p class="nav-card-description">Connect with classmates and teachers in course chat rooms.</p>
+                    </div>
+                    <div class="nav-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <!-- AI Chatbot -->
+                <a asp-controller="StudentAIChat" asp-action="Index" class="nav-card nav-card-highlight">
+                    <div class="nav-card-icon ai-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="nav-card-content">
+                        <h3 class="nav-card-title">AI Assistant <span class="badge-new">New</span></h3>
+                        <p class="nav-card-description">Smart Q&A about grades, schedules, and course registration.</p>
+                    </div>
+                    <div class="nav-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
             </div>
-        </a>
+        </div>
     </div>
+</section>
 
-</div>
-
-<!-- Floating Message Icon (Quick Access) -->
-<a asp-action="Index" asp-controller="Chat"
-   class="btn position-fixed rounded-circle shadow-lg"
-   style="bottom: 30px; right: 30px; width: 60px; height: 60px; z-index: 1000; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"
-   title="Open Messages">
-    <i class="bi bi-chat-dots-fill text-white" style="font-size: 1.5rem;"></i>
-</a>
+@section Styles {
+    <link rel="stylesheet" href="~/css/Student/Index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}

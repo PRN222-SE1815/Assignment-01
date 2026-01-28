@@ -1,0 +1,66 @@
+@model Web.Models.Teacher.TeacherGradebookIndexViewModel
+@{
+    ViewBag.Title = "My Classes - Gradebook";
+}
+
+<section class="gradebook-index">
+    <div class="page-header">
+        <h1><i class="fas fa-book-open"></i> Grade Management</h1>
+        <p class="page-subtitle">Select a class to manage grades</p>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+        </div>
+    }
+
+    @if (Model.Sections.Count == 0)
+    {
+        <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <h3>No Classes Found</h3>
+            <p>You are not assigned to any class sections.</p>
+        </div>
+    }
+    else
+    {
+        <div class="sections-grid">
+            @foreach (var classSection in Model.Sections)
+            {
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="course-code">@classSection.CourseCode</span>
+                        <span class="section-code">@classSection.SectionCode</span>
+                    </div>
+                    <div class="section-body">
+                        <h3 class="course-name">@classSection.CourseName</h3>
+                        <div class="section-meta">
+                            <span><i class="fas fa-calendar"></i> @classSection.SemesterName</span>
+                            <span><i class="fas fa-users"></i> @classSection.CurrentEnrollment / @classSection.MaxCapacity students</span>
+                            <span><i class="fas fa-graduation-cap"></i> @classSection.Credits credits</span>
+                        </div>
+                    </div>
+                    <div class="section-footer">
+                        <a asp-action="Edit" asp-route-id="@classSection.ClassSectionId" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Manage Grades
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Teacher/Gradebook/Gradebook.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}

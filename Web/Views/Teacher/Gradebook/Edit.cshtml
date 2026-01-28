@@ -1,0 +1,402 @@
+@model Web.Models.Teacher.TeacherGradebookEditViewModel
+@{
+    ViewBag.Title = $"Gradebook - {Model.Gradebook.CourseCode} {Model.Gradebook.SectionCode}";
+}
+
+<section class="gradebook-edit">
+    <div class="page-header">
+        <div class="header-info">
+            <a asp-action="Index" class="back-link"><i class="fas fa-arrow-left"></i> Back to Classes</a>
+            <h1>@Model.Gradebook.CourseCode - @Model.Gradebook.CourseName</h1>
+            <p class="page-subtitle">Section: @Model.Gradebook.SectionCode | @Model.Gradebook.SemesterName</p>
+        </div>
+        <div class="header-status">
+            <span class="status-badge status-@Model.Gradebook.Status.ToLower()">@Model.Gradebook.Status</span>
+            <span class="version-info">v@Model.Gradebook.Version</span>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+        </div>
+    }
+
+    <!-- Action Buttons -->
+    <div class="action-bar">
+        <div class="action-group">
+            @if (Model.CanEdit)
+            {
+                <button type="button" id="btnSaveGrades" class="btn btn-primary" disabled>
+                    <i class="fas fa-save"></i> Save Grades
+                </button>
+                <button type="button" id="btnAddItem" class="btn btn-secondary">
+                    <i class="fas fa-plus"></i> Add Grade Item
+                </button>
+            }
+        </div>
+        <div class="action-group">
+            @if (Model.CanPublish)
+            {
+                <form asp-action="Publish" asp-route-id="@Model.Gradebook.ClassSectionId" method="post" class="inline-form">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Publish grades to students?')">
+                        <i class="fas fa-eye"></i> Publish
+                    </button>
+                </form>
+            }
+            @if (Model.CanLock)
+            {
+                <form asp-action="Lock" asp-route-id="@Model.Gradebook.ClassSectionId" method="post" class="inline-form">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-warning" onclick="return confirm('Lock gradebook? This will prevent further edits.')">
+                        <i class="fas fa-lock"></i> Lock
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <!-- Grade Structure Form -->
+    @if (Model.CanEdit)
+    {
+        <div class="structure-section">
+            <h2><i class="fas fa-list"></i> Grade Structure</h2>
+            <form asp-action="SaveStructure" asp-route-id="@Model.Gradebook.ClassSectionId" method="post" id="structureForm">
+                @Html.AntiForgeryToken()
+                <div class="structure-table-wrapper">
+                    <table class="structure-table" id="structureTable">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Max Score</th>
+                                <th>Weight (%)</th>
+                                <th>Required</th>
+                                <th>Order</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Model.Items.Count; i++)
+                            {
+                                var item = Model.Items[i];
+                                <tr class="structure-row" data-index="@i">
+                                    <input type="hidden" name="items[@i].GradeItemId" value="@item.GradeItemId" />
+                                    <input type="hidden" name="items[@i].GradeBookId" value="@item.GradeBookId" />
+                                    <td><input type="text" name="items[@i].ItemName" value="@item.ItemName" required class="form-input" /></td>
+                                    <td><input type="number" name="items[@i].MaxScore" value="@item.MaxScore" min="0.01" max="100" step="0.01" required class="form-input" /></td>
+                                    <td><input type="number" name="items[@i].Weight" value="@(item.Weight.HasValue ? (item.Weight.Value * 100).ToString("0.##") : "")" min="0" max="100" step="0.01" class="form-input" /></td>
+                                    <td><input type="checkbox" name="items[@i].IsRequired" value="true" @(item.IsRequired ? "checked" : "") /></td>
+                                    <td><input type="number" name="items[@i].SortOrder" value="@item.SortOrder" min="0" class="form-input sort-input" /></td>
+                                    <td><button type="button" class="btn-remove-item" title="Remove"><i class="fas fa-trash"></i></button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="structure-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Structure</button>
+                </div>
+            </form>
+        </div>
+    }
+
+    <!-- Grades Grid -->
+    <div class="grades-section">
+        <h2><i class="fas fa-table"></i> Student Grades</h2>
+        @if (Model.Students.Count == 0)
+        {
+            <div class="empty-state">
+                <p>No students enrolled in this class.</p>
+            </div>
+        }
+        else if (Model.Items.Count == 0)
+        {
+            <div class="empty-state">
+                <p>Add grade items first to start grading.</p>
+            </div>
+        }
+        else
+        {
+            <div class="grades-table-wrapper">
+                <table class="grades-table" id="gradesTable">
+                    <thead>
+                        <tr>
+                            <th class="sticky-col">Student Code</th>
+                            <th class="sticky-col-2">Student Name</th>
+                            @foreach (var item in Model.Items)
+                            {
+                                <th class="grade-col" title="@item.ItemName (Max: @item.MaxScore)">
+                                    @item.ItemName
+                                    <span class="max-score">/@item.MaxScore</span>
+                                </th>
+                            }
+                            <th class="final-col">Final</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in Model.Students)
+                        {
+                            <tr data-enrollment-id="@student.EnrollmentId">
+                                <td class="sticky-col">@student.StudentCode</td>
+                                <td class="sticky-col-2">@student.StudentName</td>
+                                @foreach (var item in Model.Items)
+                                {
+                                    var score = Model.GetScore(item.GradeItemId, student.EnrollmentId);
+                                    <td class="grade-cell">
+                                        @if (Model.CanEdit)
+                                        {
+                                            <input type="number"
+                                                   class="grade-input"
+                                                   data-item-id="@item.GradeItemId"
+                                                   data-enrollment-id="@student.EnrollmentId"
+                                                   value="@(score.HasValue ? score.Value.ToString("0.##") : "")"
+                                                   min="0"
+                                                   max="10"
+                                                   step="0.01"
+                                                   placeholder="-" />
+                                        }
+                                        else
+                                        {
+                                            <span>@(score.HasValue ? score.Value.ToString("0.##") : "-")</span>
+                                        }
+                                    </td>
+                                }
+                                <td class="final-cell @(student.FinalScore.HasValue && student.FinalScore >= 5 ? "pass" : student.FinalScore.HasValue ? "fail" : "")">
+                                    @(student.FinalScore.HasValue ? student.FinalScore.Value.ToString("0.##") : "-")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <!-- Charts Section -->
+    @if (Model.Stats != null && Model.Students.Count > 0)
+    {
+        <div class="charts-section">
+            <h2><i class="fas fa-chart-bar"></i> Statistics</h2>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Score Distribution</h3>
+                    <canvas id="histogramChart"></canvas>
+                    <noscript>
+                        <table class="fallback-table">
+                            <tr>
+                                @for (var i = 0; i < Model.Stats.Histogram.Count; i++)
+                                {
+                                    <th>@i</th>
+                                }
+                            </tr>
+                            <tr>
+                                @foreach (var count in Model.Stats.Histogram)
+                                {
+                                    <td>@count</td>
+                                }
+                            </tr>
+                        </table>
+                    </noscript>
+                </div>
+                <div class="chart-card">
+                    <h3>Pass/Fail Ratio</h3>
+                    <canvas id="pieChart"></canvas>
+                    <noscript>
+                        <table class="fallback-table">
+                            <tr><th>Pass (?5)</th><td>@Model.Stats.AboveCount</td></tr>
+                            <tr><th>Fail (&lt;5)</th><td>@Model.Stats.BelowCount</td></tr>
+                            <tr><th>Not Graded</th><td>@Model.Stats.NotGradedCount</td></tr>
+                        </table>
+                    </noscript>
+                </div>
+            </div>
+        </div>
+    }
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Teacher/Gradebook/Gradebook.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const classSectionId = @Model.Gradebook.ClassSectionId;
+            const saveGradesUrlTemplate = '@Url.Action("SaveGrades", "TeacherGradebook", new { id = "__id__" })';
+            const canEdit = @(Model.CanEdit ? "true" : "false");
+            const histogramData = @Html.Raw(Model.GetHistogramJson());
+            const pieData = @Html.Raw(Model.GetPieDataJson());
+
+            // Charts
+            if (histogramData.length > 0) {
+                const histCtx = document.getElementById('histogramChart');
+                if (histCtx) {
+                    new Chart(histCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+                            datasets: [{
+                                label: 'Students',
+                                data: histogramData,
+                                backgroundColor: histogramData.map((_, i) => i >= 5 ? '#10B981' : '#EF4444'),
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                            },
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
+                    });
+                }
+            }
+
+            const pieCtx = document.getElementById('pieChart');
+            if (pieCtx && pieData.some(v => v > 0)) {
+                new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pass (?5)', 'Fail (<5)', 'Not Graded'],
+                        datasets: [{
+                            data: pieData,
+                            backgroundColor: ['#10B981', '#EF4444', '#9CA3AF']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+
+            if (!canEdit) return;
+
+            // Track changes
+            let pendingChanges = new Map();
+            const saveBtn = document.getElementById('btnSaveGrades');
+            const gradeInputs = document.querySelectorAll('.grade-input');
+
+            gradeInputs.forEach(input => {
+                const original = input.value;
+                input.dataset.original = original;
+
+                input.addEventListener('change', function() {
+                    const itemId = parseInt(this.dataset.itemId);
+                    const enrollmentId = parseInt(this.dataset.enrollmentId);
+                    const key = `${itemId}-${enrollmentId}`;
+                    const newValue = this.value === '' ? null : parseFloat(this.value);
+                    const originalValue = this.dataset.original === '' ? null : parseFloat(this.dataset.original);
+
+                    if (newValue === originalValue) {
+                        pendingChanges.delete(key);
+                        this.classList.remove('changed');
+                    } else {
+                        pendingChanges.set(key, { gradeItemId: itemId, enrollmentId: enrollmentId, score: newValue });
+                        this.classList.add('changed');
+                    }
+
+                    saveBtn.disabled = pendingChanges.size === 0;
+                });
+            });
+
+            saveBtn.addEventListener('click', async function() {
+                if (pendingChanges.size === 0) return;
+
+                const entries = Array.from(pendingChanges.values());
+                const reason = prompt('Optional: Enter a reason for these changes', '');
+
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+                try {
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                    const saveGradesUrl = saveGradesUrlTemplate.replace("__id__", classSectionId);
+                    const response = await fetch(saveGradesUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': token || ''
+                        },
+                        body: JSON.stringify({ entries: entries, reason: reason || null })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        alert(result.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + result.message);
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Grades';
+                    }
+                } catch (e) {
+                    alert('Failed to save grades. Please try again.');
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Grades';
+                }
+            });
+
+            // Add grade item
+            const addItemBtn = document.getElementById('btnAddItem');
+            const structureTable = document.getElementById('structureTable')?.querySelector('tbody');
+
+            if (addItemBtn && structureTable) {
+                addItemBtn.addEventListener('click', function() {
+                    const rows = structureTable.querySelectorAll('.structure-row');
+                    const newIndex = rows.length;
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'structure-row';
+                    tr.dataset.index = newIndex;
+                    tr.innerHTML = `
+                        <input type="hidden" name="items[${newIndex}].GradeItemId" value="0" />
+                        <input type="hidden" name="items[${newIndex}].GradeBookId" value="${@Model.Gradebook.GradeBookId}" />
+                        <td><input type="text" name="items[${newIndex}].ItemName" required class="form-input" placeholder="Item Name" /></td>
+                        <td><input type="number" name="items[${newIndex}].MaxScore" value="10" min="0.01" max="100" step="0.01" required class="form-input" /></td>
+                        <td><input type="number" name="items[${newIndex}].Weight" min="0" max="100" step="0.01" class="form-input" placeholder="Optional" /></td>
+                        <td><input type="checkbox" name="items[${newIndex}].IsRequired" value="true" /></td>
+                        <td><input type="number" name="items[${newIndex}].SortOrder" value="${newIndex}" min="0" class="form-input sort-input" /></td>
+                        <td><button type="button" class="btn-remove-item" title="Remove"><i class="fas fa-trash"></i></button></td>
+                    `;
+                    structureTable.appendChild(tr);
+                    reindexStructure();
+                });
+
+                structureTable.addEventListener('click', function(e) {
+                    if (e.target.closest('.btn-remove-item')) {
+                        e.target.closest('tr').remove();
+                        reindexStructure();
+                    }
+                });
+
+                function reindexStructure() {
+                    const rows = structureTable.querySelectorAll('.structure-row');
+                    rows.forEach((row, i) => {
+                        row.dataset.index = i;
+                        row.querySelectorAll('input').forEach(input => {
+                            const name = input.name.replace(/\[\d+\]/, `[${i}]`);
+                            input.name = name;
+                        });
+                    });
+                }
+            }
+        });
+    </script>
+}

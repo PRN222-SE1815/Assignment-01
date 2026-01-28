@@ -1,0 +1,137 @@
+@model Web.Models.Admin.UserListViewModel
+@{
+    ViewBag.Title = "User Management";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Admin/UserManagement/Index.css" asp-append-version="true" />
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">User Management</h1>
+        <p class="page-subtitle">Manage student, teacher, and admin accounts</p>
+    </div>
+    <a class="btn-primary" asp-action="Create">Create User</a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert-success">
+        <span class="alert-icon">?</span>
+        <span>@TempData["SuccessMessage"]</span>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert-error">
+        <span class="alert-icon">?</span>
+        <span>@TempData["ErrorMessage"]</span>
+    </div>
+}
+
+<div class="card">
+    <form class="filter-form" method="get">
+        <div class="filter-group">
+            <input class="form-input" name="search" value="@Model.Search" placeholder="Search by name or email" />
+        </div>
+        <div class="filter-group">
+            <select class="form-select" name="role">
+                <option value="">All Roles</option>
+                <option value="STUDENT" selected="@(Model.Role == "STUDENT")">Student</option>
+                <option value="TEACHER" selected="@(Model.Role == "TEACHER")">Teacher</option>
+                <option value="ADMIN" selected="@(Model.Role == "ADMIN")">Admin</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <select class="form-select" name="pageSize">
+                <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                <option value="20" selected="@(Model.PageSize == 20)">20</option>
+                <option value="50" selected="@(Model.PageSize == 50)">50</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-secondary">Filter</button>
+    </form>
+
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th class="actions-column">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Users.Count == 0)
+            {
+                <tr>
+                    <td colspan="7" class="empty-state">No users found.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.UserId</td>
+                        <td>@user.Username</td>
+                        <td>@user.FullName</td>
+                        <td>@(string.IsNullOrWhiteSpace(user.Email) ? "-" : user.Email)</td>
+                        <td>@user.Role</td>
+                        <td>
+                            <span class="status-badge @(user.IsActive ? "status-active" : "status-inactive")">
+                                @(user.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td class="actions-column">
+                            <a class="btn-link" asp-action="Details" asp-route-id="@user.UserId">Details</a>
+                            <a class="btn-link" asp-action="Edit" asp-route-id="@user.UserId">Edit</a>
+                            <form asp-action="Delete" method="post" class="inline-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@user.UserId" />
+                                <button type="submit" class="btn-link btn-danger">
+                                    @(user.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <div class="pagination">
+        <a class="page-link @(Model.Page <= 1 ? "disabled" : string.Empty)"
+           asp-action="Index"
+           asp-route-page="@(Model.Page - 1)"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-role="@Model.Role"
+           asp-route-search="@Model.Search">Previous</a>
+
+        @for (var i = 1; i <= Model.TotalPages; i++)
+        {
+            <a class="page-link @(i == Model.Page ? "active" : string.Empty)"
+               asp-action="Index"
+               asp-route-page="@i"
+               asp-route-pageSize="@Model.PageSize"
+               asp-route-role="@Model.Role"
+               asp-route-search="@Model.Search">@i</a>
+        }
+
+        <a class="page-link @(Model.Page >= Model.TotalPages ? "disabled" : string.Empty)"
+           asp-action="Index"
+           asp-route-page="@(Model.Page + 1)"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-role="@Model.Role"
+           asp-route-search="@Model.Search">Next</a>
+    </div>
+}

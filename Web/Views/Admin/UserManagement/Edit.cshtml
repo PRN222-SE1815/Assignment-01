@@ -1,0 +1,114 @@
+@model Web.Models.Admin.UserEditViewModel
+@{
+    ViewBag.Title = "Edit User";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Admin/UserManagement/Edit.css" asp-append-version="true" />
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Edit User</h1>
+        <p class="page-subtitle">Update account details</p>
+    </div>
+    <a class="btn-secondary" asp-action="Index">Back to list</a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert-success">
+        <span class="alert-icon">?</span>
+        <span>@TempData["SuccessMessage"]</span>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert-error">
+        <span class="alert-icon">?</span>
+        <span>@TempData["ErrorMessage"]</span>
+    </div>
+}
+
+<div class="card">
+    <form asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="UserId" />
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+        <div class="form-section">
+            <h2 class="section-title">Account Information</h2>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label class="form-label" asp-for="Username"></label>
+                    <input class="form-input" asp-for="Username" readonly />
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="Role"></label>
+                    <input class="form-input" asp-for="Role" readonly />
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="FullName"></label>
+                    <input class="form-input" asp-for="FullName" />
+                    <span asp-validation-for="FullName" class="validation-message"></span>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="Email"></label>
+                    <input class="form-input" asp-for="Email" />
+                    <span asp-validation-for="Email" class="validation-message"></span>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="Password">Reset Password (optional)</label>
+                    <input class="form-input" asp-for="Password" type="password" placeholder="Leave empty to keep current" />
+                    <span asp-validation-for="Password" class="validation-message"></span>
+                </div>
+                <div class="form-field checkbox-field">
+                    <label class="form-label" asp-for="IsActive">Status</label>
+                    <label class="switch">
+                        <input asp-for="IsActive" type="checkbox" />
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Role == "STUDENT")
+        {
+            <div class="form-section">
+                <h2 class="section-title">Student Profile</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label" asp-for="StudentCode"></label>
+                        <input class="form-input" asp-for="StudentCode" />
+                        <span asp-validation-for="StudentCode" class="validation-message"></span>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (Model.Role == "TEACHER")
+        {
+            <div class="form-section">
+                <h2 class="section-title">Teacher Profile</h2>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label" asp-for="TeacherCode"></label>
+                        <input class="form-input" asp-for="TeacherCode" />
+                        <span asp-validation-for="TeacherCode" class="validation-message"></span>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label" asp-for="Department"></label>
+                        <input class="form-input" asp-for="Department" />
+                        <span asp-validation-for="Department" class="validation-message"></span>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                Save Changes
+            </button>
+        </div>
+    </form>
+</div>

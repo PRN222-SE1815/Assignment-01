@@ -1,0 +1,108 @@
+﻿@model Web.Models.Admin.CreateUserViewModel
+@{
+    ViewBag.Title = "Create User";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Admin/UserManagement/Create.css" asp-append-version="true" />
+}
+
+<div class="page-header">
+    <h1 class="page-title">Create User</h1>
+    <p class="page-subtitle">Add a new student, teacher, or admin to the system</p>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert-success">
+        <span class="alert-icon">✓</span>
+        <span>@TempData["SuccessMessage"]</span>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert-error">
+        <span class="alert-icon">✕</span>
+        <span>@TempData["ErrorMessage"]</span>
+    </div>
+}
+
+<div class="card">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        
+        <div class="form-section">
+            <h2 class="section-title">Basic Information</h2>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label class="form-label" asp-for="Username"></label>
+                    <input class="form-input" asp-for="Username" placeholder="Enter username" />
+                    <span asp-validation-for="Username" class="validation-message"></span>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="FullName"></label>
+                    <input class="form-input" asp-for="FullName" placeholder="Enter full name" />
+                    <span asp-validation-for="FullName" class="validation-message"></span>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="Email"></label>
+                    <input class="form-input" asp-for="Email" placeholder="Enter email address" />
+                    <span asp-validation-for="Email" class="validation-message"></span>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="Password">Temporary Password (optional)</label>
+                    <input class="form-input" asp-for="Password" type="password" placeholder="Auto-generated if empty" />
+                    <span asp-validation-for="Password" class="validation-message"></span>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="Role"></label>
+                    <select class="form-select" asp-for="Role">
+                        <option value="STUDENT">Student</option>
+                        <option value="TEACHER">Teacher</option>
+                        <option value="ADMIN">Admin</option>
+                    </select>
+                    <span asp-validation-for="Role" class="validation-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="section-title">Role-Specific Information</h2>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label class="form-label" asp-for="StudentCode">Student Code (for Students)</label>
+                    <input class="form-input" asp-for="StudentCode" placeholder="e.g., SE123456" />
+                    <span asp-validation-for="StudentCode" class="validation-message"></span>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="ProgramId">Program ID (for Students)</label>
+                    <input class="form-input" asp-for="ProgramId" type="number" placeholder="Program ID" />
+                    <span asp-validation-for="ProgramId" class="validation-message"></span>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="CurrentSemesterId">Current Semester (for Students)</label>
+                    <input class="form-input" asp-for="CurrentSemesterId" type="number" placeholder="Semester ID" />
+                    <span asp-validation-for="CurrentSemesterId" class="validation-message"></span>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="TeacherCode">Teacher Code (for Teachers)</label>
+                    <input class="form-input" asp-for="TeacherCode" placeholder="e.g., T123456" />
+                    <span asp-validation-for="TeacherCode" class="validation-message"></span>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" asp-for="Department">Department (for Teachers)</label>
+                    <input class="form-input" asp-for="Department" placeholder="e.g., Computer Science" />
+                    <span asp-validation-for="Department" class="validation-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                <span class="btn-icon">✓</span>
+                Create User
+            </button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,161 @@
+@model Web.Models.Student.StudentCalendarViewModel
+@using BusinessObject.Enum
+@{
+    ViewBag.Title = "My Schedule";
+    var daysInRange = Enumerable.Range(0, Model.RangeEnd.DayNumber - Model.RangeStart.DayNumber + 1)
+        .Select(offset => Model.RangeStart.AddDays(offset))
+        .ToList();
+}
+
+<section class="student-schedule">
+    <h1><i class="fas fa-calendar-alt"></i> My Schedule</h1>
+
+    <form method="get" class="filter-bar">
+        <div class="view-mode-group">
+            <label>View:</label>
+            <select name="viewMode" onchange="this.form.submit()">
+                <option value="@CalendarViewMode.TODAY" selected="@(Model.ViewMode == CalendarViewMode.TODAY)">Today</option>
+                <option value="@CalendarViewMode.WEEK" selected="@(Model.ViewMode == CalendarViewMode.WEEK)">Week</option>
+                <option value="@CalendarViewMode.MONTH" selected="@(Model.ViewMode == CalendarViewMode.MONTH)">Month</option>
+            </select>
+        </div>
+        <div class="date-nav">
+            <a href="@Url.Action("Index", new { viewMode = Model.ViewMode, anchorDate = Model.AnchorDate.AddDays(-7) })" class="nav-btn">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <input type="date" name="anchorDate" value="@Model.AnchorDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()" />
+            <a href="@Url.Action("Index", new { viewMode = Model.ViewMode, anchorDate = Model.AnchorDate.AddDays(7) })" class="nav-btn">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+        <button type="submit" class="btn-primary-refresh">
+            <i class="fas fa-sync"></i> Refresh
+        </button>
+    </form>
+
+    <div class="calendar-container">
+        @if (Model.ViewMode == CalendarViewMode.WEEK || Model.ViewMode == CalendarViewMode.TODAY)
+        {
+            <div class="week-grid">
+                @foreach (var day in daysInRange)
+                {
+                    var isToday = day == DateOnly.FromDateTime(DateTime.UtcNow);
+                    var dayOccurrences = Model.OccurrencesByDay.GetValueOrDefault(day) ?? Array.Empty<Web.Models.Student.StudentScheduleOccurrenceViewModel>();
+                    <div class="day-column @(isToday ? "today" : "")">
+                        <div class="day-header">
+                            <span class="day-name">@day.DayOfWeek.ToString().Substring(0, 3)</span>
+                            <span class="day-date">@day.ToString("dd/MM")</span>
+                        </div>
+                        <div class="day-events">
+                            @if (dayOccurrences.Count == 0)
+                            {
+                                <div class="no-events">No classes</div>
+                            }
+                            else
+                            {
+                                @foreach (var occ in dayOccurrences.OrderBy(o => o.StartAtLocal))
+                                {
+                                    var statusClass = occ.Status switch
+                                    {
+                                        "PUBLISHED" => "status-published",
+                                        "RESCHEDULED" => "status-rescheduled",
+                                        "CANCELLED" => "status-cancelled",
+                                        _ => ""
+                                    };
+                                    <div class="event-card @statusClass @(occ.IsOverride ? "is-override" : "")" 
+                                         data-occurrence-id="@occ.OccurrenceId" 
+                                         onclick="showDetails('@occ.OccurrenceId')">
+                                        <div class="event-time">
+                                            @occ.StartAtLocal.ToString("HH:mm") - @occ.EndAtLocal.ToString("HH:mm")
+                                        </div>
+                                        <div class="event-title">@occ.Title</div>
+                                        <div class="event-details">
+                                            <span class="course">@occ.CourseName</span>
+                                            <span class="section">@occ.SectionCode</span>
+                                        </div>
+                                        <div class="event-teacher">
+                                            <i class="fas fa-chalkboard-teacher"></i> @occ.TeacherName
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(occ.Location))
+                                        {
+                                            <div class="event-location">
+                                                <i class="fas fa-map-marker-alt"></i> @occ.Location
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrEmpty(occ.OnlineUrl))
+                                        {
+                                            <a href="@occ.OnlineUrl" target="_blank" class="event-online" onclick="event.stopPropagation();">
+                                                <i class="fas fa-video"></i> Join Online
+                                            </a>
+                                        }
+                                        @if (occ.IsOverride)
+                                        {
+                                            <span class="override-badge">Modified</span>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="month-grid">
+                @foreach (var day in daysInRange)
+                {
+                    var isToday = day == DateOnly.FromDateTime(DateTime.UtcNow);
+                    var dayOccurrences = Model.OccurrencesByDay.GetValueOrDefault(day) ?? Array.Empty<Web.Models.Student.StudentScheduleOccurrenceViewModel>();
+                    <div class="month-cell @(isToday ? "today" : "")">
+                        <div class="cell-date">@day.Day</div>
+                        @foreach (var occ in dayOccurrences.Take(3))
+                        {
+                            <div class="month-event" title="@occ.Title - @occ.StartAtLocal.ToString("HH:mm")" onclick="showDetails('@occ.OccurrenceId')">
+                                @occ.StartAtLocal.ToString("HH:mm") @occ.SectionCode
+                            </div>
+                        }
+                        @if (dayOccurrences.Count > 3)
+                        {
+                            <div class="more-events">+@(dayOccurrences.Count - 3) more</div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Details Modal -->
+<div id="detailsModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Student/Schedule/Schedule.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+@section Scripts {
+    <script>
+        function showDetails(occurrenceId) {
+            fetch('@Url.Action("Details")' + '?occurrenceId=' + encodeURIComponent(occurrenceId))
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody').innerHTML = html;
+                    document.getElementById('detailsModal').style.display = 'flex';
+                });
+        }
+
+        function closeModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        document.getElementById('detailsModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+}

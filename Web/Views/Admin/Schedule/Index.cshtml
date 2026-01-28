@@ -1,0 +1,125 @@
+@model Web.Models.Admin.ScheduleEventListViewModel
+@using BusinessObject.Enum
+@{
+    ViewBag.Title = "Schedule Management";
+}
+
+<section class="admin-schedule">
+    <h1>Schedule Management</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-success">
+            <i class="fas fa-check-circle"></i>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <form method="get" class="filter-form">
+        <label>
+            <i class="fas fa-hashtag"></i> Class Section ID
+            <input type="number" name="classSectionId" value="@Model.ClassSectionId" placeholder="Enter section ID" />
+        </label>
+        <button type="submit" class="btn-primary">
+            <i class="fas fa-search"></i> Load Events
+        </button>
+        <a asp-action="Create" asp-route-classSectionId="@Model.ClassSectionId" class="btn-secondary">
+            <i class="fas fa-plus"></i> Create Event
+        </a>
+    </form>
+
+    @if (!Model.Events.Any())
+    {
+        <div style="background: #fff; border-radius: 16px; padding: 3rem; text-align: center; color: #6B7280;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">??</div>
+            <h3 style="color: #374151; margin-bottom: 0.5rem;">No Events Found</h3>
+            <p>Enter a Class Section ID and click Load to view schedule events.</p>
+        </div>
+    }
+    else
+    {
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-heading"></i> Title</th>
+                    <th><i class="fas fa-clock"></i> Start (UTC)</th>
+                    <th><i class="fas fa-clock"></i> End (UTC)</th>
+                    <th><i class="fas fa-info-circle"></i> Status</th>
+                    <th><i class="fas fa-redo"></i> Recurrence</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Events)
+            {
+                var statusStyle = item.Status switch
+                {
+                    "DRAFT" => "background: #FEF3C7; color: #92400E;",
+                    "PUBLISHED" => "background: #D1FAE5; color: #065F46;",
+                    "CANCELLED" => "background: #FEE2E2; color: #991B1B;",
+                    "RESCHEDULED" => "background: #DBEAFE; color: #1E40AF;",
+                    _ => "background: #E5E7EB; color: #374151;"
+                };
+                <tr>
+                    <td><strong>@item.Title</strong></td>
+                    <td>@item.StartAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@item.EndAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>
+                        <span class="status-badge" style="@statusStyle">
+                            @item.Status
+                        </span>
+                    </td>
+                    <td>
+                        @if (item.RecurrenceId.HasValue)
+                        {
+                            <span style="color: #2563EB; font-weight: 600;">
+                                <i class="fas fa-sync-alt"></i> #@item.RecurrenceId
+                            </span>
+                        }
+                        else
+                        {
+                            <span style="color: #9CA3AF;">—</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="inline-form">
+                            <a asp-action="Edit" asp-route-scheduleEventId="@item.ScheduleEventId" asp-route-classSectionId="@Model.ClassSectionId" class="btn-secondary" style="padding: 8px 16px;">
+                                <i class="fas fa-pen"></i> Edit
+                            </a>
+                            @if (item.Status == ScheduleEventStatus.DRAFT.ToString())
+                            {
+                                <form asp-action="Publish" method="post" style="display: inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="scheduleEventId" value="@item.ScheduleEventId" />
+                                    <input type="hidden" name="classSectionId" value="@Model.ClassSectionId" />
+                                    <button type="submit" class="btn-primary" style="padding: 8px 16px;">
+                                        <i class="fas fa-check"></i> Publish
+                                    </button>
+                                </form>
+                            }
+                            @if (item.RecurrenceId.HasValue)
+                            {
+                                <a asp-action="Override" asp-route-recurrenceId="@item.RecurrenceId" asp-route-scheduleEventId="@item.ScheduleEventId" class="btn-secondary" style="padding: 8px 16px;">
+                                    <i class="fas fa-calendar-times"></i> Override
+                                </a>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Admin/ScheduleManagement/Schedule.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}

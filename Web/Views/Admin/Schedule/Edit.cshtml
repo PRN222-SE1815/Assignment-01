@@ -1,0 +1,142 @@
+@model Web.Models.Admin.ScheduleEventEditViewModel
+@using BusinessObject.Enum
+@{
+    ViewBag.Title = "Edit Schedule Event";
+}
+
+<section class="admin-schedule">
+    <a asp-action="Index" asp-route-classSectionId="@Model.ClassSectionId" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Schedule
+    </a>
+    
+    <h1><i class="fas fa-edit"></i> Edit Schedule Event</h1>
+
+    <div class="event-status-info">
+        <span class="status-label">Current Status:</span>
+        <span class="status-badge status-@Model.Status.ToLower()">@Model.Status</span>
+    </div>
+
+    <form asp-action="Edit" method="post" class="form-grid">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ScheduleEventId" />
+        <input type="hidden" asp-for="ClassSectionId" />
+        <input type="hidden" asp-for="Status" />
+        <input type="hidden" asp-for="RecurrenceId" />
+
+        <label>
+            <i class="fas fa-heading"></i> Title
+            <input asp-for="Title" placeholder="e.g., Lecture - Introduction to Programming" />
+            <span asp-validation-for="Title" class="field-validation-error"></span>
+        </label>
+        
+        <label>
+            <i class="fas fa-play"></i> Start Time (UTC)
+            <input asp-for="StartAtUtc" type="datetime-local" />
+            <span asp-validation-for="StartAtUtc" class="field-validation-error"></span>
+        </label>
+        
+        <label>
+            <i class="fas fa-stop"></i> End Time (UTC)
+            <input asp-for="EndAtUtc" type="datetime-local" />
+            <span asp-validation-for="EndAtUtc" class="field-validation-error"></span>
+        </label>
+        
+        <label>
+            <i class="fas fa-globe"></i> Timezone
+            <input asp-for="Timezone" placeholder="e.g., Asia/Ho_Chi_Minh" />
+        </label>
+        
+        <label>
+            <i class="fas fa-map-marker-alt"></i> Location
+            <input asp-for="Location" placeholder="e.g., Room A101" />
+        </label>
+        
+        <label>
+            <i class="fas fa-link"></i> Online URL
+            <input asp-for="OnlineUrl" placeholder="e.g., https://meet.google.com/..." />
+        </label>
+        
+        <label>
+            <i class="fas fa-chalkboard-teacher"></i> Teacher ID
+            <input asp-for="TeacherId" type="number" placeholder="Enter teacher ID" />
+        </label>
+
+        @if (Model.RecurrenceId.HasValue)
+        {
+            <div class="recurrence-info" style="grid-column: 1 / -1; background: #EFF6FF; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                <h3><i class="fas fa-redo"></i> Recurrence Information</h3>
+                <p><strong>Rule:</strong> @(Model.RecurrenceRule ?? "None")</p>
+                <p><strong>Period:</strong> @(Model.RecurrenceStartDate?.ToString("yyyy-MM-dd") ?? "-") to @(Model.RecurrenceEndDate?.ToString("yyyy-MM-dd") ?? "-")</p>
+                <p class="hint">To modify individual occurrences, use the Override feature from the schedule list.</p>
+            </div>
+        }
+
+        <label style="grid-column: 1 / -1;">
+            <i class="fas fa-comment"></i> Reason for Change
+            <input asp-for="Reason" placeholder="e.g., Room change, time adjustment..." />
+        </label>
+
+        <div class="form-actions" style="grid-column: 1 / -1; margin-top: 1rem; display: flex; gap: 1rem;">
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+            
+            @if (Model.Status == ScheduleEventStatus.DRAFT.ToString())
+            {
+                <a asp-action="Publish" asp-route-scheduleEventId="@Model.ScheduleEventId" asp-route-classSectionId="@Model.ClassSectionId" 
+                   class="btn-success" onclick="return confirm('Publish this event?');">
+                    <i class="fas fa-check"></i> Publish
+                </a>
+            }
+            
+            @if (Model.Status != ScheduleEventStatus.CANCELLED.ToString())
+            {
+                <button type="button" class="btn-danger" onclick="showCancelDialog()">
+                    <i class="fas fa-times"></i> Cancel Event
+                </button>
+            }
+        </div>
+    </form>
+</section>
+
+<!-- Cancel Dialog -->
+<div id="cancelDialog" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3><i class="fas fa-exclamation-triangle"></i> Cancel Schedule Event</h3>
+        <p>Are you sure you want to cancel this event? This action will notify enrolled students.</p>
+        <form asp-action="Cancel" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="scheduleEventId" value="@Model.ScheduleEventId" />
+            <input type="hidden" name="classSectionId" value="@Model.ClassSectionId" />
+            <label>
+                <i class="fas fa-comment"></i> Reason for Cancellation
+                <input type="text" name="reason" placeholder="e.g., Teacher unavailable, Holiday..." required />
+            </label>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeCancelDialog()">Back</button>
+                <button type="submit" class="btn-danger">Confirm Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Admin/ScheduleManagement/Schedule.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+@section Scripts {
+    <script>
+        function showCancelDialog() {
+            document.getElementById('cancelDialog').style.display = 'flex';
+        }
+
+        function closeCancelDialog() {
+            document.getElementById('cancelDialog').style.display = 'none';
+        }
+
+        document.getElementById('cancelDialog').addEventListener('click', function(e) {
+            if (e.target === this) closeCancelDialog();
+        });
+    </script>
+}

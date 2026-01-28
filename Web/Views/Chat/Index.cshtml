@@ -1,126 +1,169 @@
-@model List<BusinessLogic.DTOs.Responses.ConversationResponse>
-
+@model Web.ViewModels.ChatRoomListVm
+@using System.Security.Claims
 @{
-    ViewData["Title"] = "Chat - Conversations";
+    ViewBag.Title = "Chat Rooms";
+    var userRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "";
+    Layout = userRole == "TEACHER" ? "~/Views/Teacher/_LayoutTeacher.cshtml" : "~/Views/Student/_LayoutStudent.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-12">
-            <!-- Header Section -->
-            <div class="conversations-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <h2 class="mb-0">
-                    <i class="bi bi-chat-dots-fill"></i> My Conversations
-                </h2>
-                <div class="d-flex gap-2 flex-wrap">
-                    <a asp-action="StudyGroups" class="btn btn-primary">
-                        <i class="bi bi-people-fill"></i> Study Groups
-                    </a>
-                    <a asp-action="CreateStudyGroup" class="btn btn-success">
-                        <i class="bi bi-plus-circle-fill"></i> Create Study Group
-                    </a>
-                </div>
+<section class="chat-rooms-page">
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="chat-header-content">
+                <h1 class="chat-title">
+                    <i class="fas fa-comments"></i>
+                    My Chat Rooms
+                </h1>
+                <p class="chat-subtitle">Connect with your classmates and teachers</p>
             </div>
+            <div class="chat-header-actions">
+                <button type="button" class="btn-create-chat" id="btnOpenCreateModal">
+                    <i class="fas fa-plus"></i>
+                    <span>New Chat</span>
+                </button>
+            </div>
+        </div>
 
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show">
-                    <i class="bi bi-check-circle-fill me-2"></i>
-                    @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                @TempData["Error"]
+            </div>
+        }
 
-            @if (TempData["ErrorMessage"] != null)
+        <div class="rooms-list">
+            @if (Model.Rooms.Count == 0)
             {
-                <div class="alert alert-danger alert-dismissible fade show">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-
-            @if (!Model.Any())
-            {
-                <div class="alert alert-info">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-info-circle-fill fs-3 me-3"></i>
-                        <div>
-                            <h5 class="mb-1">No conversations yet</h5>
-                            <p class="mb-2">You don't have any conversations yet. Start by creating your first study group!</p>
-                            <a asp-action="CreateStudyGroup" class="btn btn-success btn-sm">
-                                <i class="bi bi-plus-circle"></i> Create your first study group
-                            </a>
-                        </div>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-inbox"></i>
                     </div>
+                    <h3>No Chat Rooms Yet</h3>
+                    <p>You'll see chat rooms here once you're enrolled in courses or classes.</p>
+                    <button type="button" class="btn-create-first" id="btnCreateFirst">
+                        <i class="fas fa-plus"></i>
+                        Start a New Conversation
+                    </button>
                 </div>
             }
             else
             {
-                <div class="list-group">
-                    @foreach (var conversation in Model)
-                    {
-                        <a asp-action="Conversation" asp-route-id="@conversation.ConversationId" 
-                           class="list-group-item list-group-item-action">
-                            <div class="d-flex w-100 justify-content-between align-items-start">
-                                <div class="flex-grow-1">
-                                    <h5 class="mb-2">
-                                        @if (conversation.IsGroup)
-                                        {
-                                            <i class="bi bi-people-fill text-primary me-2"></i>
-                                        }
-                                        else
-                                        {
-                                            <i class="bi bi-person-fill text-secondary me-2"></i>
-                                        }
-                                        @conversation.Title
-                                    </h5>
-                                    <p class="mb-2 text-muted small d-flex align-items-center">
-                                        <i class="bi bi-person-badge me-1"></i>
-                                        @conversation.Participants.Count participants
-                                    </p>
-                                    @if (conversation.LastMessage != null)
-                                    {
-                                        <p class="mb-0 text-secondary">
-                                            <strong class="text-dark">@conversation.LastMessage.SenderName:</strong> 
-                                            <span class="text-muted">
-                                                @(conversation.LastMessage.Body.Length > 50 
-                                                    ? conversation.LastMessage.Body.Substring(0, 50) + "..." 
-                                                    : conversation.LastMessage.Body)
-                                            </span>
-                                        </p>
-                                    }
-                                </div>
-                                <div class="text-end ms-3">
-                                    <small class="text-muted d-block mb-2">
-                                        <i class="bi bi-calendar3 me-1"></i>
-                                        @conversation.CreatedAt.ToString("MMM dd, yyyy")
-                                    </small>
-                                    @if (conversation.UnreadCount > 0)
-                                    {
-                                        <span class="badge bg-danger rounded-pill">
-                                            <i class="bi bi-envelope-fill me-1"></i>@conversation.UnreadCount new
-                                        </span>
-                                    }
-                                </div>
-                            </div>
-                        </a>
-                    }
-                </div>
+                @foreach (var room in Model.Rooms)
+                {
+                    <a asp-action="Room" asp-route-id="@room.RoomId" class="room-card">
+                        <div class="room-icon @room.RoomType.ToLower()">
+                            @if (room.RoomType == "CLASS")
+                            {
+                                <i class="fas fa-chalkboard"></i>
+                            }
+                            else if (room.RoomType == "COURSE")
+                            {
+                                <i class="fas fa-book"></i>
+                            }
+                            else if (room.RoomType == "DM")
+                            {
+                                <i class="fas fa-user"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-users"></i>
+                            }
+                        </div>
+                        <div class="room-info">
+                            <h3 class="room-name">@room.RoomName</h3>
+                            <span class="room-type-badge @room.RoomType.ToLower()">@room.RoomType</span>
+                        </div>
+                        <div class="room-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                }
             }
+        </div>
+    </div>
+</section>
+
+<!-- Create Chat Modal -->
+<div class="modal-overlay" id="createChatModal">
+    <div class="modal-content create-chat-modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-plus-circle"></i> Create New Chat</h3>
+            <button type="button" class="modal-close" id="btnCloseModal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Chat Type Tabs -->
+            <div class="chat-type-tabs">
+                <button type="button" class="tab-btn active" data-tab="dm">
+                    <i class="fas fa-user"></i>
+                    Direct Message
+                </button>
+                <button type="button" class="tab-btn" data-tab="group">
+                    <i class="fas fa-users"></i>
+                    Group Chat
+                </button>
+            </div>
+
+            <!-- DM Tab Content -->
+            <div class="tab-content active" id="dmTabContent">
+                <div class="form-group">
+                    <label for="dmUserSearch">Search for a user</label>
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="dmUserSearch" class="form-input" placeholder="Type a name or email...">
+                    </div>
+                </div>
+                <div class="users-list" id="dmUsersList">
+                    <div class="users-placeholder">
+                        <i class="fas fa-search"></i>
+                        <p>Search for users to start a conversation</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Group Tab Content -->
+            <div class="tab-content" id="groupTabContent">
+                <div class="form-group">
+                    <label for="groupName">Group Name <span class="required">*</span></label>
+                    <input type="text" id="groupName" class="form-input" placeholder="Enter group name..." maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="groupUserSearch">Add Members</label>
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="groupUserSearch" class="form-input" placeholder="Search users to add...">
+                    </div>
+                </div>
+                <div class="selected-members" id="selectedMembers">
+                    <!-- Selected members will be added here -->
+                </div>
+                <div class="users-list" id="groupUsersList">
+                    <div class="users-placeholder">
+                        <i class="fas fa-user-plus"></i>
+                        <p>Search for users to add to your group</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="btnCancelCreate">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnConfirmCreate" disabled>
+                <i class="fas fa-paper-plane"></i>
+                Create Chat
+            </button>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        // Auto-dismiss alerts after 5 seconds
-        setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(alert) {
-                alert.classList.remove('show');
-                setTimeout(() => alert.remove(), 150);
-            });
-        }, 5000);
-    </script>
+@Html.AntiForgeryToken()
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Chat/Index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 }
 
+@section Scripts {
+    <script src="~/js/Chat/index.js" asp-append-version="true"></script>
+}

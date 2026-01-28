@@ -1,0 +1,108 @@
+@model Web.Models.Student.AIChatSessionViewModel
+@{
+    ViewBag.Title = "AI Assistant";
+    ViewBag.HideFooter = true;
+    
+    var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+    Func<DateTime, string> toVietnamTime = (utcTime) => 
+        TimeZoneInfo.ConvertTimeFromUtc(utcTime, vietnamTimeZone).ToString("HH:mm");
+}
+
+<section class="ai-chat-session">
+    <div class="chat-container">
+        <div class="chat-header">
+            <a asp-action="Index" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="header-info">
+                <h1><i class="fas fa-robot"></i> AI Assistant</h1>
+                <span class="purpose-badge">@GetPurposeDisplay(Model.Purpose)</span>
+            </div>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+            <div class="messages-list" id="messagesList">
+                @if (Model.Messages.Count == 0)
+                {
+                    <div class="welcome-message">
+                        <div class="welcome-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3>Hello! I'm your AI Assistant.</h3>
+                        <p>Ask me anything and I'll help you.</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var message in Model.Messages)
+                    {
+                        var isUser = message.SenderType == "USER";
+                        <div class="message @(isUser ? "user" : "assistant")" data-message-id="@message.ChatMessageId">
+                            <div class="message-avatar">
+                                @if (isUser)
+                                {
+                                    <i class="fas fa-user"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-robot"></i>
+                                }
+                            </div>
+                            <div class="message-bubble">
+                                <div class="message-content">@message.Content</div>
+                                <div class="message-time">@toVietnamTime(message.CreatedAt)</div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span class="typing-text">AI is typing...</span>
+            </div>
+            <form id="chatForm" class="chat-form">
+                <input type="hidden" id="sessionId" value="@Model.ChatSessionId" />
+                <div class="input-wrapper">
+                    <textarea id="messageInput" 
+                              class="message-input" 
+                              placeholder="Type a message..." 
+                              rows="1" 
+                              maxlength="2000"></textarea>
+                    <button type="submit" class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@Html.AntiForgeryToken()
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Student/AIChat/Session.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+@section Scripts {
+    <script src="~/js/Student/AIChat/session.js" asp-append-version="true"></script>
+}
+
+@functions {
+    string GetPurposeDisplay(string purpose)
+    {
+        return purpose switch
+        {
+            "registration" => "Course Registration Support",
+            "grades" => "Grade Lookup",
+            "schedule" => "Schedule Advisor",
+            "general" => "General Q&A",
+            _ => purpose
+        };
+    }
+}

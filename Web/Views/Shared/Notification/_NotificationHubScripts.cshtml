@@ -1,0 +1,183 @@
+@using System.Security.Claims
+@{
+    var userRole = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+}
+
+<div class="notification-toast-container" id="notificationToastContainer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.12/signalr.min.js"></script>
+<script>
+    (function () {
+        const toastContainer = document.getElementById('notificationToastContainer');
+        const notificationPanel = document.getElementById('notificationPanel');
+        const notificationList = document.getElementById('notificationList');
+        const notificationCount = document.getElementById('notificationCount');
+        const role = '@userRole'.toLowerCase();
+
+        let notifications = [];
+        let unreadCount = 0;
+
+        // Toggle notification panel
+        window.toggleNotificationPanel = function() {
+            if (notificationPanel) {
+                notificationPanel.classList.toggle('open');
+            }
+        };
+
+        // Close panel when clicking outside
+        document.addEventListener('click', function(e) {
+            const bell = document.getElementById('notificationBell');
+            if (bell && !bell.contains(e.target) && notificationPanel) {
+                notificationPanel.classList.remove('open');
+            }
+        });
+
+        // Clear all notifications
+        window.clearAllNotifications = function() {
+            notifications = [];
+            unreadCount = 0;
+            updateNotificationUI();
+        };
+
+        // Update notification UI
+        function updateNotificationUI() {
+            if (notificationCount) {
+                if (unreadCount > 0) {
+                    notificationCount.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    notificationCount.style.display = 'flex';
+                } else {
+                    notificationCount.style.display = 'none';
+                }
+            }
+
+            if (notificationList) {
+                if (notifications.length === 0) {
+                    notificationList.innerHTML = `
+                        <div class="empty-notifications">
+                            <span>??</span>
+                            <p>No new notifications</p>
+                        </div>
+                    `;
+                } else {
+                    notificationList.innerHTML = notifications.map((n, i) => `
+                        <div class="notification-item ${n.read ? '' : 'unread'}" onclick="markAsRead(${i}); window.location.href='${n.linkRoute || '#'}';">
+                            <div class="notification-icon ${n.iconClass}">
+                                ${n.icon}
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">${n.title}</div>
+                                <div class="notification-meta">${n.meta}</div>
+                                <div class="notification-time">${n.timeAgo}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        // Mark notification as read
+        window.markAsRead = function(index) {
+            if (notifications[index] && !notifications[index].read) {
+                notifications[index].read = true;
+                unreadCount = Math.max(0, unreadCount - 1);
+                updateNotificationUI();
+            }
+        };
+
+        // Get icon based on change type
+        function getNotificationIcon(changeType) {
+            switch (changeType) {
+                case 'PUBLISH':
+                    return { icon: '??', iconClass: 'published' };
+                case 'CANCEL':
+                    return { icon: '?', iconClass: 'cancelled' };
+                case 'UPDATE':
+                default:
+                    return { icon: '??', iconClass: 'schedule' };
+            }
+        }
+
+        // Get time ago string
+        function getTimeAgo() {
+            return 'Just now';
+        }
+
+        // Create toast notification
+        function showToast(payload) {
+            if (!toastContainer) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast ' + role;
+
+            const iconInfo = getNotificationIcon(payload.changeType);
+            const title = payload.changeType === 'PUBLISH'
+                ? 'Schedule Published'
+                : payload.changeType === 'CANCEL'
+                    ? 'Schedule Cancelled'
+                    : 'Schedule Updated';
+
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <span class="toast-icon">${iconInfo.icon}</span>
+                    <span class="toast-title">${title}</span>
+                    <button class="toast-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+                <div class="toast-meta">Section ${payload.classSectionId} · ${payload.occurrenceDate || 'N/A'}</div>
+                ${payload.reason ? `<div class="toast-reason">${payload.reason}</div>` : ''}
+                <a href="${payload.linkRoute || '#'}" class="toast-link">View Schedule ?</a>
+            `;
+
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 8000);
+        }
+
+        // Add notification to list
+        function addNotification(payload) {
+            const iconInfo = getNotificationIcon(payload.changeType);
+            const title = payload.changeType === 'PUBLISH'
+                ? 'Schedule Published'
+                : payload.changeType === 'CANCEL'
+                    ? 'Schedule Cancelled'
+                    : 'Schedule Updated';
+
+            notifications.unshift({
+                title: title,
+                meta: `Section ${payload.classSectionId} · ${payload.occurrenceDate || 'N/A'}`,
+                icon: iconInfo.icon,
+                iconClass: iconInfo.iconClass,
+                linkRoute: payload.linkRoute,
+                timeAgo: getTimeAgo(),
+                read: false
+            });
+
+            // Keep max 20 notifications
+            if (notifications.length > 20) {
+                notifications = notifications.slice(0, 20);
+            }
+
+            unreadCount++;
+            updateNotificationUI();
+        }
+
+        // SignalR connection
+        if (!window.signalR) return;
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl('/hubs/notifications')
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on('scheduleNotification', function (payload) {
+            if (!payload) return;
+            showToast(payload);
+            addNotification(payload);
+        });
+
+        connection.start().catch(function (err) {
+            console.log('SignalR connection error:', err);
+        });
+
+        // Initial UI update
+        updateNotificationUI();
+    })();
+</script>

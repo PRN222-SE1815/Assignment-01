@@ -1,0 +1,71 @@
+@model Web.Models.Student.AIChatIndexViewModel
+@{
+    ViewBag.Title = "AI Assistant";
+}
+
+<section class="ai-chat-index">
+    <div class="page-header">
+        <h1><i class="fas fa-robot"></i> AI Assistant</h1>
+        <p class="page-subtitle">Select a purpose to start chatting with AI Assistant</p>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+        </div>
+    }
+
+    <form asp-action="StartSession" method="post" class="purpose-form">
+        <div class="purpose-cards">
+            @foreach (var purpose in Model.Purposes)
+            {
+                <label class="purpose-card">
+                    <input type="radio" name="purpose" value="@purpose.Value" 
+                           @(Model.SelectedPurpose == purpose.Value ? "checked" : "") />
+                    <div class="purpose-card-content">
+                        @if (purpose.Value == "registration")
+                        {
+                            <i class="fas fa-clipboard-list"></i>
+                        }
+                        else if (purpose.Value == "grades")
+                        {
+                            <i class="fas fa-chart-line"></i>
+                        }
+                        else if (purpose.Value == "schedule")
+                        {
+                            <i class="fas fa-calendar-alt"></i>
+                        }
+                        else
+                        {
+                            <i class="fas fa-question-circle"></i>
+                        }
+                        <span class="purpose-title">@purpose.Text</span>
+                    </div>
+                </label>
+            }
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-start">
+                <i class="fas fa-comments"></i> Start Conversation
+            </button>
+        </div>
+    </form>
+
+    <div class="ai-info">
+        <div class="info-card">
+            <h3><i class="fas fa-info-circle"></i> Note</h3>
+            <ul>
+                <li>AI Assistant can help you look up grades, schedules, and course registration.</li>
+                <li>AI will not perform actions on your behalf, only provide information and suggestions.</li>
+                <li>All personal information is kept secure and used only within the chat session.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Student/AIChat/Index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
