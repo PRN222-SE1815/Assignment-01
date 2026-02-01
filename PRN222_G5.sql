@@ -703,6 +703,131 @@ JOIN dbo.Courses c ON c.CourseId = cs.CourseId
 JOIN dbo.Teachers t ON t.TeacherId = cs.TeacherId
 JOIN dbo.Users u ON u.UserId = t.TeacherId;
 GO
+--===========================QUIZZ test ====================================--
+CREATE TABLE dbo.Quizzes (
+    QuizId INT IDENTITY(1,1) PRIMARY KEY,
+    ClassSectionId INT NOT NULL,
+    CreatedBy INT NOT NULL,
+    QuizTitle NVARCHAR(200) NOT NULL,
+    Description NVARCHAR(MAX) NULL,
+    TotalQuestions INT NOT NULL,
+    TimeLimitMin INT NULL,
+    ShuffleQuestions BIT NOT NULL DEFAULT 1,
+    ShuffleAnswers BIT NOT NULL DEFAULT 1,
+    StartAt DATETIME2(0) NULL,
+    EndAt DATETIME2(0) NULL,
+    Status NVARCHAR(20) NOT NULL DEFAULT 'DRAFT',
+    CreatedAt DATETIME2(0) NOT NULL DEFAULT SYSUTCDATETIME()
+);
+GO
+
+ALTER TABLE dbo.Quizzes
+ADD CONSTRAINT FK_Quizzes_ClassSection FOREIGN KEY (ClassSectionId)
+REFERENCES dbo.ClassSections(ClassSectionId);
+
+ALTER TABLE dbo.Quizzes
+ADD CONSTRAINT FK_Quizzes_CreatedBy FOREIGN KEY (CreatedBy)
+REFERENCES dbo.Users(UserId);
+
+ALTER TABLE dbo.Quizzes
+ADD CONSTRAINT CK_Quizzes_TotalQuestions CHECK (TotalQuestions IN (10,20,30));
+
+ALTER TABLE dbo.Quizzes
+ADD CONSTRAINT CK_Quizzes_Status CHECK (Status IN ('DRAFT','PUBLISHED','CLOSED'));
+GO
+
+
+--=========================================
+CREATE TABLE dbo.QuizQuestions (
+    QuestionId INT IDENTITY(1,1) PRIMARY KEY,
+    QuizId INT NOT NULL,
+    QuestionText NVARCHAR(MAX) NOT NULL,
+    QuestionType NVARCHAR(20) NOT NULL DEFAULT 'MCQ',
+    Points DECIMAL(5,2) NOT NULL DEFAULT 1,
+    SortOrder INT NOT NULL DEFAULT 0
+);
+GO
+
+ALTER TABLE dbo.QuizQuestions
+ADD CONSTRAINT FK_QuizQuestions_Quiz FOREIGN KEY (QuizId)
+REFERENCES dbo.Quizzes(QuizId);
+
+ALTER TABLE dbo.QuizQuestions
+ADD CONSTRAINT CK_QuizQuestions_Type CHECK (QuestionType IN ('MCQ','TRUE_FALSE'));
+GO
+--======================
+CREATE TABLE dbo.QuizAnswers (
+    AnswerId INT IDENTITY(1,1) PRIMARY KEY,
+    QuestionId INT NOT NULL,
+    AnswerText NVARCHAR(1000) NOT NULL,
+    IsCorrect BIT NOT NULL DEFAULT 0
+);
+GO
+
+ALTER TABLE dbo.QuizAnswers
+ADD CONSTRAINT FK_QuizAnswers_Question FOREIGN KEY (QuestionId)
+REFERENCES dbo.QuizQuestions(QuestionId);
+GO
+--=====================
+CREATE TABLE dbo.QuizAttempts (
+    AttemptId INT IDENTITY(1,1) PRIMARY KEY,
+    QuizId INT NOT NULL,
+    EnrollmentId INT NOT NULL,
+    StartedAt DATETIME2(0) NOT NULL DEFAULT SYSUTCDATETIME(),
+    SubmittedAt DATETIME2(0) NULL,
+    Score DECIMAL(5,2) NULL,
+    Status NVARCHAR(20) NOT NULL DEFAULT 'IN_PROGRESS'
+);
+GO
+
+ALTER TABLE dbo.QuizAttempts
+ADD CONSTRAINT FK_QuizAttempts_Quiz FOREIGN KEY (QuizId)
+REFERENCES dbo.Quizzes(QuizId);
+
+ALTER TABLE dbo.QuizAttempts
+ADD CONSTRAINT FK_QuizAttempts_Enrollment FOREIGN KEY (EnrollmentId)
+REFERENCES dbo.Enrollments(EnrollmentId);
+
+ALTER TABLE dbo.QuizAttempts
+ADD CONSTRAINT CK_QuizAttempts_Status CHECK (Status IN ('IN_PROGRESS','SUBMITTED','GRADED'));
+
+CREATE UNIQUE INDEX UX_QuizAttempts_OnePerStudent
+ON dbo.QuizAttempts(QuizId, EnrollmentId);
+GO
+
+---====================================
+
+CREATE TABLE dbo.QuizAttemptAnswers (
+    AttemptAnswerId INT IDENTITY(1,1) PRIMARY KEY,
+    AttemptId INT NOT NULL,
+    QuestionId INT NOT NULL,
+    SelectedAnswerId INT NULL,
+    IsCorrect BIT NULL
+);
+GO
+
+ALTER TABLE dbo.QuizAttemptAnswers
+ADD CONSTRAINT FK_QAA_Attempt FOREIGN KEY (AttemptId)
+REFERENCES dbo.QuizAttempts(AttemptId);
+
+ALTER TABLE dbo.QuizAttemptAnswers
+ADD CONSTRAINT FK_QAA_Question FOREIGN KEY (QuestionId)
+REFERENCES dbo.QuizQuestions(QuestionId);
+
+ALTER TABLE dbo.QuizAttemptAnswers
+ADD CONSTRAINT FK_QAA_Answer FOREIGN KEY (SelectedAnswerId)
+REFERENCES dbo.QuizAnswers(AnswerId);
+GO
+
+ALTER TABLE dbo.QuizAttempts
+ADD ClassSectionId INT NOT NULL;
+
+--=========================test
+
+
+--===========================
+
+
 
 INSERT INTO dbo.Programs (ProgramCode, ProgramName) VALUES
 ('SE', N'Kỹ thuật phần mềm'),
